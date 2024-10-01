@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 kotlin {
@@ -33,6 +34,8 @@ kotlin {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
+
+            implementation(libs.ktor.client.okhttp)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -41,6 +44,46 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
+
+            implementation(libs.bundles.ktor)
+
+            // Navigator
+            implementation(libs.voyager.navigator)
+
+            // Screen Model
+            implementation(libs.voyager.screenmodel)
+
+            // BottomSheetNavigator
+            implementation(libs.voyager.bottom.sheet.navigator)
+
+            // TabNavigator
+            implementation(libs.voyager.tab.navigator)
+
+            // Transitions
+            implementation(libs.voyager.transitions)
+
+            implementation(libs.kotlinx.datetime)
+
+            api(libs.datastore.preferences)
+            api(libs.datastore)
+
+//            // Koin integration
+//            implementation(libs.voyager.koin)
+//
+//            // Hilt integration
+//            implementation(libs.voyager.hilt)
+//
+//            // LiveData integration
+//            implementation(libs.voyager.livedata)
+//
+//            // Kodein integration
+//            implementation(libs.voyager.kodein)
+//
+//            // RxJava integration
+//            implementation(libs.voyager.rxjava)
+        }
+        nativeMain.dependencies {
+             implementation(libs.ktor.client.darwin)
         }
     }
 }
@@ -80,5 +123,9 @@ android {
     dependencies {
         debugImplementation(compose.uiTooling)
     }
+}
+dependencies {
+    implementation(libs.androidx.activity.ktx)
+    implementation(libs.androidx.material3.android)
 }
 
