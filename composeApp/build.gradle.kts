@@ -36,6 +36,8 @@ kotlin {
             implementation(libs.androidx.activity.compose)
 
             implementation(libs.ktor.client.okhttp)
+
+            implementation(libs.core.splashscreen)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -90,6 +92,8 @@ kotlin {
 
 android {
     namespace = "org.ayopajak.ayopajakmobile"
+    namespace = "com.plcoding.cmp_splashscreen"
+
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
@@ -98,6 +102,7 @@ android {
 
     defaultConfig {
         applicationId = "org.ayopajak.ayopajakmobile"
+        applicationId = "com.plcoding.cmp_splashscreen"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
