@@ -341,7 +341,7 @@ class LoginScreen(val client: Account, val cryptoManager: Crypto,
                     Text(
                         modifier = Modifier.clickable(true, onClick = {
                             println("Daftar")
-                            TODO("Implement Registration")
+                            //TODO("Implement Registration")
                         }),
                         text = "Daftar",
                         fontSize = 16.sp,
