@@ -54,6 +54,7 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import global.Colors
+import global.universalUIComponents.topBar
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import models.LoginRequest
@@ -85,7 +86,7 @@ class ForgetPassword: Screen {
             modifier = Modifier.fillMaxSize().background(Colors().panel)
         ) {
             //TopBar
-            global.universalUIComponents.topBar("")
+            topBar("")
 
             //Body
             Column(
@@ -97,7 +98,7 @@ class ForgetPassword: Screen {
                     //Title
                     Text(
                         text = "Atur Ulang Kata Sandi",
-                        fontSize = 28.sp,
+                        fontSize = 24.sp,
                         fontWeight = FontWeight.Bold,
                         letterSpacing = 0.sp
                     )
@@ -106,7 +107,7 @@ class ForgetPassword: Screen {
                     Text(
                         modifier = Modifier.padding(top = 16.dp),
                         text = "Masukkan e-mail yang terdaftar di Ayopajak.\nKami akan mengirimkan kode verifikasi untuk atur ulang kata sandi.",
-                        fontSize = 16.sp,
+                        fontSize = 12.sp,
                         fontWeight = FontWeight.Normal,
                         letterSpacing = 0.sp
                     )
@@ -114,7 +115,7 @@ class ForgetPassword: Screen {
                     Text(
                         modifier = Modifier.padding(top = 32.dp).padding(bottom = 8.dp),
                         text = "Email terdaftar",
-                        fontSize = 16.sp,
+                        fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.Black
                     )
@@ -124,13 +125,13 @@ class ForgetPassword: Screen {
                                 border = BorderStroke(1.dp, Color.LightGray),
                                 shape = RoundedCornerShape(4.dp)
                             ),
-                        placeholder = { Text("Masukkan Email") },
+                        placeholder = { Text("Masukkan Email", fontSize = 16.sp) },
                         value = email,
                         onValueChange = { email = it },
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Email,
-                            imeAction = ImeAction.Next
+                            imeAction = ImeAction.Done
                         ),
                         colors = TextFieldDefaults.textFieldColors(
                             backgroundColor = Color.White,
@@ -156,8 +157,10 @@ class ForgetPassword: Screen {
                     modifier = Modifier.height(88.dp).fillMaxWidth().padding(16.dp),
                     colors = buttonColors(backgroundColor = Colors().buttonActive, contentColor = Color.White),
                     onClick = {
-                        println("send email")
                         //TODO("Implement Forget Password -> Post email to API")
+
+                        //navigation
+                        navigator.push(EmailVerification(email))
                     },
                     enabled = enabled
                 ) {
@@ -169,7 +172,7 @@ class ForgetPassword: Screen {
                             color = Color.White
                         )
                     } else {
-                        Text("Selanjutnya")
+                        Text("Selanjutnya", fontSize = 16.sp, fontWeight = FontWeight.Bold)
                     }
                 }
             }

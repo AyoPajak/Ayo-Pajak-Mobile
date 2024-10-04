@@ -52,7 +52,7 @@ fun topBar(title: String) {
                 modifier = Modifier.align(Alignment.CenterVertically),
                 text = title,
                 fontWeight = FontWeight.Bold,
-                fontSize = 20.sp
+                fontSize = 16.sp
             )
         }
     }

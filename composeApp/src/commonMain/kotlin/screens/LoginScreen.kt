@@ -154,7 +154,7 @@ class LoginScreen(val client: Account, val cryptoManager: Crypto,
                 Text(
                     modifier = Modifier.padding(top = 24.dp).padding(bottom = 8.dp).padding(horizontal = 16.dp),
                     text = "Selamat Datang!",
-                    fontSize = 32.sp,
+                    fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.Black
                 )
@@ -163,7 +163,7 @@ class LoginScreen(val client: Account, val cryptoManager: Crypto,
                 Text(
                     modifier = Modifier.padding(bottom = 32.dp).padding(horizontal = 16.dp),
                     text = "Kelola Pajak dengan Bijak bersama AyoPajak",
-                    fontSize = 16.sp,
+                    fontSize = 14.sp,
                     color = Color.Gray
                 )
 
@@ -171,7 +171,7 @@ class LoginScreen(val client: Account, val cryptoManager: Crypto,
                 Text(
                     modifier = Modifier.padding(vertical = 8.dp).padding(horizontal = 16.dp),
                     text = "Email",
-                    fontSize = 16.sp,
+                    fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.Black
                 )
@@ -181,7 +181,7 @@ class LoginScreen(val client: Account, val cryptoManager: Crypto,
                             border = BorderStroke(1.dp, Color.LightGray),
                             shape = RoundedCornerShape(4.dp)
                         ),
-                    placeholder = { Text("Masukkan Email") },
+                    placeholder = { Text("Masukkan Email", fontSize = 16.sp) },
                     value = email,
                     onValueChange = { email = it },
                     singleLine = true,
@@ -201,7 +201,7 @@ class LoginScreen(val client: Account, val cryptoManager: Crypto,
                 Text(
                     modifier = Modifier.padding(vertical = 8.dp).padding(horizontal = 16.dp),
                     text = "Kata Sandi",
-                    fontSize = 16.sp,
+                    fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.Black
                 )
@@ -211,7 +211,7 @@ class LoginScreen(val client: Account, val cryptoManager: Crypto,
                             border = BorderStroke(1.dp, Color.LightGray),
                             shape = RoundedCornerShape(4.dp)
                         ),
-                    placeholder = { Text("Masukkan Kata Sandi") },
+                    placeholder = { Text("Masukkan Kata Sandi", fontSize = 16.sp) },
                     value = pass,
                     onValueChange = { pass = it },
                     singleLine = true,
@@ -265,11 +265,10 @@ class LoginScreen(val client: Account, val cryptoManager: Crypto,
                 Text(
                     modifier = Modifier.padding(vertical = 16.dp).padding(horizontal = 16.dp).align(Alignment.End)
                         .clickable(true, onClick = {
-                            println("Lupa Password")
                             navigator.push(ForgetPassword())
                         }),
                     text = "Lupa kata sandi",
-                    fontSize = 16.sp,
+                    fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
                     color = Colors().textClickable
                 )
@@ -326,7 +325,7 @@ class LoginScreen(val client: Account, val cryptoManager: Crypto,
                             color = Color.White
                         )
                     } else {
-                        Text("Masuk")
+                        Text("Masuk", fontSize = 16.sp, fontWeight = FontWeight.Bold)
                     }
                 }
 
@@ -336,7 +335,7 @@ class LoginScreen(val client: Account, val cryptoManager: Crypto,
                 ) {
                     Text(
                         text = "Belum punya akun? ",
-                        fontSize = 16.sp
+                        fontSize = 14.sp
                     )
                     Text(
                         modifier = Modifier.clickable(true, onClick = {
@@ -344,7 +343,7 @@ class LoginScreen(val client: Account, val cryptoManager: Crypto,
                             //TODO("Implement Registration")
                         }),
                         text = "Daftar",
-                        fontSize = 16.sp,
+                        fontSize = 14.sp,
                         fontWeight = FontWeight.Bold,
                         color = Colors().textClickable
                     )
