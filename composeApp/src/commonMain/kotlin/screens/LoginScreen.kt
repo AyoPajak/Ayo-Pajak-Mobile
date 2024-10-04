@@ -27,10 +27,12 @@ import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults.buttonColors
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
+import androidx.compose.material.icons.Icons
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -62,6 +64,7 @@ import cafe.adriel.voyager.navigator.tab.CurrentTab
 import cafe.adriel.voyager.navigator.tab.LocalTabNavigator
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabNavigator
+import global.Colors
 import global.Variables
 import http.Account
 import kotlinx.coroutines.delay
@@ -83,7 +86,6 @@ class LoginScreen(val client: Account, val cryptoManager: Crypto,
     private val userSecret = Variables.TPApiUserSecret
     private val cryptoKey = Variables.RijndaelKey
 
-    @OptIn(ExperimentalComposeUiApi::class)
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
@@ -96,9 +98,7 @@ class LoginScreen(val client: Account, val cryptoManager: Crypto,
         var isLoginSuccess by remember { mutableStateOf(false) }
 
         var enabled by remember { mutableStateOf(false) }
-        var isLoading by remember {
-            mutableStateOf(false)
-        }
+        var isLoading by remember { mutableStateOf(false) }
 
         var errorMessage by remember {
             mutableStateOf<NetworkError?>(null)
@@ -121,7 +121,7 @@ class LoginScreen(val client: Account, val cryptoManager: Crypto,
 
         //Content
         Column(
-            modifier = Modifier.fillMaxSize().background(Color.Blue)
+            modifier = Modifier.fillMaxSize().background(Colors().brandDark60)
                 .pointerInput(Unit) {
                     detectTapGestures(onTap = {
                         focusManager.clearFocus()
@@ -148,7 +148,7 @@ class LoginScreen(val client: Account, val cryptoManager: Crypto,
                 modifier = Modifier.fillMaxWidth()
                     .weight(5.2f)
                     .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
-                    .background(Color.White)
+                    .background(Colors().panel)
             ) {
                 //Greeting
                 Text(
@@ -244,6 +244,7 @@ class LoginScreen(val client: Account, val cryptoManager: Crypto,
                                     }
                                     .onError {
                                         errorMessage = it
+                                        pass = ""
                                     }
                                 isLoading = false
                             }
@@ -255,24 +256,28 @@ class LoginScreen(val client: Account, val cryptoManager: Crypto,
                         focusedIndicatorColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent,
                         disabledIndicatorColor = Color.Transparent
-                    )
+                    ),
+//                    trailingIcon = { IconButton(onClick = { showPassword = !showPassword }) {
+//                        Icon(imageVector = if(showPassword) Icons.Filled.VisibilityOff else Icons.Filled.Visibility, contentDescription = "Show Password")
+//                    }})
                 )
 
                 Text(
                     modifier = Modifier.padding(vertical = 16.dp).padding(horizontal = 16.dp).align(Alignment.End)
                         .clickable(true, onClick = {
                             println("Lupa Password")
+                            navigator.push(ForgetPassword())
                         }),
                     text = "Lupa kata sandi",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.Blue
+                    color = Colors().textClickable
                 )
             }
 
             //Footer
             Column(
-                modifier = Modifier.background(Color.White),
+                modifier = Modifier.background(Colors().panel),
                 verticalArrangement = Arrangement.Bottom
             )
             {
@@ -284,7 +289,7 @@ class LoginScreen(val client: Account, val cryptoManager: Crypto,
 
                 Button(
                     modifier = Modifier.height(48.dp).fillMaxWidth().padding(horizontal = 16.dp),
-                    colors = buttonColors(backgroundColor = Color.Blue, contentColor = Color.White),
+                    colors = buttonColors(backgroundColor = Colors().buttonActive, contentColor = Color.White),
                     onClick = {
                         enabled = false
 
@@ -336,11 +341,12 @@ class LoginScreen(val client: Account, val cryptoManager: Crypto,
                     Text(
                         modifier = Modifier.clickable(true, onClick = {
                             println("Daftar")
+                            TODO("Implement Registration")
                         }),
                         text = "Daftar",
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.Blue
+                        color = Colors().textClickable
                     )
                 }
             }
