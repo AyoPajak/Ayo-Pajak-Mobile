@@ -3,6 +3,7 @@ package screens
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -42,6 +43,8 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.VectorPainter
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -75,22 +78,30 @@ class ForgetPassword: Screen {
         var isLoading by remember { mutableStateOf(false) }
 
         var email by remember { mutableStateOf("") }
+        var isEmailValid by remember { mutableStateOf(false) }
 
         var errorMessage by remember {
             mutableStateOf<NetworkError?>(null)
         }
 
         val scope = rememberCoroutineScope()
+        val focusManager = LocalFocusManager.current
 
+        //Content
         Column(
             modifier = Modifier.fillMaxSize().background(Colors().panel)
+                .pointerInput(Unit) {
+                detectTapGestures(onTap = {
+                    focusManager.clearFocus()
+                })
+            }
         ) {
             //TopBar
             topBar("")
 
             //Body
             Column(
-                modifier = Modifier.fillMaxWidth().weight(7.25f)
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Column(
                     modifier = Modifier.padding(16.dp)
@@ -125,9 +136,13 @@ class ForgetPassword: Screen {
                                 border = BorderStroke(1.dp, Color.LightGray),
                                 shape = RoundedCornerShape(4.dp)
                             ),
-                        placeholder = { Text("Masukkan Email", fontSize = 16.sp) },
+                        placeholder = { Text("Masukkan email", fontSize = 16.sp,
+                            color = Colors().textDarkGrey) },
                         value = email,
-                        onValueChange = { email = it },
+                        onValueChange = {
+                            email = it
+                            if (email.contains("@") && email.contains(".")) isEmailValid = true else isEmailValid = false
+                        },
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Email,
@@ -160,9 +175,9 @@ class ForgetPassword: Screen {
                         //TODO("Implement Forget Password -> Post email to API")
 
                         //navigation
-                        navigator.push(EmailVerification(email))
+                        navigator.push(EmailVerification(email, false))
                     },
-                    enabled = enabled
+                    enabled = enabled && isEmailValid
                 ) {
                     if (isLoading) {
                         CircularProgressIndicator(

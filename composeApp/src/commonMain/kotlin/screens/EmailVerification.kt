@@ -41,7 +41,7 @@ import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.imageResource
 import org.jetbrains.compose.resources.painterResource
 
-class EmailVerification(val email: String): Screen {
+class EmailVerification(val email: String, val isFromRegister:Boolean): Screen {
 
     @Composable
     override fun Content() {
@@ -61,7 +61,7 @@ class EmailVerification(val email: String): Screen {
 
             //Body
             Column(
-                modifier = Modifier.fillMaxWidth().weight(7.25f)
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Column(
                     modifier = Modifier.padding(16.dp).align(Alignment.CenterHorizontally)
@@ -125,7 +125,12 @@ class EmailVerification(val email: String): Screen {
                     onClick = {
                         enabled = false
                         timer = delayTime.toInt()/1000 - 2
-                        //TODO("Implement re-Post email to API")
+
+                        if (isFromRegister) {
+                            //TODO("Implement re-Post register email to API")
+                        } else {
+                            //TODO("Implement re-Post forget password email to API")
+                        }
                     },
                     enabled = enabled
                 ) {
@@ -144,8 +149,10 @@ class EmailVerification(val email: String): Screen {
                             color = Color.White
                         )
                     } else {
-                        if (timer >= 0)
+                        if ( timer >= 10)
                             Text("Kirim Ulang (00:$timer)", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                        else if (timer >= 0)
+                            Text("Kirim Ulang (00:0$timer)", fontSize = 16.sp, fontWeight = FontWeight.Bold)
                         else
                             Text("Kirim Ulang", fontSize = 16.sp, fontWeight = FontWeight.Bold)
                     }

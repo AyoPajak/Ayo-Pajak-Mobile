@@ -16,6 +16,7 @@ import androidx.lifecycle.lifecycleScope
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import cafe.adriel.voyager.transitions.SlideTransition
 import createDataStore
 import http.Account
 import io.ktor.client.engine.okhttp.OkHttp
@@ -43,7 +44,9 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-            Navigator(LoginScreen(client = remember { Account(CreateHttpClient(OkHttp.create())) }, cryptoManager = remember { Crypto() }, dataStore = remember { createDataStore(applicationContext) }))
+            Navigator(LoginScreen(client = remember { Account(CreateHttpClient(OkHttp.create())) }, cryptoManager = remember { Crypto() }, dataStore = remember { createDataStore(applicationContext) })) {
+                navigator -> SlideTransition(navigator)
+            }
         }
     }
 }

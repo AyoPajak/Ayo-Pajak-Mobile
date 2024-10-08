@@ -93,6 +93,9 @@ class LoginScreen(val client: Account, val cryptoManager: Crypto,
         var email by remember { mutableStateOf("") }
         var pass by remember { mutableStateOf("") }
 
+        var isEmailValid by remember { mutableStateOf(false) }
+        var isPassValid by remember { mutableStateOf(false) }
+
         var isPasswordVisible = false
 
         var isLoginSuccess by remember { mutableStateOf(false) }
@@ -146,7 +149,6 @@ class LoginScreen(val client: Account, val cryptoManager: Crypto,
             //Body
             Column(
                 modifier = Modifier.fillMaxWidth()
-                    .weight(5.2f)
                     .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
                     .background(Colors().panel)
             ) {
@@ -164,7 +166,7 @@ class LoginScreen(val client: Account, val cryptoManager: Crypto,
                     modifier = Modifier.padding(bottom = 32.dp).padding(horizontal = 16.dp),
                     text = "Kelola Pajak dengan Bijak bersama AyoPajak",
                     fontSize = 14.sp,
-                    color = Color.Gray
+                    color = Colors().textDarkGrey
                 )
 
                 //Email
@@ -181,9 +183,13 @@ class LoginScreen(val client: Account, val cryptoManager: Crypto,
                             border = BorderStroke(1.dp, Color.LightGray),
                             shape = RoundedCornerShape(4.dp)
                         ),
-                    placeholder = { Text("Masukkan Email", fontSize = 16.sp) },
+                    placeholder = { Text("Masukkan email", fontSize = 16.sp,
+                        color = Colors().textDarkGrey) },
                     value = email,
-                    onValueChange = { email = it },
+                    onValueChange = {
+                        email = it
+                        if (email.contains("@") && email.contains(".")) isEmailValid = true else isEmailValid = false
+                    },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Email,
@@ -211,45 +217,49 @@ class LoginScreen(val client: Account, val cryptoManager: Crypto,
                             border = BorderStroke(1.dp, Color.LightGray),
                             shape = RoundedCornerShape(4.dp)
                         ),
-                    placeholder = { Text("Masukkan Kata Sandi", fontSize = 16.sp) },
+                    placeholder = { Text("Masukkan kata sandi", fontSize = 16.sp,
+                         color = Colors().textDarkGrey) },
                     value = pass,
-                    onValueChange = { pass = it },
+                    onValueChange = {
+                        pass = it
+                        if (pass.length >= 8) isPassValid = true else isPassValid = false
+                    },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Password,
                         imeAction = ImeAction.Done
                     ),
-                    keyboardActions = KeyboardActions(
-                        onDone = {
-                            focusManager.clearFocus()
-
-                            enabled = false
-
-                            scope.launch {
-                                isLoading = true
-                                errorMessage = null
-
-                                val encryptedEmail = cryptoManager.Encrypt(email, cryptoKey)
-                                val encryptedPass = cryptoManager.Encrypt(pass, cryptoKey)
-
-                                val loginModel = LoginRequest(encryptedEmail, encryptedPass)
-
-                                client.Login(loginModel, "Bearer $apiToken")
-                                    .onSuccess {
-                                        println(it)
-                                        if (it.ErrorCode == 0) {
-                                            isLoginSuccess = true
-                                            focusManager.clearFocus()
-                                        }
-                                    }
-                                    .onError {
-                                        errorMessage = it
-                                        pass = ""
-                                    }
-                                isLoading = false
-                            }
-                        }
-                    ),
+//                    keyboardActions = KeyboardActions(
+//                        onDone = {
+//                            focusManager.clearFocus()
+//
+//                            enabled = false
+//
+//                            scope.launch {
+//                                isLoading = true
+//                                errorMessage = null
+//
+//                                val encryptedEmail = cryptoManager.Encrypt(email, cryptoKey)
+//                                val encryptedPass = cryptoManager.Encrypt(pass, cryptoKey)
+//
+//                                val loginModel = LoginRequest(encryptedEmail, encryptedPass)
+//
+//                                client.Login(loginModel, "Bearer $apiToken")
+//                                    .onSuccess {
+//                                        println(it)
+//                                        if (it.ErrorCode == 0) {
+//                                            isLoginSuccess = true
+//                                            focusManager.clearFocus()
+//                                        }
+//                                    }
+//                                    .onError {
+//                                        errorMessage = it
+//                                        pass = ""
+//                                    }
+//                                isLoading = false
+//                            }
+//                        }
+//                    ),
                     visualTransformation = PasswordVisualTransformation(),
                     colors = TextFieldDefaults.textFieldColors(
                         backgroundColor = Color.White,
@@ -276,7 +286,7 @@ class LoginScreen(val client: Account, val cryptoManager: Crypto,
 
             //Footer
             Column(
-                modifier = Modifier.background(Colors().panel),
+                modifier = Modifier.weight(1.5f).background(Colors().panel),
                 verticalArrangement = Arrangement.Bottom
             )
             {
@@ -315,7 +325,7 @@ class LoginScreen(val client: Account, val cryptoManager: Crypto,
                             isLoading = false
                         }
                     },
-                    enabled = enabled
+                    enabled = enabled && isEmailValid && isPassValid
                 ) {
                     if (isLoading) {
                         CircularProgressIndicator(
@@ -340,7 +350,7 @@ class LoginScreen(val client: Account, val cryptoManager: Crypto,
                     Text(
                         modifier = Modifier.clickable(true, onClick = {
                             println("Daftar")
-                            //TODO("Implement Registration")
+                            navigator.push(RegisterAccount())
                         }),
                         text = "Daftar",
                         fontSize = 14.sp,

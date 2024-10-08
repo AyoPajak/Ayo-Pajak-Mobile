@@ -31,4 +31,5 @@ class Colors {
 
     val buttonActive = Color(0xFF4780ff)
     val textClickable = Color(0xFF3565fc)
+    val textDarkGrey = Color(0xFF868E96)
 }
