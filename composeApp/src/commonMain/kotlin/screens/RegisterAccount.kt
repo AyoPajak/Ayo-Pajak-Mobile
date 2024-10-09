@@ -308,7 +308,7 @@ class RegisterAccount: Screen {
 					colors = buttonColors(backgroundColor = Colors().buttonActive, contentColor = Color.White),
 					onClick = {
 						enabled = false
-						//TODO("Create TnC and Privacy Policy Page")
+						navigator.push(TermsAndCondition(email))
 					},
 					enabled = enabled && isEmailValid && isPassValid && isConfirmPassValid
 				) {
