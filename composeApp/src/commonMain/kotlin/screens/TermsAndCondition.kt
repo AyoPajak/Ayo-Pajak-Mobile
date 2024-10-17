@@ -2,6 +2,7 @@ package screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -176,7 +177,8 @@ class TermsAndCondition(val email: String): Screen {
 							)
 						)
 						Text(
-							modifier = Modifier.fillMaxWidth().padding(end = 16.dp),
+							modifier = Modifier.fillMaxWidth().padding(end = 16.dp)
+								.clickable(onClick = { isChecked = !isChecked }),
 							text = "Dengan ini saya membaca, memahami, dan menyetujui hal-hal yang tercantum pada syarat dan ketentuan yang berlaku",
 							fontSize = 12.sp,
 							fontWeight = FontWeight.Bold

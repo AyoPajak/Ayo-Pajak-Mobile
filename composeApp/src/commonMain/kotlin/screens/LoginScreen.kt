@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -26,9 +27,13 @@ import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults.buttonColors
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.LocalContentColor
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
+import androidx.compose.material.SnackbarDefaults.backgroundColor
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
@@ -44,7 +49,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
@@ -74,6 +82,7 @@ import org.jetbrains.compose.resources.painterResource
 import security.Crypto
 import tabs.AccountTab
 import tabs.HomeTab
+import tabs.TaxManagerTab
 import util.NetworkError
 import util.onError
 import util.onSuccess
@@ -98,7 +107,7 @@ class LoginScreen(val client: Account, val cryptoManager: Crypto,
 
         var isPasswordVisible = false
 
-        var isLoginSuccess by remember { mutableStateOf(false) }
+        var isLoginSuccess by remember { mutableStateOf(true) }
 
         var enabled by remember { mutableStateOf(false) }
         var isLoading by remember { mutableStateOf(false) }
@@ -372,8 +381,19 @@ private fun NavigateToHomeScreen() {
                 CurrentTab()
             },
             bottomBar = {
-                BottomNavigation {
+                BottomNavigation(
+                    modifier = Modifier.height(80.dp)
+                        .shadow( //TODO("Create Custom Shadow")
+                            elevation = 12.dp,
+                            shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+                            ambientColor = Color.Black
+                        )
+                        .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
+                        .background(Color.White),
+                    backgroundColor = Color.White
+                ) {
                     TabNavigationItem(HomeTab)
+                    TabNavigationItem(TaxManagerTab)
                     TabNavigationItem(AccountTab)
                 }
             }
@@ -385,9 +405,24 @@ private fun NavigateToHomeScreen() {
 private fun RowScope.TabNavigationItem(tab: Tab) {
     val tabNavigator = LocalTabNavigator.current
 
+    val isSelected = tabNavigator.current == tab
+
     BottomNavigationItem(
+        modifier = Modifier.align(Alignment.CenterVertically),
         selected = tabNavigator.current == tab,
         onClick = { tabNavigator.current = tab },
-        icon = { tab.options.icon?.let { Icon(painter = it, contentDescription = tab.options.title) } }
+        icon = {
+            tab.options.icon?.let {
+                Image(
+                    painter = it,
+                    contentDescription = tab.options.title,
+                    colorFilter = if(!isSelected) ColorFilter.colorMatrix(ColorMatrix().apply {
+                        setToSaturation(0f)
+                    })  else null,
+//                    alpha = if(isSelected) 1f else 0.3f
+                )
+            } },
+        label = { Text(text = tab.options.title, fontWeight = if(isSelected) FontWeight.Bold else FontWeight.Normal) },
+        alwaysShowLabel = true,
     )
 }

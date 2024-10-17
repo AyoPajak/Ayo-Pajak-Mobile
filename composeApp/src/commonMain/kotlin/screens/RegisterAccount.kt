@@ -5,10 +5,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.ScrollableState
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,12 +17,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults.buttonColors
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
@@ -54,11 +49,7 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import global.Colors
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import models.LoginRequest
 import org.jetbrains.compose.resources.painterResource
-import util.onError
-import util.onSuccess
 
 class RegisterAccount: Screen {
 
@@ -111,7 +102,7 @@ class RegisterAccount: Screen {
 					.background(Colors().panel)
 			) {
 				//Title
-				item() {
+				item {
 					Text(
 						modifier = Modifier.padding(vertical = 24.dp).padding(horizontal = 16.dp),
 						text = "Daftar Akun Baru",
@@ -121,7 +112,7 @@ class RegisterAccount: Screen {
 				}
 
 				//Email
-				item() {
+				item {
 					Text(
 						modifier = Modifier.padding(vertical = 8.dp).padding(horizontal = 16.dp),
 						text = "Email",
@@ -144,7 +135,7 @@ class RegisterAccount: Screen {
 						value = email,
 						onValueChange = {
 							email = it
-							if (email.contains("@") && email.contains(".")) isEmailValid = true else isEmailValid = false
+							isEmailValid = email.contains("@") && email.contains(".")
 						},
 						singleLine = true,
 						keyboardOptions = KeyboardOptions(
@@ -161,7 +152,7 @@ class RegisterAccount: Screen {
 				}
 
 				//Pass
-				item() {
+				item {
 					Text(
 						modifier = Modifier.padding(vertical = 8.dp).padding(horizontal = 16.dp),
 						text = "Kata Sandi",
@@ -172,7 +163,7 @@ class RegisterAccount: Screen {
 					TextField(
 						modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
 							.border(
-								border = BorderStroke(1.dp, Color.LightGray),
+								border = BorderStroke(1.dp, if (pass.isNotBlank()) { if (isPassValid) Colors().textGreen else Colors().textRed } else Color.LightGray),
 								shape = RoundedCornerShape(4.dp)
 							),
 						placeholder = {
@@ -184,7 +175,7 @@ class RegisterAccount: Screen {
 						value = pass,
 						onValueChange = {
 							pass = it
-							if (pass.length >= 8) isPassValid = true else isPassValid = false
+							isPassValid = checkPassValidity(pass)
 						},
 						singleLine = true,
 						keyboardOptions = KeyboardOptions(
@@ -203,19 +194,18 @@ class RegisterAccount: Screen {
 //                    }})
 					)
 
-
 					//PassHelperText
 					Text(
 						modifier = Modifier.padding(top = 8.dp).padding(bottom = 16.dp)
 							.padding(horizontal = 24.dp),
 						text = "Kata sandi harus berisi minimal 8 karakter,\n1 huruf besar, 1 angka dan 1 simbol.",
 						fontSize = 12.sp,
-						color = Colors().textDarkGrey
+						color = if (pass.isNotBlank()) { if (isPassValid) Colors().textGreen else Colors().textRed } else Colors().textDarkGrey
 					)
 				}
 
 				//Confirm Pass
-				item() {
+				item {
 					Text(
 						modifier = Modifier.padding(vertical = 8.dp).padding(horizontal = 16.dp),
 						text = "Konfirmasi Kata Sandi",
@@ -226,7 +216,7 @@ class RegisterAccount: Screen {
 					TextField(
 						modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp).padding(horizontal = 16.dp)
 							.border(
-								border = BorderStroke(1.dp, Color.LightGray),
+								border = BorderStroke(1.dp, if (confirmPass.isNotBlank()) { if (isConfirmPassValid) Colors().textGreen else Colors().textRed } else Color.LightGray),
 								shape = RoundedCornerShape(4.dp)
 							),
 						placeholder = {
@@ -238,7 +228,7 @@ class RegisterAccount: Screen {
 						value = confirmPass,
 						onValueChange = {
 							confirmPass = it
-							if (confirmPass == pass && confirmPass.isNotBlank()) isConfirmPassValid = true else isConfirmPassValid = false
+							isConfirmPassValid = confirmPass == pass && confirmPass.isNotBlank()
 						},
 						singleLine = true,
 						keyboardOptions = KeyboardOptions(
@@ -256,7 +246,7 @@ class RegisterAccount: Screen {
 				}
 
 				//RefCode
-				item() {
+				item {
 					Text(
 						modifier = Modifier.padding(vertical = 8.dp).padding(horizontal = 16.dp),
 						text = "Kode Refferal (opsional)",
@@ -345,4 +335,12 @@ class RegisterAccount: Screen {
 			}
 		}
 	}
+}
+
+fun checkPassValidity(pass: String): Boolean {
+	val isUpper = pass.contains("[A-Z]".toRegex())
+	val isNum = pass.contains("[0-9]".toRegex())
+	val isSym = pass.contains("[!\"#\$%&'()*+,\\-./:;\\\\<=>?@\\[\\]^_`{|}~]".toRegex())
+	val len = pass.length >= 8
+	return isUpper && isNum && isSym && len
 }

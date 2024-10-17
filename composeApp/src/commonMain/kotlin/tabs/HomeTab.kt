@@ -16,7 +16,7 @@ object HomeTab : Tab {
         @Composable
         get() {
             val title = stringResource(Res.string.home_tab_title)
-            val icon = painterResource(Res.drawable.compose_multiplatform)
+            val icon = painterResource(Res.drawable.icon_home_selected)
 
             return remember {
                 TabOptions(

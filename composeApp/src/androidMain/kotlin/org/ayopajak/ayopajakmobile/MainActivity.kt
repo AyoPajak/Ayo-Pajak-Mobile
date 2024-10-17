@@ -31,17 +31,18 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        var isChecking = true
-        lifecycleScope.launch {
-            delay(2000L)
-            isChecking = false
-        }
+//        var isChecking = true
+//        lifecycleScope.launch {
+//            delay(2000L)
+//            isChecking = false
+//        }
 
-        installSplashScreen().apply {
-            setKeepOnScreenCondition {
-                isChecking
-            }
-        }
+        installSplashScreen()
+//            .apply {
+//            setKeepOnScreenCondition {
+//                isChecking
+//            }
+//        }
 
         setContent {
             Navigator(LoginScreen(client = remember { Account(CreateHttpClient(OkHttp.create())) }, cryptoManager = remember { Crypto() }, dataStore = remember { createDataStore(applicationContext) })) {

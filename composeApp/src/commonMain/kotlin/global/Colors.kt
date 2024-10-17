@@ -27,9 +27,26 @@ class Colors {
     val brandDark90 = Color(0xFF1a288e)
     val brandDark100 = Color(0xFF151b56)
 
+    val slate5 = Color(0xFFFFFFFF)
+    val slate10 = Color(0xFFF8F9FA)
+    val slate20 = Color(0xFFF1F3F5)
+    val slate30 = Color(0xFF)
+    val slate40 = Color(0xFF)
+    val slate50 = Color(0xFF)
+    val slate60 = Color(0xFF)
+    val slate70 = Color(0xFF495057)
+    val slate80 = Color(0xFF)
+    val slate90 = Color(0xFF)
+    val slate100 = Color(0xFF)
+    val slate110 = Color(0xFF)
+
     val panel = Color(0xFFfcfcfc)
 
     val buttonActive = Color(0xFF4780ff)
+
+    val textBlack = Color(0xFF212529)
     val textClickable = Color(0xFF3565fc)
     val textDarkGrey = Color(0xFF868E96)
+    val textRed = Color(0xFFD7274D)
+    val textGreen = Color(0xFF00A478)
 }
