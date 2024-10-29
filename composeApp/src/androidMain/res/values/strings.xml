@@ -3,4 +3,5 @@
     <string name="home_tab">Home</string>
     <string name="taxmanager_tab_title">Tax Manager</string>
     <string name="placeholder_username">Dian Sastro</string>
+    <string name="placeholder_NPWP">0.1200-121.00-000</string>
 </resources>
