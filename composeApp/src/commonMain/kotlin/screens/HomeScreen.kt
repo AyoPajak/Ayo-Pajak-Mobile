@@ -3,6 +3,7 @@ package screens
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -42,6 +43,7 @@ import ayopajakmobile.composeapp.generated.resources.placeholder_username
 import ayopajakmobile.composeapp.generated.resources.promo_placeholder
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.bottomSheet.LocalBottomSheetNavigator
 import global.Colors
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -51,6 +53,7 @@ class HomeScreen : Screen {
 	@Composable
 	override fun Content() {
 		val navigator = LocalNavigator.current
+		val tabNavigator = LocalNavigator.current
 		val placeholderName = stringResource(Res.string.placeholder_username)
 
 		LazyColumn(
@@ -85,188 +88,94 @@ class HomeScreen : Screen {
 					)
 				}
 			}
-
-			//Recent Transaction
-			item{
-				Box(
-					modifier = Modifier
-						.padding(horizontal = 16.dp)
-						.padding(bottom = 16.dp)
-						.fillMaxWidth()
-						.clip(shape = RoundedCornerShape(8.dp))
-						.border(1.dp, Color.White, RoundedCornerShape(8.dp))
-				) {
-					Column()
-					{
-						Row(
-							modifier = Modifier.padding(16.dp).fillMaxWidth(),
-							horizontalArrangement = Arrangement.SpaceBetween
-						) {
-							Text(
-								text = "Transaksi November 2024",
-								color = Color.White,
-								fontWeight = FontWeight.Medium,
-								fontSize = 12.sp
-							)
-							
-							Image(
-								modifier = Modifier.align(Alignment.CenterVertically),
-								painter = painterResource(Res.drawable.icon_chevron_right),
-								contentDescription = null
-							)
-						}
-						
-						//Divider
-						Box(
-							modifier = Modifier
-								.fillMaxWidth()
-								.padding(horizontal = 16.dp)
-								.height(1.dp)
-								.background(Color.White)
-						)
-						
-						Box(
-							modifier = Modifier
-								.fillMaxWidth()
-								.padding(16.dp)
-						) {
-							Column{
-								Row(
-									modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
-								) {
-									Column(
-										modifier = Modifier.weight(0.5f)
-									) {
-										Text(
-											text = "SPT",
-											modifier = Modifier.padding(bottom = 4.dp),
-											color = Color.White,
-											fontSize = 10.sp
-										)
-										Text(
-											text = "31",
-											color = Color.White,
-											fontSize = 14.sp,
-											fontWeight = FontWeight.Medium
-										)
-									}
-									Column(
-										modifier = Modifier.weight(0.5f)
-									) {
-										Text(
-											text = "e-Billing",
-											modifier = Modifier.padding(bottom = 4.dp),
-											color = Color.White,
-											fontSize = 10.sp
-										)
-										Text(
-											text = "51363135",
-											color = Color.White,
-											fontSize = 14.sp,
-											fontWeight = FontWeight.Medium
-										)
-									}
-								}
-								Row(
-									modifier = Modifier.fillMaxWidth()
-								){
-									Column(
-										modifier = Modifier.weight(0.5f)
-									) {
-										Text(
-											text = "e-Faktur",
-											modifier = Modifier.padding(bottom = 4.dp),
-											color = Color.White,
-											fontSize = 10.sp
-										)
-										Text(
-											text = "41256342",
-											color = Color.White,
-											fontSize = 14.sp,
-											fontWeight = FontWeight.Medium
-										)
-									}
-									Column(
-										modifier = Modifier.weight(0.5f)
-									) {
-										Text(
-											text ="e-Bupot",
-											modifier = Modifier.padding(bottom = 4.dp),
-											color = Color.White,
-											fontSize = 10.sp
-										)
-										Text(
-											text = "3636",
-											color = Color.White,
-											fontSize = 14.sp,
-											fontWeight = FontWeight.Medium
-										)
-									}
-								}
-							}
-						}
-					}
-				}
-			}
 			
-			item {
-				//Service Category
-				Row(
-					modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-				) {
-					Box(
-						modifier = Modifier.padding(top = 16.dp, end = 8.dp)
-							.clip(RoundedCornerShape(24.dp))
-							.background(Colors().brandDark5)
-							.border(1.dp, Colors().textClickable, RoundedCornerShape(24.dp))
-					) {
-						Text(
-							modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-							text = "Pajak",
-							fontWeight = FontWeight.Medium,
-							fontSize = 12.sp,
-							color = Colors().textClickable
-						)
-					}
-					
-					Box(
-						modifier = Modifier.padding(top = 16.dp, end = 8.dp)
-							.clip(RoundedCornerShape(24.dp))
-							.background(Colors().brandDark30)
-							.border(1.dp, Colors().brandDark40, RoundedCornerShape(24.dp))
-					) {
-						Text(
-							modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-							text = "Non Pajak",
-							fontWeight = FontWeight.Medium,
-							fontSize = 12.sp,
-							color = Color.White
-						)
-					}
-					
-					Box(
-						modifier = Modifier.padding(top = 16.dp)
-							.clip(RoundedCornerShape(24.dp))
-							.background(Colors().brandDark30)
-							.border(1.dp, Colors().brandDark40, RoundedCornerShape(24.dp))
-					) {
-						Text(
-							modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-							text = "Pembayaran",
-							fontWeight = FontWeight.Medium,
-							fontSize = 12.sp,
-							color = Color.White
-						)
-					}
-				}
-			}
+//			item {
+//				//Service Category
+//				Row(
+//					modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+//				) {
+//					Box(
+//						modifier = Modifier.padding(top = 16.dp, end = 8.dp)
+//							.clip(RoundedCornerShape(24.dp))
+//							.background(Colors().brandDark5)
+//							.border(1.dp, Colors().textClickable, RoundedCornerShape(24.dp))
+//					) {
+//						Text(
+//							modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+//							text = "Pajak",
+//							fontWeight = FontWeight.Medium,
+//							fontSize = 12.sp,
+//							color = Colors().textClickable
+//						)
+//					}
+//
+//					Box(
+//						modifier = Modifier.padding(top = 16.dp, end = 8.dp)
+//							.clip(RoundedCornerShape(24.dp))
+//							.background(Colors().brandDark30)
+//							.border(1.dp, Colors().brandDark40, RoundedCornerShape(24.dp))
+//					) {
+//						Text(
+//							modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+//							text = "Non Pajak",
+//							fontWeight = FontWeight.Medium,
+//							fontSize = 12.sp,
+//							color = Color.White
+//						)
+//					}
+//
+//					Box(
+//						modifier = Modifier.padding(top = 16.dp)
+//							.clip(RoundedCornerShape(24.dp))
+//							.background(Colors().brandDark30)
+//							.border(1.dp, Colors().brandDark40, RoundedCornerShape(24.dp))
+//					) {
+//						Text(
+//							modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+//							text = "Pembayaran",
+//							fontWeight = FontWeight.Medium,
+//							fontSize = 12.sp,
+//							color = Color.White
+//						)
+//					}
+//				}
+//			}
 			
 			item{
 				//Services
 				LazyRow(
-					modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
+					modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
 					contentPadding = PaddingValues(horizontal = 16.dp)
 				){
+					//SPT
+					item{
+						Box(
+							modifier = Modifier.height(76.dp).width(72.dp).padding(end = 8.dp)
+								.clickable(true, onClick = {
+									navigator?.push(SPTScreen())
+								})
+						) {
+							Column(
+								modifier = Modifier.fillMaxSize(),
+								verticalArrangement = Arrangement.Center
+							) {
+								Image(
+									modifier = Modifier.height(48.dp).align(Alignment.CenterHorizontally),
+									painter = painterResource(Res.drawable.icon_ebilling),
+									contentDescription = null
+								)
+								Text(
+									modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+									text = "SPT",
+									color = Color.White,
+									fontSize = 10.sp,
+									fontWeight = FontWeight.Bold,
+									textAlign = TextAlign.Center
+								)
+							}
+						}
+					}
+					
 					//e-Billing
 					item{
 						Box(
@@ -293,134 +202,86 @@ class HomeScreen : Screen {
 						}
 					}
 
-					//e-Faktur
-					item{
-						Box(
-							modifier = Modifier.height(76.dp).width(72.dp).padding(end = 8.dp)
-						) {
-							Column(
-								modifier = Modifier.fillMaxSize(),
-								verticalArrangement = Arrangement.Center
-							) {
-								Image(
-									modifier = Modifier.height(48.dp).align(Alignment.CenterHorizontally),
-									painter = painterResource(Res.drawable.icon_ebilling),
-									contentDescription = null
-								)
-								Text(
-									modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-									text = "e-Faktur",
-									color = Color.White,
-									fontSize = 10.sp,
-									fontWeight = FontWeight.Bold,
-									textAlign = TextAlign.Center
-								)
-							}
-						}
-					}
+//					//e-Faktur
+//					item{
+//						Box(
+//							modifier = Modifier.height(76.dp).width(72.dp).padding(end = 8.dp)
+//						) {
+//							Column(
+//								modifier = Modifier.fillMaxSize(),
+//								verticalArrangement = Arrangement.Center
+//							) {
+//								Image(
+//									modifier = Modifier.height(48.dp).align(Alignment.CenterHorizontally),
+//									painter = painterResource(Res.drawable.icon_ebilling),
+//									contentDescription = null
+//								)
+//								Text(
+//									modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+//									text = "e-Faktur",
+//									color = Color.White,
+//									fontSize = 10.sp,
+//									fontWeight = FontWeight.Bold,
+//									textAlign = TextAlign.Center
+//								)
+//							}
+//						}
+//					}
 
-					//e-Bupot
-					item{
-						Box(
-							modifier = Modifier.height(76.dp).width(72.dp).padding(end = 8.dp)
-						) {
-							Column(
-								modifier = Modifier.fillMaxSize(),
-								verticalArrangement = Arrangement.Center
-							) {
-								Image(
-									modifier = Modifier.height(48.dp).align(Alignment.CenterHorizontally),
-									painter = painterResource(Res.drawable.icon_ebilling),
-									contentDescription = null
-								)
-								Text(
-									modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-									text = "e-Bupot",
-									color = Color.White,
-									fontSize = 10.sp,
-									fontWeight = FontWeight.Bold,
-									textAlign = TextAlign.Center
-								)
-							}
-						}
-					}
+//					//e-Bupot
+//					item{
+//						Box(
+//							modifier = Modifier.height(76.dp).width(72.dp).padding(end = 8.dp)
+//						) {
+//							Column(
+//								modifier = Modifier.fillMaxSize(),
+//								verticalArrangement = Arrangement.Center
+//							) {
+//								Image(
+//									modifier = Modifier.height(48.dp).align(Alignment.CenterHorizontally),
+//									painter = painterResource(Res.drawable.icon_ebilling),
+//									contentDescription = null
+//								)
+//								Text(
+//									modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+//									text = "e-Bupot",
+//									color = Color.White,
+//									fontSize = 10.sp,
+//									fontWeight = FontWeight.Bold,
+//									textAlign = TextAlign.Center
+//								)
+//							}
+//						}
+//					}
 
-					//SPT
-					item{
-						Box(
-							modifier = Modifier.height(76.dp).width(72.dp).padding(end = 8.dp)
-						) {
-							Column(
-								modifier = Modifier.fillMaxSize(),
-								verticalArrangement = Arrangement.Center
-							) {
-								Image(
-									modifier = Modifier.height(48.dp).align(Alignment.CenterHorizontally),
-									painter = painterResource(Res.drawable.icon_ebilling),
-									contentDescription = null
-								)
-								Text(
-									modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-									text = "SPT",
-									color = Color.White,
-									fontSize = 10.sp,
-									fontWeight = FontWeight.Bold,
-									textAlign = TextAlign.Center
-								)
-							}
-						}
-					}
-
-					//Tax Manager
-					item{
-						Box(
-							modifier = Modifier.height(76.dp).width(72.dp).padding(end = 8.dp)
-						) {
-							Column(
-								modifier = Modifier.fillMaxSize(),
-								verticalArrangement = Arrangement.Center
-							) {
-								Image(
-									modifier = Modifier.height(48.dp).align(Alignment.CenterHorizontally),
-									painter = painterResource(Res.drawable.icon_ebilling),
-									contentDescription = null
-								)
-								Text(
-									modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-									text = "Tax Manager",
-									color = Color.White,
-									fontSize = 10.sp,
-									fontWeight = FontWeight.Bold,
-									textAlign = TextAlign.Center
-								)
-							}
-						}
-					}
-
-					item{
-						Box(
-							modifier = Modifier.height(76.dp).width(72.dp).padding(end = 8.dp)
-						) {
-							Column(
-								modifier = Modifier.fillMaxSize(),
-								verticalArrangement = Arrangement.Center
-							) {
-								Image(
-									modifier = Modifier.height(48.dp).align(Alignment.CenterHorizontally),
-									painter = painterResource(Res.drawable.icon_ebilling),
-									contentDescription = null
-								)
-								Text(
-									modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-									text = "Tax Manager",
-									color = Color.White,
-									fontSize = 10.sp,
-									fontWeight = FontWeight.Bold,
-									textAlign = TextAlign.Center
-								)
-							}
-						}
-					}
+//					//Tax Manager
+//					item{
+//						Box(
+//							modifier = Modifier.height(76.dp).width(72.dp).padding(end = 8.dp)
+//								.clickable(true, onClick = {
+//									navigator?.push(TaxManagerScreen())
+//								})
+//						) {
+//							Column(
+//								modifier = Modifier.fillMaxSize(),
+//								verticalArrangement = Arrangement.Center
+//							) {
+//								Image(
+//									modifier = Modifier.height(48.dp).align(Alignment.CenterHorizontally),
+//									painter = painterResource(Res.drawable.icon_ebilling),
+//									contentDescription = null
+//								)
+//								Text(
+//									modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+//									text = "Tax Manager",
+//									color = Color.White,
+//									fontSize = 10.sp,
+//									fontWeight = FontWeight.Bold,
+//									textAlign = TextAlign.Center
+//								)
+//							}
+//						}
+//					}
 				}
 			}
 
@@ -431,124 +292,6 @@ class HomeScreen : Screen {
 						.clip(shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
 						.background(Color.White)
 				){
-
-
-//                    //Tax Calender Preview
-//                    LazyRow(
-//                        modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
-//                        contentPadding = PaddingValues(horizontal = 16.dp)
-//                    ){
-//                        item{
-//                            Box(
-//                                modifier = Modifier
-//                                    .padding(end = 8.dp)
-//                                    .shadow(12.dp, RoundedCornerShape(8.dp), ambientColor = Color.Black)
-//                                    .background(Color.White)
-//                            ) {
-//                                Row(
-//                                    modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
-//                                    horizontalArrangement = Arrangement.SpaceBetween
-//                                ) {
-//                                    Column(
-//                                        modifier = Modifier.padding(vertical = 24.dp).padding(end = 36.dp)
-//                                    ) {
-//                                        Text(
-//                                            modifier = Modifier.padding(bottom = 16.dp),
-//                                            text = "Batas Akhir Penyetoran SPT\nMasa Bea Materai",
-//                                            color = Color.Black,
-//                                            fontSize = 10.sp
-//                                        )
-//                                        Text(
-//                                            text = "7 Hari Lagi",
-//                                            color = Colors().textClickable,
-//                                            fontWeight = FontWeight.Bold,
-//                                            fontSize = 10.sp
-//                                        )
-//                                    }
-//                                    Image(
-//                                        modifier = Modifier.align(Alignment.CenterVertically),
-//                                        painter = painterResource(Res.drawable.icon_chevron_right),
-//                                        contentDescription = null,
-//                                        colorFilter = ColorFilter.tint(Color.Black)
-//                                    )
-//                                }
-//                            }
-//                        }
-//
-//                        item{
-//                            Box(
-//                                modifier = Modifier
-//                                    .padding(end = 8.dp)
-//                                    .shadow(12.dp, RoundedCornerShape(8.dp), ambientColor = Color.Black)
-//                                    .background(Color.White)
-//                            ) {
-//                                Row(
-//                                    modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
-//                                    horizontalArrangement = Arrangement.SpaceBetween
-//                                ) {
-//                                    Column(
-//                                        modifier = Modifier.padding(vertical = 24.dp).padding(end = 36.dp)
-//                                    ) {
-//                                        Text(
-//                                            modifier = Modifier.padding(bottom = 16.dp),
-//                                            text = "Batas Akhir Penyetoran SPT\nMasa Bea Materai",
-//                                            color = Color.Black,
-//                                            fontSize = 10.sp
-//                                        )
-//                                        Text(
-//                                            text = "7 Hari Lagi",
-//                                            color = Colors().textClickable,
-//                                            fontWeight = FontWeight.Bold,
-//                                            fontSize = 10.sp
-//                                        )
-//                                    }
-//                                    Image(
-//                                        modifier = Modifier.align(Alignment.CenterVertically),
-//                                        painter = painterResource(Res.drawable.icon_chevron_right),
-//                                        contentDescription = null,
-//                                        colorFilter = ColorFilter.tint(Color.Black)
-//                                    )
-//                                }
-//                            }
-//                        }
-//
-//                        item{
-//                            Box(
-//                                modifier = Modifier
-//                                    .shadow(12.dp, RoundedCornerShape(8.dp), ambientColor = Color.Black)
-//                                    .background(Color.White)
-//                            ) {
-//                                Row(
-//                                    modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
-//                                    horizontalArrangement = Arrangement.SpaceBetween
-//                                ) {
-//                                    Column(
-//                                        modifier = Modifier.padding(vertical = 24.dp).padding(end = 36.dp)
-//                                    ) {
-//                                        Text(
-//                                            modifier = Modifier.padding(bottom = 16.dp),
-//                                            text = "Batas Akhir Penyetoran SPT\nMasa Bea Materai",
-//                                            color = Color.Black,
-//                                            fontSize = 10.sp
-//                                        )
-//                                        Text(
-//                                            text = "7 Hari Lagi",
-//                                            color = Colors().textClickable,
-//                                            fontWeight = FontWeight.Bold,
-//                                            fontSize = 10.sp
-//                                        )
-//                                    }
-//                                    Image(
-//                                        modifier = Modifier.align(Alignment.CenterVertically),
-//                                        painter = painterResource(Res.drawable.icon_chevron_right),
-//                                        contentDescription = null,
-//                                        colorFilter = ColorFilter.tint(Color.Black)
-//                                    )
-//                                }
-//                            }
-//                        }
-//                    }
-
 					//Promo
 					LazyRow(
 						modifier = Modifier.padding(vertical = 16.dp),

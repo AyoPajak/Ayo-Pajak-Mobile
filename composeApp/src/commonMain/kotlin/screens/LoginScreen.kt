@@ -44,6 +44,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -88,156 +89,156 @@ import util.onError
 import util.onSuccess
 
 class LoginScreen(val client: Account, val cryptoManager: Crypto,
-                  val dataStore: DataStore<Preferences>
+									val dataStore: DataStore<Preferences>
 ) : Screen {
-
-    private val userKey = Variables.TPApiUserKey
-    private val userSecret = Variables.TPApiUserSecret
-    private val cryptoKey = Variables.RijndaelKey
-
-    @Composable
-    override fun Content() {
-        val navigator = LocalNavigator.currentOrThrow
-
-        var email by remember { mutableStateOf("") }
-        var pass by remember { mutableStateOf("") }
-
-        var isEmailValid by remember { mutableStateOf(false) }
-        var isPassValid by remember { mutableStateOf(false) }
-
-        var isPasswordVisible = false
-
-        var isLoginSuccess by remember { mutableStateOf(true) }
-
-        var enabled by remember { mutableStateOf(false) }
-        var isLoading by remember { mutableStateOf(false) }
-
-        var errorMessage by remember {
-            mutableStateOf<NetworkError?>(null)
-        }
-
-        val scope = rememberCoroutineScope()
-
-        var apiToken = ""
-        scope.launch {
-            client.GetApiToken(userKey, userSecret, "grant_type=password")
-                .onSuccess {
-                    apiToken = it.AccessToken
-                }
-                .onError {
-                    apiToken = ""
-                }
-        }
-
-        val focusManager = LocalFocusManager.current
-
-        //Content
-        Column(
-            modifier = Modifier.fillMaxSize().background(Colors().brandDark60)
-                .pointerInput(Unit) {
-                    detectTapGestures(onTap = {
-                        focusManager.clearFocus()
-                    })
-                }
-        ) {
-            //Header
-            Box(
-                modifier = Modifier.fillMaxWidth().weight(2.8f).pointerInput(Unit) {
-                    detectTapGestures(onTap = {
-                        focusManager.clearFocus()
-                    })
-                }
-            ) {
-                Image(
-                    modifier = Modifier.height(80.dp).align(Alignment.Center),
-                    painter = painterResource(Res.drawable.logo_bnw),
-                    contentDescription = null
-                )
-            }
-
-            //Body
-            Column(
-                modifier = Modifier.fillMaxWidth()
-                    .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
-                    .background(Colors().panel)
-            ) {
-                //Greeting
-                Text(
-                    modifier = Modifier.padding(top = 24.dp).padding(bottom = 8.dp).padding(horizontal = 16.dp),
-                    text = "Selamat Datang!",
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Black
-                )
-
-                //Subtitle
-                Text(
-                    modifier = Modifier.padding(bottom = 32.dp).padding(horizontal = 16.dp),
-                    text = "Kelola Pajak dengan Bijak bersama AyoPajak",
-                    fontSize = 14.sp,
-                    color = Colors().textDarkGrey
-                )
-
-                //Email
-                Text(
-                    modifier = Modifier.padding(vertical = 8.dp).padding(horizontal = 16.dp),
-                    text = "Email",
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Black
-                )
-                TextField(
-                    modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp).padding(horizontal = 16.dp)
-                        .border(
-                            border = BorderStroke(1.dp, Color.LightGray),
-                            shape = RoundedCornerShape(4.dp)
-                        ),
-                    placeholder = { Text("Masukkan email", fontSize = 16.sp,
-                        color = Colors().textDarkGrey) },
-                    value = email,
-                    onValueChange = {
-                        email = it
-                        if (email.contains("@") && email.contains(".")) isEmailValid = true else isEmailValid = false
-                    },
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Email,
-                        imeAction = ImeAction.Next
-                    ),
-                    colors = TextFieldDefaults.textFieldColors(
-                        backgroundColor = Color.White,
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent,
-                        disabledIndicatorColor = Color.Transparent
-                    )
-                )
-
-                //Password
-                Text(
-                    modifier = Modifier.padding(vertical = 8.dp).padding(horizontal = 16.dp),
-                    text = "Kata Sandi",
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Black
-                )
-                TextField(
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
-                        .border(
-                            border = BorderStroke(1.dp, Color.LightGray),
-                            shape = RoundedCornerShape(4.dp)
-                        ),
-                    placeholder = { Text("Masukkan kata sandi", fontSize = 16.sp,
-                         color = Colors().textDarkGrey) },
-                    value = pass,
-                    onValueChange = {
-                        pass = it
-                        if (pass.length >= 8) isPassValid = true else isPassValid = false
-                    },
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Password,
-                        imeAction = ImeAction.Done
-                    ),
+	
+	private val userKey = Variables.TPApiUserKey
+	private val userSecret = Variables.TPApiUserSecret
+	private val cryptoKey = Variables.RijndaelKey
+	
+	@Composable
+	override fun Content() {
+		val navigator = LocalNavigator.currentOrThrow
+		
+		var email by remember { mutableStateOf("") }
+		var pass by remember { mutableStateOf("") }
+		
+		var isEmailValid by remember { mutableStateOf(false) }
+		var isPassValid by remember { mutableStateOf(false) }
+		
+		var isPasswordVisible = false
+		
+		var isLoginSuccess by remember { mutableStateOf(true) }
+		
+		var enabled by remember { mutableStateOf(false) }
+		var isLoading by remember { mutableStateOf(false) }
+		
+		var errorMessage by remember {
+			mutableStateOf<NetworkError?>(null)
+		}
+		
+		val scope = rememberCoroutineScope()
+		
+		var apiToken = ""
+		scope.launch {
+			client.GetApiToken(userKey, userSecret, "grant_type=password")
+				.onSuccess {
+					apiToken = it.AccessToken
+				}
+				.onError {
+					apiToken = ""
+				}
+		}
+		
+		val focusManager = LocalFocusManager.current
+		
+		//Content
+		Column(
+			modifier = Modifier.fillMaxSize().background(Colors().brandDark60)
+				.pointerInput(Unit) {
+					detectTapGestures(onTap = {
+						focusManager.clearFocus()
+					})
+				}
+		) {
+			//Header
+			Box(
+				modifier = Modifier.fillMaxWidth().weight(2.8f).pointerInput(Unit) {
+					detectTapGestures(onTap = {
+						focusManager.clearFocus()
+					})
+				}
+			) {
+				Image(
+					modifier = Modifier.height(80.dp).align(Alignment.Center),
+					painter = painterResource(Res.drawable.logo_bnw),
+					contentDescription = null
+				)
+			}
+			
+			//Body
+			Column(
+				modifier = Modifier.fillMaxWidth()
+					.clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
+					.background(Colors().panel)
+			) {
+				//Greeting
+				Text(
+					modifier = Modifier.padding(top = 24.dp).padding(bottom = 8.dp).padding(horizontal = 16.dp),
+					text = "Selamat Datang!",
+					fontSize = 24.sp,
+					fontWeight = FontWeight.Bold,
+					color = Color.Black
+				)
+				
+				//Subtitle
+				Text(
+					modifier = Modifier.padding(bottom = 32.dp).padding(horizontal = 16.dp),
+					text = "Kelola Pajak dengan Bijak bersama AyoPajak",
+					fontSize = 14.sp,
+					color = Colors().textDarkGrey
+				)
+				
+				//Email
+				Text(
+					modifier = Modifier.padding(vertical = 8.dp).padding(horizontal = 16.dp),
+					text = "Email",
+					fontSize = 12.sp,
+					fontWeight = FontWeight.Bold,
+					color = Color.Black
+				)
+				TextField(
+					modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp).padding(horizontal = 16.dp)
+						.border(
+							border = BorderStroke(1.dp, Color.LightGray),
+							shape = RoundedCornerShape(4.dp)
+						),
+					placeholder = { Text("Masukkan email", fontSize = 16.sp,
+						color = Colors().textDarkGrey) },
+					value = email,
+					onValueChange = {
+						email = it
+						if (email.contains("@") && email.contains(".")) isEmailValid = true else isEmailValid = false
+					},
+					singleLine = true,
+					keyboardOptions = KeyboardOptions(
+						keyboardType = KeyboardType.Email,
+						imeAction = ImeAction.Next
+					),
+					colors = TextFieldDefaults.textFieldColors(
+						backgroundColor = Color.White,
+						focusedIndicatorColor = Color.Transparent,
+						unfocusedIndicatorColor = Color.Transparent,
+						disabledIndicatorColor = Color.Transparent
+					)
+				)
+				
+				//Password
+				Text(
+					modifier = Modifier.padding(vertical = 8.dp).padding(horizontal = 16.dp),
+					text = "Kata Sandi",
+					fontSize = 12.sp,
+					fontWeight = FontWeight.Bold,
+					color = Color.Black
+				)
+				TextField(
+					modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
+						.border(
+							border = BorderStroke(1.dp, Color.LightGray),
+							shape = RoundedCornerShape(4.dp)
+						),
+					placeholder = { Text("Masukkan kata sandi", fontSize = 16.sp,
+						color = Colors().textDarkGrey) },
+					value = pass,
+					onValueChange = {
+						pass = it
+						if (pass.length >= 8) isPassValid = true else isPassValid = false
+					},
+					singleLine = true,
+					keyboardOptions = KeyboardOptions(
+						keyboardType = KeyboardType.Password,
+						imeAction = ImeAction.Done
+					),
 //                    keyboardActions = KeyboardActions(
 //                        onDone = {
 //                            focusManager.clearFocus()
@@ -269,160 +270,160 @@ class LoginScreen(val client: Account, val cryptoManager: Crypto,
 //                            }
 //                        }
 //                    ),
-                    visualTransformation = PasswordVisualTransformation(),
-                    colors = TextFieldDefaults.textFieldColors(
-                        backgroundColor = Color.White,
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent,
-                        disabledIndicatorColor = Color.Transparent
-                    ),
+					visualTransformation = PasswordVisualTransformation(),
+					colors = TextFieldDefaults.textFieldColors(
+						backgroundColor = Color.White,
+						focusedIndicatorColor = Color.Transparent,
+						unfocusedIndicatorColor = Color.Transparent,
+						disabledIndicatorColor = Color.Transparent
+					),
 //                    trailingIcon = { IconButton(onClick = { showPassword = !showPassword }) {
 //                        Icon(imageVector = if(showPassword) Icons.Filled.VisibilityOff else Icons.Filled.Visibility, contentDescription = "Show Password")
 //                    }})
-                )
-
-                Text(
-                    modifier = Modifier.padding(vertical = 16.dp).padding(horizontal = 16.dp).align(Alignment.End)
-                        .clickable(true, onClick = {
-                            navigator.push(ForgetPassword())
-                        }),
-                    text = "Lupa kata sandi",
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Colors().textClickable
-                )
-            }
-
-            //Footer
-            Column(
-                modifier = Modifier.weight(1.5f).background(Colors().panel),
-                verticalArrangement = Arrangement.Bottom
-            )
-            {
-                LaunchedEffect(enabled) {
-                    if (enabled) return@LaunchedEffect
-                    else delay(1000L)
-                    enabled = true
-                }
-
-                Button(
-                    modifier = Modifier.height(48.dp).fillMaxWidth().padding(horizontal = 16.dp),
-                    colors = buttonColors(backgroundColor = Colors().buttonActive, contentColor = Color.White),
-                    onClick = {
-                        enabled = false
-
-                        scope.launch {
-                            isLoading = true
-                            errorMessage = null
-
-                            val encryptedEmail = cryptoManager.Encrypt(email, cryptoKey)
-                            val encryptedPass = cryptoManager.Encrypt(pass, cryptoKey)
-
-                            val loginModel = LoginRequest(encryptedEmail, encryptedPass)
-
-                            client.Login(loginModel, "Bearer $apiToken")
-                                .onSuccess {
-                                    println(it)
-                                    if (it.ErrorCode == 0) {
-                                        isLoginSuccess = true
-                                        focusManager.clearFocus()
-                                    }
-                                }
-                                .onError {
-                                    errorMessage = it
-                                }
-                            isLoading = false
-                        }
-                    },
-                    enabled = enabled && isEmailValid && isPassValid
-                ) {
-                    if (isLoading) {
-                        CircularProgressIndicator(
-                            modifier = Modifier
-                                .size(15.dp),
-                            strokeWidth = 1.dp,
-                            color = Color.White
-                        )
-                    } else {
-                        Text("Masuk", fontSize = 16.sp, fontWeight = FontWeight.Bold)
-                    }
-                }
-
-                Row(
-                    modifier = Modifier.fillMaxWidth().padding(16.dp),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Text(
-                        text = "Belum punya akun? ",
-                        fontSize = 14.sp
-                    )
-                    Text(
-                        modifier = Modifier.clickable(true, onClick = {
-                            println("Daftar")
-                            navigator.push(RegisterAccount())
-                        }),
-                        text = "Daftar",
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Colors().textClickable
-                    )
-                }
-            }
-        }
-        if (isLoginSuccess) NavigateToHomeScreen()
-    }
+				)
+				
+				Text(
+					modifier = Modifier.padding(vertical = 16.dp).padding(horizontal = 16.dp).align(Alignment.End)
+						.clickable(true, onClick = {
+							navigator.push(ForgetPassword())
+						}),
+					text = "Lupa kata sandi",
+					fontSize = 14.sp,
+					fontWeight = FontWeight.Bold,
+					color = Colors().textClickable
+				)
+			}
+			
+			//Footer
+			Column(
+				modifier = Modifier.weight(1.5f).background(Colors().panel),
+				verticalArrangement = Arrangement.Bottom
+			)
+			{
+				LaunchedEffect(enabled) {
+					if (enabled) return@LaunchedEffect
+					else delay(1000L)
+					enabled = true
+				}
+				
+				Button(
+					modifier = Modifier.height(48.dp).fillMaxWidth().padding(horizontal = 16.dp),
+					colors = buttonColors(backgroundColor = Colors().buttonActive, contentColor = Color.White),
+					onClick = {
+						enabled = false
+						
+						scope.launch {
+							isLoading = true
+							errorMessage = null
+							
+							val encryptedEmail = cryptoManager.Encrypt(email, cryptoKey)
+							val encryptedPass = cryptoManager.Encrypt(pass, cryptoKey)
+							
+							val loginModel = LoginRequest(encryptedEmail, encryptedPass)
+							
+							client.Login(loginModel, "Bearer $apiToken")
+								.onSuccess {
+									println(it)
+									if (it.ErrorCode == 0) {
+										isLoginSuccess = true
+										focusManager.clearFocus()
+									}
+								}
+								.onError {
+									errorMessage = it
+								}
+							isLoading = false
+						}
+					},
+					enabled = enabled && isEmailValid && isPassValid
+				) {
+					if (isLoading) {
+						CircularProgressIndicator(
+							modifier = Modifier
+								.size(15.dp),
+							strokeWidth = 1.dp,
+							color = Color.White
+						)
+					} else {
+						Text("Masuk", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+					}
+				}
+				
+				Row(
+					modifier = Modifier.fillMaxWidth().padding(16.dp),
+					horizontalArrangement = Arrangement.Center
+				) {
+					Text(
+						text = "Belum punya akun? ",
+						fontSize = 14.sp
+					)
+					Text(
+						modifier = Modifier.clickable(true, onClick = {
+							println("Daftar")
+							navigator.push(RegisterAccount())
+						}),
+						text = "Daftar",
+						fontSize = 14.sp,
+						fontWeight = FontWeight.Bold,
+						color = Colors().textClickable
+					)
+				}
+			}
+		}
+		if (isLoginSuccess) NavigateToHomeScreen()
+	}
 }
 
 @Composable
-private fun NavigateToHomeScreen() {
-    TabNavigator(HomeTab) {
-        Scaffold(
-            content = {
-                CurrentTab()
-            },
-            bottomBar = {
-                BottomNavigation(
-                    modifier = Modifier.height(80.dp)
-                        .shadow( //TODO("Create Custom Shadow")
-                            elevation = 12.dp,
-                            shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
-                            ambientColor = Color.Black
-                        )
-                        .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
-                        .background(Color.White),
-                    backgroundColor = Color.White
-                ) {
-                    TabNavigationItem(HomeTab)
-                    TabNavigationItem(TaxManagerTab)
-                    TabNavigationItem(AccountTab)
-                }
-            }
-        )
-    }
+fun NavigateToHomeScreen() {
+	TabNavigator(HomeTab) {
+		Scaffold(
+			content = {
+				CurrentTab()
+			},
+			bottomBar = {
+				BottomNavigation(
+					modifier = Modifier.height(80.dp)
+						.shadow( //TODO("Create Custom Shadow")
+							elevation = 12.dp,
+							shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+							spotColor = Color.Black
+						)
+						.clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
+						.background(Color.White),
+					backgroundColor = Color.White
+				) {
+					TabNavigationItem(HomeTab)
+					TabNavigationItem(TaxManagerTab)
+					TabNavigationItem(AccountTab)
+				}
+			}
+		)
+	}
 }
 
 @Composable
 private fun RowScope.TabNavigationItem(tab: Tab) {
-    val tabNavigator = LocalTabNavigator.current
-
-    val isSelected = tabNavigator.current == tab
-
-    BottomNavigationItem(
-        modifier = Modifier.align(Alignment.CenterVertically),
-        selected = tabNavigator.current == tab,
-        onClick = { tabNavigator.current = tab },
-        icon = {
-            tab.options.icon?.let {
-                Image(
-                    painter = it,
-                    contentDescription = tab.options.title,
-                    colorFilter = if(!isSelected) ColorFilter.colorMatrix(ColorMatrix().apply {
-                        setToSaturation(0f)
-                    })  else null,
+	val tabNavigator = LocalTabNavigator.current
+	
+	val isSelected = tabNavigator.current == tab
+	
+	BottomNavigationItem(
+		modifier = Modifier.align(Alignment.CenterVertically),
+		selected = tabNavigator.current == tab,
+		onClick = { tabNavigator.current = tab },
+		icon = {
+			tab.options.icon?.let {
+				Image(
+					painter = it,
+					contentDescription = tab.options.title,
+					colorFilter = if(!isSelected) ColorFilter.colorMatrix(ColorMatrix().apply {
+						setToSaturation(0f)
+					})  else null,
 //                    alpha = if(isSelected) 1f else 0.3f
-                )
-            } },
-        label = { Text(text = tab.options.title, fontWeight = if(isSelected) FontWeight.Bold else FontWeight.Normal) },
-        alwaysShowLabel = true,
-    )
+				)
+			} },
+		label = { Text(text = tab.options.title, fontWeight = if(isSelected) FontWeight.Bold else FontWeight.Normal) },
+		alwaysShowLabel = true,
+	)
 }

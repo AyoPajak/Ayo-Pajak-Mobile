@@ -26,8 +26,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import ayopajakmobile.composeapp.generated.resources.Res
 import ayopajakmobile.composeapp.generated.resources.icon_account
 import ayopajakmobile.composeapp.generated.resources.icon_accountsetting
@@ -41,16 +44,25 @@ import ayopajakmobile.composeapp.generated.resources.logo_bnw
 import ayopajakmobile.composeapp.generated.resources.placeholder_NPWP
 import ayopajakmobile.composeapp.generated.resources.placeholder_username
 import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.Navigator
+import cafe.adriel.voyager.navigator.currentOrThrow
+import cafe.adriel.voyager.transitions.SlideTransition
+import createDataStore
 import global.Colors
 import global.universalUIComponents.popUpBox
+import http.Account
+import networking.CreateHttpClient
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import security.Crypto
 
-class AccountScreen: Screen {
+class AccountScreen(): Screen {
 	
 	@Composable
 	override fun Content() {
 		
+		val navigator = LocalNavigator.currentOrThrow
 		var showLogoutPopUp by remember { mutableStateOf(false) }
 		
 		Column(
@@ -126,11 +138,12 @@ class AccountScreen: Screen {
 			}
 		}
 		
+		//Pop Up Logout
 		popUpBox(
 			popupWidth = 300f,
 			popupHeight = 200f,
 			showPopup = showLogoutPopUp,
-			onClickOutside = { showLogoutPopUp = false},
+			onClickOutside = { showLogoutPopUp = false },
 			content = {
 				Column(
 				
@@ -143,9 +156,27 @@ class AccountScreen: Screen {
 						textAlign = TextAlign.Center
 					)
 					Text(
-						modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
+						modifier = Modifier.fillMaxWidth().padding(top = 16.dp).padding(bottom = 32.dp),
 						text = "Anda yakin untuk logout?",
 						fontSize = 14.sp,
+						textAlign = TextAlign.Center
+					)
+					Text(
+						modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp)
+							.clickable(true, onClick = {
+								//TODO("Logout")
+							}),
+						text = "Logout",
+						fontSize = 16.sp,
+						color = Colors().textRed,
+						textAlign = TextAlign.Center
+					)
+					divider(0.dp)
+					Text(
+						modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp)
+							.clickable(true, onClick = { showLogoutPopUp = false }),
+						text = "Batal",
+						fontSize = 16.sp,
 						textAlign = TextAlign.Center
 					)
 				}
@@ -176,11 +207,11 @@ fun selection(icon: Painter, title: String, subTitle: String){
 }
 
 @Composable
-fun divider(){
+fun divider(paddingH: Dp = 16.dp){
 	Box(
 		modifier = Modifier
 			.fillMaxWidth()
-			.padding(horizontal = 16.dp)
+			.padding(horizontal = paddingH)
 			.height(1.dp)
 			.background(Colors().slate30)
 	)

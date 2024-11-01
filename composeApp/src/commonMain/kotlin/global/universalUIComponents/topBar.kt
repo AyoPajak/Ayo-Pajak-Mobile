@@ -12,6 +12,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -25,17 +26,19 @@ import org.jetbrains.compose.resources.vectorResource
 import global.Colors
 
 @Composable
-fun topBar(title: String) {
+fun topBar(title: String, textColor: Color = Color.Black, bgColor: Color = Colors().panel, buttonColor: Color = Colors().panel) {
     val navigator = LocalNavigator.currentOrThrow
 
     Row(
-    modifier = Modifier.fillMaxWidth().background(Colors().panel)
+    modifier = Modifier.fillMaxWidth().background(bgColor)
     ) {
         IconButton(
             modifier = Modifier
                 .padding(horizontal = 16.dp)
                 .padding(vertical = 24.dp)
+                .clip(CircleShape)
                 .border(1.dp, Color.LightGray, CircleShape)
+                .background(buttonColor)
                 .align(Alignment.CenterVertically),
             onClick = {
                 navigator.pop()
@@ -52,7 +55,8 @@ fun topBar(title: String) {
                 modifier = Modifier.align(Alignment.CenterVertically),
                 text = title,
                 fontWeight = FontWeight.Bold,
-                fontSize = 16.sp
+                fontSize = 16.sp,
+                color = textColor
             )
         }
     }

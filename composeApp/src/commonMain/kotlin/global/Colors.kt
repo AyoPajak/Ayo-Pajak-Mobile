@@ -41,6 +41,8 @@ class Colors {
     val slate110 = Color(0xFF)
 
     val panel = Color(0xFFfcfcfc)
+    val panelGreen = Color(0xFFEAFFF6)
+    val panelRed = Color(0xFFFEF2F3)
 
     val buttonActive = Color(0xFF4780ff)
 

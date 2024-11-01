@@ -14,7 +14,7 @@ import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import screens.TaxManager
+import screens.TaxManagerScreen
 
 object TaxManagerTab : Tab {
 
@@ -35,6 +35,6 @@ object TaxManagerTab : Tab {
 
 	@Composable
 	override fun Content() {
-		Navigator(TaxManager())
+		Navigator(TaxManagerScreen())
 	}
 }

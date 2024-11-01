@@ -11,24 +11,24 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 object HomeTab : Tab {
-
-    override val options: TabOptions
-        @Composable
-        get() {
-            val title = stringResource(Res.string.home_tab_title)
-            val icon = painterResource(Res.drawable.icon_home_selected)
-
-            return remember {
-                TabOptions(
-                    index = 0u,
-                    title = title,
-                    icon = icon
-                )
-            }
-        }
-
-    @Composable
-    override fun Content() {
-        Navigator(HomeScreen())
-    }
+	
+	override val options: TabOptions
+		@Composable
+		get() {
+			val title = stringResource(Res.string.home_tab_title)
+			val icon = painterResource(Res.drawable.icon_home_selected)
+			
+			return remember {
+				TabOptions(
+					index = 0u,
+					title = title,
+					icon = icon
+				)
+			}
+		}
+	
+	@Composable
+	override fun Content() {
+		Navigator(HomeScreen())
+	}
 }
