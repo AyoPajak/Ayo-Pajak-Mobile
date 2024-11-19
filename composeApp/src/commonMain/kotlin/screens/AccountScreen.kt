@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,6 +32,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.edit
 import ayopajakmobile.composeapp.generated.resources.Res
 import ayopajakmobile.composeapp.generated.resources.icon_account
 import ayopajakmobile.composeapp.generated.resources.icon_accountsetting
@@ -50,20 +53,26 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import cafe.adriel.voyager.transitions.SlideTransition
 import createDataStore
 import global.Colors
+import global.PreferencesKey.Companion.IsLoggedIn
 import global.universalUIComponents.popUpBox
 import http.Account
+import kotlinx.coroutines.launch
 import networking.CreateHttpClient
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import security.Crypto
 
-class AccountScreen(): Screen {
+class AccountScreen(val client: Account, val cryptoManager: Crypto,
+										val prefs: DataStore<Preferences>
+) : Screen {
 	
 	@Composable
 	override fun Content() {
 		
 		val navigator = LocalNavigator.currentOrThrow
 		var showLogoutPopUp by remember { mutableStateOf(false) }
+		
+		val scope = rememberCoroutineScope()
 		
 		Column(
 			modifier = Modifier.fillMaxSize().background(Colors().panel)
@@ -165,6 +174,12 @@ class AccountScreen(): Screen {
 						modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp)
 							.clickable(true, onClick = {
 								//TODO("Logout")
+								scope.launch {
+									prefs.edit { dataStore ->
+										dataStore[booleanPreferencesKey(IsLoggedIn)] = false
+									}
+									navigator.replaceAll(LoginScreen(client, cryptoManager, prefs))
+								}
 							}),
 						text = "Logout",
 						fontSize = 16.sp,

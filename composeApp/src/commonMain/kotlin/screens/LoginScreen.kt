@@ -32,6 +32,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.LocalContentColor
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.Scaffold
 import androidx.compose.material.SnackbarDefaults.backgroundColor
 import androidx.compose.material.Text
@@ -40,14 +41,13 @@ import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
@@ -64,6 +64,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
 import ayopajakmobile.composeapp.generated.resources.Res
 import ayopajakmobile.composeapp.generated.resources.logo_bnw
 import cafe.adriel.voyager.core.screen.Screen
@@ -74,9 +77,11 @@ import cafe.adriel.voyager.navigator.tab.LocalTabNavigator
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabNavigator
 import global.Colors
+import global.PreferencesKey
 import global.Variables
 import http.Account
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import models.LoginRequest
 import org.jetbrains.compose.resources.painterResource
@@ -89,7 +94,7 @@ import util.onError
 import util.onSuccess
 
 class LoginScreen(val client: Account, val cryptoManager: Crypto,
-									val dataStore: DataStore<Preferences>
+									val prefs: DataStore<Preferences>
 ) : Screen {
 	
 	private val userKey = Variables.TPApiUserKey
@@ -98,7 +103,23 @@ class LoginScreen(val client: Account, val cryptoManager: Crypto,
 	
 	@Composable
 	override fun Content() {
+		
+		val previousUserName by prefs
+			.data
+			.map {
+				it[stringPreferencesKey(PreferencesKey.Username)] ?: ""
+			}
+			.collectAsState("")
+		
+		val isLoggedIn by prefs
+			.data
+			.map {
+				it[booleanPreferencesKey(PreferencesKey.IsLoggedIn)] ?: false
+			}
+			.collectAsState(false)
+		
 		val navigator = LocalNavigator.currentOrThrow
+		val focusManager = LocalFocusManager.current
 		
 		var email by remember { mutableStateOf("") }
 		var pass by remember { mutableStateOf("") }
@@ -108,7 +129,7 @@ class LoginScreen(val client: Account, val cryptoManager: Crypto,
 		
 		var isPasswordVisible = false
 		
-		var isLoginSuccess by remember { mutableStateOf(true) }
+		var isLoginSuccess by remember { mutableStateOf(false) }
 		
 		var enabled by remember { mutableStateOf(false) }
 		var isLoading by remember { mutableStateOf(false) }
@@ -130,7 +151,49 @@ class LoginScreen(val client: Account, val cryptoManager: Crypto,
 				}
 		}
 		
-		val focusManager = LocalFocusManager.current
+		fun login(email: String, pass: String) {
+			scope.launch {
+				isLoading = true
+				errorMessage = null
+				
+				val encryptedEmail = cryptoManager.Encrypt(email, cryptoKey)
+				val encryptedPass = cryptoManager.Encrypt(pass, cryptoKey)
+				
+				val loginModel = LoginRequest(encryptedEmail, encryptedPass)
+				
+				client.Login(loginModel, "Bearer $apiToken")
+					.onSuccess {
+						if (it.ErrorCode == 0) {
+							println(it.Message)
+							
+							val isUserNameSameAsPreviousLogin = email == previousUserName
+							
+							prefs.edit { dataStore ->
+								dataStore[stringPreferencesKey(PreferencesKey.Username)] = email
+								dataStore[stringPreferencesKey(PreferencesKey.Password)] = encryptedPass
+								dataStore[stringPreferencesKey(PreferencesKey.AyoPajakUserApiToken)] = ""
+								dataStore[stringPreferencesKey(PreferencesKey.PertamaUserApiToken)] = ""
+								dataStore[booleanPreferencesKey(PreferencesKey.IsLoggedIn)] = true
+							}
+							
+							if(!isUserNameSameAsPreviousLogin) {
+								prefs.edit { dataStore ->
+									dataStore[stringPreferencesKey(PreferencesKey.UserTaxPayerName)] = ""
+								}
+								
+								//TODO Http Request getUserKeySecret
+							}
+							
+							isLoginSuccess = true
+							focusManager.clearFocus()
+						}
+					}
+					.onError {
+//						errorMessage =
+					}
+				isLoading = false
+			}
+		}
 		
 		//Content
 		Column(
@@ -312,28 +375,7 @@ class LoginScreen(val client: Account, val cryptoManager: Crypto,
 					onClick = {
 						enabled = false
 						
-						scope.launch {
-							isLoading = true
-							errorMessage = null
-							
-							val encryptedEmail = cryptoManager.Encrypt(email, cryptoKey)
-							val encryptedPass = cryptoManager.Encrypt(pass, cryptoKey)
-							
-							val loginModel = LoginRequest(encryptedEmail, encryptedPass)
-							
-							client.Login(loginModel, "Bearer $apiToken")
-								.onSuccess {
-									println(it)
-									if (it.ErrorCode == 0) {
-										isLoginSuccess = true
-										focusManager.clearFocus()
-									}
-								}
-								.onError {
-									errorMessage = it
-								}
-							isLoading = false
-						}
+						login(email, pass)
 					},
 					enabled = enabled && isEmailValid && isPassValid
 				) {
@@ -370,35 +412,37 @@ class LoginScreen(val client: Account, val cryptoManager: Crypto,
 				}
 			}
 		}
+		
+		isLoginSuccess = isLoggedIn
 		if (isLoginSuccess) NavigateToHomeScreen()
 	}
-}
-
-@Composable
-fun NavigateToHomeScreen() {
-	TabNavigator(HomeTab) {
-		Scaffold(
-			content = {
-				CurrentTab()
-			},
-			bottomBar = {
-				BottomNavigation(
-					modifier = Modifier.height(80.dp)
-						.shadow( //TODO("Create Custom Shadow")
-							elevation = 12.dp,
-							shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
-							spotColor = Color.Black
-						)
-						.clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
-						.background(Color.White),
-					backgroundColor = Color.White
-				) {
-					TabNavigationItem(HomeTab)
-					TabNavigationItem(TaxManagerTab)
-					TabNavigationItem(AccountTab)
+	
+	@Composable
+	fun NavigateToHomeScreen() {
+		TabNavigator(HomeTab) {
+			Scaffold(
+				content = {
+					CurrentTab()
+				},
+				bottomBar = {
+					BottomNavigation(
+						modifier = Modifier.height(80.dp)
+							.shadow( //TODO("Create Custom Shadow")
+								elevation = 12.dp,
+								shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+								spotColor = Color.Black
+							)
+							.clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
+							.background(Color.White),
+						backgroundColor = Color.White
+					) {
+						TabNavigationItem(HomeTab)
+						TabNavigationItem(TaxManagerTab)
+						TabNavigationItem(AccountTab(client, cryptoManager, prefs))
+					}
 				}
-			}
-		)
+			)
+		}
 	}
 }
 
@@ -420,7 +464,6 @@ private fun RowScope.TabNavigationItem(tab: Tab) {
 					colorFilter = if(!isSelected) ColorFilter.colorMatrix(ColorMatrix().apply {
 						setToSaturation(0f)
 					})  else null,
-//                    alpha = if(isSelected) 1f else 0.3f
 				)
 			} },
 		label = { Text(text = tab.options.title, fontWeight = if(isSelected) FontWeight.Bold else FontWeight.Normal) },

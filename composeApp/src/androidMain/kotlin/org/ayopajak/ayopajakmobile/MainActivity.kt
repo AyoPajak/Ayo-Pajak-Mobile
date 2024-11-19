@@ -45,7 +45,7 @@ class MainActivity : ComponentActivity() {
 //        }
 
         setContent {
-            Navigator(LoginScreen(client = remember { Account(CreateHttpClient(OkHttp.create())) }, cryptoManager = remember { Crypto() }, dataStore = remember { createDataStore(applicationContext) })) {
+            Navigator(LoginScreen(client = remember { Account(CreateHttpClient(OkHttp.create())) }, cryptoManager = remember { Crypto() }, prefs = remember { createDataStore(applicationContext) })) {
                 navigator -> SlideTransition(navigator)
             }
         }

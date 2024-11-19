@@ -1,0 +1,4 @@
+package SPT
+
+class SPTManager {
+}

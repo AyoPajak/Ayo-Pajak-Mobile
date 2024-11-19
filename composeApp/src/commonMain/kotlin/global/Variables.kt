@@ -30,3 +30,41 @@ class Variables {
         const val CurrencyCodeIDR = "IDR"
     }
 }
+
+class PreferencesKey {
+    companion object {
+        const val Username = "Username"
+        const val Password = "Password"
+        const val WPNPWP = "WPNPWP"
+        const val IsLoggedIn = "IsLoggedIn"
+        
+        const val Pin = "Pin"
+        const val IsPinAlreadyRequested = "IsPinAlreadyRequested"
+        const val IsUserProfileSetup = "IsUserProfileSetup"
+        
+        const val UserApiKey = "UserApiKey"
+        const val UserApiSecret = "UserApiSecret"
+        const val UserTaxPayerName = "UserTaxPayerName"
+        
+        const val TPApiToken = "TPApiToken"
+        const val AyoPajakUserApiToken = "AyoPajakUserApiToken"
+        const val PertamaUserApiToken = "PertamaUserApiToken"
+        
+        const val LastStep = "LastStep"
+        const val KppList = "Master.KppList"
+        const val CityList = "Master.CityList"
+        const val JobList = "Master.JobList"
+        const val KluList = "Master.KluList"
+        const val FamilyRelList = "Master.FamilyRelList"
+        const val CurrencyList = "Master.CurrencyList"
+        const val CurrencyRateList = "Master.CurrencyRateList"
+        const val IncomeTaxRateList = "Master.IncomeTaxRateList"
+        const val InterestTypeList = "Master.InterestTypeList"
+        const val WealthTypeList = "Master.WealthTypeList"
+        const val DebtTypeList = "Master.DebtTypeList"
+        
+        const val IsBiometricOn = "IsBiometricOn"
+        const val TaxTypeList = "TaxTypeList"
+        const val DepositTypeList = "DepositTypeList"
+    }
+}

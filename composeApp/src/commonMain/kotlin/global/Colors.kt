@@ -34,7 +34,7 @@ class Colors {
     val slate40 = Color(0xFF)
     val slate50 = Color(0xFF)
     val slate60 = Color(0xFF)
-    val slate70 = Color(0xFF495057)
+    val slate70 = Color(0xFF868E96)
     val slate80 = Color(0xFF)
     val slate90 = Color(0xFF)
     val slate100 = Color(0xFF)
@@ -48,6 +48,7 @@ class Colors {
 
     val textBlack = Color(0xFF212529)
     val textClickable = Color(0xFF3565fc)
+    val textLightGrey = Color(0xFFADB5BD)
     val textDarkGrey = Color(0xFF868E96)
     val textRed = Color(0xFFD7274D)
     val textGreen = Color(0xFF00A478)
