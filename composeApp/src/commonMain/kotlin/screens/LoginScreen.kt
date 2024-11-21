@@ -78,12 +78,26 @@ import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabNavigator
 import global.Colors
 import global.PreferencesKey
+import global.PreferencesKey.Companion.TPApiToken
+import global.PreferencesKey.Companion.UserApiKey
+import global.PreferencesKey.Companion.UserApiSecret
 import global.Variables
 import http.Account
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import models.LoginRequest
+import models.PertamaGeneralApiResponse
+import models.ReturnStatus
+import models.account.ApiAuthenticationModel
+import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
 import security.Crypto
 import tabs.AccountTab
@@ -140,15 +154,49 @@ class LoginScreen(val client: Account, val cryptoManager: Crypto,
 		
 		val scope = rememberCoroutineScope()
 		
-		var apiToken = ""
-		scope.launch {
-			client.GetApiToken(userKey, userSecret, "grant_type=password")
-				.onSuccess {
-					apiToken = it.AccessToken
+		val apiToken by prefs
+			.data
+			.map {
+				it[stringPreferencesKey(TPApiToken)] ?: ""
+			}
+			.collectAsState("")
+			
+			if (apiToken == ""){
+				scope.launch {
+					client.ApiToken(userKey, userSecret, "grant_type=password")
+						.onSuccess {
+							prefs.edit { dataStore ->
+								dataStore[stringPreferencesKey(TPApiToken)] = it.AccessToken
+							}
+						}
+						.onError {
+							println("Error Occurred")
+						}
 				}
-				.onError {
-					apiToken = ""
+			}
+		
+		fun getUserKeySecret(tokenBearer: String, username: String): ReturnStatus {
+			val result = ReturnStatus()
+			scope.launch {
+				
+				client.GetAuthentication(tokenBearer, username)
+					.onSuccess {
+						val pertamaResponseModel = it
+
+				if (pertamaResponseModel.ErrorCode == 0 && pertamaResponseModel.Data != null) {
+					prefs.edit { dataStore ->
+						dataStore[stringPreferencesKey(UserApiKey)] = pertamaResponseModel.Data.jsonObject["ApiKey"]?.jsonPrimitive?.content.toString()
+						dataStore[stringPreferencesKey(UserApiSecret)] = pertamaResponseModel.Data.jsonObject["ApiSecret"]?.jsonPrimitive?.content.toString()
+					}
+				} else {
+					println("Error")
 				}
+					}
+					.onError {
+						println("Error")
+					}
+			}
+			return result
 		}
 		
 		fun login(email: String, pass: String) {
@@ -164,8 +212,6 @@ class LoginScreen(val client: Account, val cryptoManager: Crypto,
 				client.Login(loginModel, "Bearer $apiToken")
 					.onSuccess {
 						if (it.ErrorCode == 0) {
-							println(it.Message)
-							
 							val isUserNameSameAsPreviousLogin = email == previousUserName
 							
 							prefs.edit { dataStore ->
@@ -176,12 +222,16 @@ class LoginScreen(val client: Account, val cryptoManager: Crypto,
 								dataStore[booleanPreferencesKey(PreferencesKey.IsLoggedIn)] = true
 							}
 							
-							if(!isUserNameSameAsPreviousLogin) {
+							if(isUserNameSameAsPreviousLogin) {
 								prefs.edit { dataStore ->
 									dataStore[stringPreferencesKey(PreferencesKey.UserTaxPayerName)] = ""
 								}
 								
 								//TODO Http Request getUserKeySecret
+								val getUserKeySecretResult = getUserKeySecret("Bearer $apiToken", email)
+								if (!getUserKeySecretResult.IsSuccess) {
+									isLoginSuccess = false
+								}
 							}
 							
 							isLoginSuccess = true
