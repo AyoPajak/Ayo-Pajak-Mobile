@@ -1,5 +1,6 @@
 package screens
 
+import SPT.SPTManager
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -24,9 +25,11 @@ import androidx.compose.material.Divider
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,6 +41,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import ayopajakmobile.composeapp.generated.resources.Res
 import ayopajakmobile.composeapp.generated.resources.icon_notification_border
 import ayopajakmobile.composeapp.generated.resources.icon_tripledot_black
@@ -47,15 +52,40 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import global.Colors
 import global.universalUIComponents.popUpBox
 import global.universalUIComponents.topBar
+import http.Account
+import http.Interfaces
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import models.ApiODataQueryModel
+import models.transaction.Form1770HdResponseApiModel
 import org.jetbrains.compose.resources.painterResource
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
-class SPTScreen: Screen {
+class SPTScreen(val client: Account, val sptPertamaClient: Interfaces, val prefs: DataStore<Preferences>): Screen {
+	
+	val sptManager = SPTManager(prefs, client, sptPertamaClient)
 	
 	@Composable
 	override fun Content() {
+		var dataList by remember { mutableStateOf<List<Form1770HdResponseApiModel>>(emptyList()) }
+		
+		val scope = rememberCoroutineScope()
 		
 		val navigator = LocalNavigator.currentOrThrow
 		var showTripleDotPopup by remember { mutableStateOf(false) }
+		
+		LaunchedEffect(dataList){
+			try {
+				scope.launch {
+					dataList = getSPTListByQuery(scope, ApiODataQueryModel(5)).second
+				}
+			} catch (ex: Exception) {
+				print(ex.message)
+			}
+		}
 		
 		Column(
 			modifier = Modifier.fillMaxWidth().background(Colors().panel),
@@ -124,10 +154,20 @@ class SPTScreen: Screen {
 							fontWeight = FontWeight.Bold,
 							color = Colors().slate70
 						)
-						sptCard("2024", "0", "SPT 1770 S", 0, 100000000, 10800000)
-						sptCard("2023", "1", "SPT 1770 S", 1, 100000000, 10800000)
-						sptCard("2023", "0", "SPT 1770 S", 2, 100000000, 10800000)
-						sptCard("2022", "0", "SPT 1770 S", 3, 100000000, -10800000)
+//						sptCard("2024", "0", "SPT 1770 S", 0, 100000000, 10800000)
+//						sptCard("2023", "1", "SPT 1770 S", 1, 100000000, 10800000)
+//						sptCard("2023", "0", "SPT 1770 S", 2, 100000000, 10800000)
+//						sptCard("2022", "0", "SPT 1770 S", 3, 100000000, -10800000)
+						
+						// Display the list of SPT cards if data is available
+						if (dataList.isNotEmpty()) {
+							dataList.forEach {
+								sptCard(it.TaxYear, it.CorrectionSeq.toString(), it.SPTType, 0, 100000000, 10800000)
+							}
+						} else {
+							// Optionally display a loading indicator or empty state
+							Text(text = "No SPT available", modifier = Modifier.padding(16.dp))
+						}
 						
 						Spacer(modifier = Modifier.padding(bottom = 40.dp))
 					}
@@ -209,6 +249,24 @@ class SPTScreen: Screen {
 				}
 			}
 		)
+	}
+
+	private suspend fun getSPTListByQuery(scope: CoroutineScope, query: ApiODataQueryModel) : Pair<Boolean, ArrayList<Form1770HdResponseApiModel>>
+	{
+		var successCall = true
+		var dataList = ArrayList<Form1770HdResponseApiModel>()
+		try {
+			val sptList = sptManager.getSptHdList(scope, query)
+			if (sptList.any()) {
+				dataList = sptList as ArrayList<Form1770HdResponseApiModel>
+			}
+		}
+		catch (ex: Exception) {
+			successCall = false
+			println(ex.message)
+		}
+		
+		return Pair(successCall, dataList)
 	}
 }
 

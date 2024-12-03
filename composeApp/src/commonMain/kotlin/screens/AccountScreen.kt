@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,6 +35,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
 import ayopajakmobile.composeapp.generated.resources.Res
 import ayopajakmobile.composeapp.generated.resources.icon_account
 import ayopajakmobile.composeapp.generated.resources.icon_accountsetting
@@ -54,8 +56,13 @@ import cafe.adriel.voyager.transitions.SlideTransition
 import createDataStore
 import global.Colors
 import global.PreferencesKey.Companion.IsLoggedIn
+import global.PreferencesKey.Companion.NPWP
+import global.PreferencesKey.Companion.WPName
+import global.Variables
 import global.universalUIComponents.popUpBox
 import http.Account
+import http.Interfaces
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import networking.CreateHttpClient
 import org.jetbrains.compose.resources.painterResource
@@ -63,7 +70,7 @@ import org.jetbrains.compose.resources.stringResource
 import security.Crypto
 
 class AccountScreen(val client: Account, val cryptoManager: Crypto,
-										val prefs: DataStore<Preferences>
+										val prefs: DataStore<Preferences>, val sptPertamaClient: Interfaces
 ) : Screen {
 	
 	@Composable
@@ -73,6 +80,22 @@ class AccountScreen(val client: Account, val cryptoManager: Crypto,
 		var showLogoutPopUp by remember { mutableStateOf(false) }
 		
 		val scope = rememberCoroutineScope()
+		
+		val UName by prefs
+			.data
+			.map {
+				it[stringPreferencesKey(WPName)] ?: ""
+			}
+			.collectAsState(stringResource(Res.string.placeholder_username))
+		
+		val NPWP by prefs
+			.data
+			.map {
+				it[stringPreferencesKey(NPWP)] ?: ""
+			}
+			.collectAsState(stringResource(Res.string.placeholder_NPWP))
+		
+		//Logic
 		
 		Column(
 			modifier = Modifier.fillMaxSize().background(Colors().panel)
@@ -102,8 +125,8 @@ class AccountScreen(val client: Account, val cryptoManager: Crypto,
 						horizontalArrangement = Arrangement.SpaceBetween,
 					) {
 						Column {
-							Text(text = stringResource(Res.string.placeholder_username), fontSize = 14.sp, fontWeight = FontWeight.Bold, color = Color.White)
-							Text(text = stringResource(Res.string.placeholder_NPWP), fontSize = 10.sp, color = Color.White)
+							Text(text = UName, fontSize = 14.sp, fontWeight = FontWeight.Bold, color = Color.White)
+							Text(text = NPWP, fontSize = 10.sp, color = Color.White)
 						}
 						Image(
 							modifier = Modifier.size(24.dp),
@@ -178,7 +201,7 @@ class AccountScreen(val client: Account, val cryptoManager: Crypto,
 									prefs.edit { dataStore ->
 										dataStore[booleanPreferencesKey(IsLoggedIn)] = false
 									}
-									navigator.replaceAll(LoginScreen(client, cryptoManager, prefs))
+									navigator.replaceAll(LoginScreen(client, cryptoManager, prefs, sptPertamaClient))
 								}
 							}),
 						text = "Logout",

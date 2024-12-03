@@ -19,6 +19,7 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import cafe.adriel.voyager.transitions.SlideTransition
 import createDataStore
 import http.Account
+import http.Interfaces
 import io.ktor.client.engine.okhttp.OkHttp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -45,7 +46,12 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-            Navigator(LoginScreen(client = remember { Account(CreateHttpClient(OkHttp.create())) }, cryptoManager = remember { Crypto() }, prefs = remember { createDataStore(applicationContext) })) {
+            Navigator(
+                LoginScreen(
+                    client = remember { Account(CreateHttpClient(OkHttp.create())) },
+                    sptPertamaClient = remember { Interfaces(CreateHttpClient(OkHttp.create())) },
+                    cryptoManager = remember { Crypto() },
+                    prefs = remember { createDataStore(applicationContext) })) {
                 navigator -> SlideTransition(navigator)
             }
         }

@@ -11,6 +11,7 @@ import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
 import http.Account
+import http.Interfaces
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import screens.AccountScreen
@@ -18,7 +19,7 @@ import security.Crypto
 
 class AccountTab(
     val client: Account, val cryptoManager: Crypto,
-    val prefs: DataStore<Preferences>
+    val prefs: DataStore<Preferences>, val sptPertamaClient: Interfaces
 ) : Tab {
     override val options: TabOptions
         @Composable
@@ -37,6 +38,6 @@ class AccountTab(
     
     @Composable
     override fun Content() {
-        Navigator(AccountScreen(client, cryptoManager, prefs))
+        Navigator(AccountScreen(client, cryptoManager, prefs, sptPertamaClient))
     }
 }

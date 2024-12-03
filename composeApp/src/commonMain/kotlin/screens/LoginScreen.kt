@@ -83,8 +83,10 @@ import global.PreferencesKey.Companion.UserApiKey
 import global.PreferencesKey.Companion.UserApiSecret
 import global.Variables
 import http.Account
+import http.Interfaces
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -108,7 +110,7 @@ import util.onError
 import util.onSuccess
 
 class LoginScreen(val client: Account, val cryptoManager: Crypto,
-									val prefs: DataStore<Preferences>
+									val prefs: DataStore<Preferences>, val sptPertamaClient: Interfaces
 ) : Screen {
 	
 	private val userKey = Variables.TPApiUserKey
@@ -160,20 +162,6 @@ class LoginScreen(val client: Account, val cryptoManager: Crypto,
 				it[stringPreferencesKey(TPApiToken)] ?: ""
 			}
 			.collectAsState("")
-			
-			if (apiToken == ""){
-				scope.launch {
-					client.ApiToken(userKey, userSecret, "grant_type=password")
-						.onSuccess {
-							prefs.edit { dataStore ->
-								dataStore[stringPreferencesKey(TPApiToken)] = it.AccessToken
-							}
-						}
-						.onError {
-							println("Error Occurred")
-						}
-				}
-			}
 		
 		fun getUserKeySecret(tokenBearer: String, username: String): ReturnStatus {
 			val result = ReturnStatus()
@@ -199,7 +187,21 @@ class LoginScreen(val client: Account, val cryptoManager: Crypto,
 			return result
 		}
 		
-		fun login(email: String, pass: String) {
+		suspend fun login(email: String, pass: String) {
+			val tokenCoroutine = scope.launch {
+				client.ApiToken(userKey, userSecret, "grant_type=password")
+					.onSuccess {
+						prefs.edit { dataStore ->
+							dataStore[stringPreferencesKey(TPApiToken)] = it.AccessToken
+						}
+					}
+					.onError {
+						println("Error Occurred")
+					}
+			}
+			
+			tokenCoroutine.join()
+			
 			scope.launch {
 				isLoading = true
 				errorMessage = null
@@ -222,16 +224,15 @@ class LoginScreen(val client: Account, val cryptoManager: Crypto,
 								dataStore[booleanPreferencesKey(PreferencesKey.IsLoggedIn)] = true
 							}
 							
-							if(isUserNameSameAsPreviousLogin) {
+							if(!isUserNameSameAsPreviousLogin) {
 								prefs.edit { dataStore ->
 									dataStore[stringPreferencesKey(PreferencesKey.UserTaxPayerName)] = ""
 								}
-								
-								//TODO Http Request getUserKeySecret
-								val getUserKeySecretResult = getUserKeySecret("Bearer $apiToken", email)
-								if (!getUserKeySecretResult.IsSuccess) {
-									isLoginSuccess = false
-								}
+							}
+							
+							val getUserKeySecretResult = getUserKeySecret("Bearer $apiToken", email)
+							if (!getUserKeySecretResult.IsSuccess) {
+								isLoginSuccess = false
 							}
 							
 							isLoginSuccess = true
@@ -425,7 +426,7 @@ class LoginScreen(val client: Account, val cryptoManager: Crypto,
 					onClick = {
 						enabled = false
 						
-						login(email, pass)
+						scope.launch { login(email, pass) }
 					},
 					enabled = enabled && isEmailValid && isPassValid
 				) {
@@ -469,7 +470,7 @@ class LoginScreen(val client: Account, val cryptoManager: Crypto,
 	
 	@Composable
 	fun NavigateToHomeScreen() {
-		TabNavigator(HomeTab) {
+		TabNavigator(HomeTab(client, cryptoManager, prefs, sptPertamaClient)) {
 			Scaffold(
 				content = {
 					CurrentTab()
@@ -486,9 +487,9 @@ class LoginScreen(val client: Account, val cryptoManager: Crypto,
 							.background(Color.White),
 						backgroundColor = Color.White
 					) {
-						TabNavigationItem(HomeTab)
+						TabNavigationItem(HomeTab(client, cryptoManager, prefs, sptPertamaClient))
 						TabNavigationItem(TaxManagerTab)
-						TabNavigationItem(AccountTab(client, cryptoManager, prefs))
+						TabNavigationItem(AccountTab(client, cryptoManager, prefs, sptPertamaClient))
 					}
 				}
 			)

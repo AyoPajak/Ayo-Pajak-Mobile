@@ -21,6 +21,13 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,6 +39,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.*
 import ayopajakmobile.composeapp.generated.resources.Res
 import ayopajakmobile.composeapp.generated.resources.blog_placeholder
 import ayopajakmobile.composeapp.generated.resources.event_placeholder
@@ -45,16 +56,91 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.bottomSheet.LocalBottomSheetNavigator
 import global.Colors
+import global.PreferencesKey
+import global.PreferencesKey.Companion.Address
+import global.PreferencesKey.Companion.AyoPajakUserApiToken
+import global.PreferencesKey.Companion.CityId
+import global.PreferencesKey.Companion.ECertEFakturExpiryDate
+import global.PreferencesKey.Companion.ECertEFilingExpiryDate
+import global.PreferencesKey.Companion.EFINNo
+import global.PreferencesKey.Companion.GenderE
+import global.PreferencesKey.Companion.JobId
+import global.PreferencesKey.Companion.JobTitle
+import global.PreferencesKey.Companion.KluId
+import global.PreferencesKey.Companion.MaritalStatusE
+import global.PreferencesKey.Companion.NPWP
+import global.PreferencesKey.Companion.NPWP_New
+import global.PreferencesKey.Companion.RegisterName
+import global.PreferencesKey.Companion.SpouseNPWP
+import global.PreferencesKey.Companion.TPApiToken
+import global.PreferencesKey.Companion.TaxPayerTypeE
+import global.PreferencesKey.Companion.TaxStatusE
+import global.PreferencesKey.Companion.TelephoneNo
+import global.PreferencesKey.Companion.UserApiKey
+import global.PreferencesKey.Companion.UserApiSecret
+import global.PreferencesKey.Companion.UserGuid
+import global.PreferencesKey.Companion.Username
+import global.PreferencesKey.Companion.WPNIK
+import global.PreferencesKey.Companion.WPName
+import global.Variables
+import http.Account
+import http.Interfaces
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import models.account.ClientProfileResponseApiModel
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import security.Crypto
+import util.onError
+import util.onSuccess
+import viewmodels.UserProfileModel
 
-class HomeScreen : Screen {
+class HomeScreen(private val client: Account, private val sptPertamaClient: Interfaces, val cryptoManager: Crypto, private val prefs: DataStore<Preferences>) : Screen {
 
 	@Composable
 	override fun Content() {
 		val navigator = LocalNavigator.current
-		val tabNavigator = LocalNavigator.current
 		val placeholderName = stringResource(Res.string.placeholder_username)
+		
+		val scope = rememberCoroutineScope()
+		
+		var key by remember { mutableStateOf("") }
+		var secret by remember { mutableStateOf("") }
+		
+		runBlocking {
+			val pref = prefs.data.first()
+			key = pref[stringPreferencesKey(UserApiKey)] ?: ""
+			secret = pref[stringPreferencesKey(UserApiSecret)] ?: ""
+		}
+		
+		val GreetingsName by prefs
+			.data
+			.map {
+				it[stringPreferencesKey(WPName)] ?: ""
+			}
+			.collectAsState(placeholderName)
+		
+		//LOGIC
+		LaunchedEffect(key) {
+			var userProfile = UserProfileModel()
+			val tokenCoroutine = scope.launch {
+				client.ApiToken(userKey = key, userSecret = secret, body = "grant_type=password")
+					.onSuccess { prefs.edit { dataStore ->
+						dataStore[stringPreferencesKey(AyoPajakUserApiToken)] = it.AccessToken
+						userProfile = GetUserProfile(it.AccessToken)
+					} }
+			}
+			tokenCoroutine.join()
+			
+//			val apiToken = prefs.data.first()[stringPreferencesKey(AyoPajakUserApiToken)] ?: ""
+//			val userProfile = GetUserProfile(apiToken)
+			
+			scope.launch { SetUserProfileLocally(userProfile) }
+		}
 
 		LazyColumn(
 			modifier = Modifier.fillMaxSize().background(Colors().brandDark60)
@@ -81,7 +167,7 @@ class HomeScreen : Screen {
 					}
 					Text(
 						modifier = Modifier.fillMaxWidth().padding(top = 24.dp),
-						text = "Hi, $placeholderName",
+						text = "Hi, $GreetingsName",
 						color = Color.White,
 						fontWeight = FontWeight.Bold,
 						fontSize = 20.sp
@@ -152,7 +238,7 @@ class HomeScreen : Screen {
 						Box(
 							modifier = Modifier.height(76.dp).width(72.dp).padding(end = 8.dp)
 								.clickable(true, onClick = {
-									navigator?.push(SPTScreen())
+									navigator?.push(SPTScreen(client, sptPertamaClient, prefs))
 								})
 						) {
 							Column(
@@ -441,6 +527,43 @@ class HomeScreen : Screen {
 					}
 				}
 			}
+		}
+	}
+	
+	suspend fun GetUserProfile(apiToken: String): UserProfileModel {
+		var result = UserProfileModel()
+		client.getUserProfile("Bearer $apiToken")
+			.onSuccess {
+				result = it.toDataModel()
+				return result
+			}
+			.onError {
+				println(it.name)
+			}
+		return result
+	}
+	
+	suspend fun SetUserProfileLocally(data: UserProfileModel) {
+		prefs.edit { dataStore ->
+			dataStore[intPreferencesKey(TaxPayerTypeE)] = data.TaxPayerTypeE
+			dataStore[stringPreferencesKey(WPNIK)] = data.WPNIK
+			dataStore[stringPreferencesKey(WPName)] = data.WPName
+			dataStore[stringPreferencesKey(GenderE)] = data.GenderE
+			dataStore[intPreferencesKey(MaritalStatusE)] = data.MaritalStatusE
+			dataStore[stringPreferencesKey(TaxStatusE)] = data.TaxStatusE
+			dataStore[stringPreferencesKey(SpouseNPWP)] = data.SpouseNPWP.toString()
+			dataStore[intPreferencesKey(JobId)] = data.JobId
+			dataStore[intPreferencesKey(KluId)] = data.KluId
+			dataStore[stringPreferencesKey(Address)] = data.Address
+			dataStore[intPreferencesKey(CityId)] = data.CityId
+			dataStore[stringPreferencesKey(TelephoneNo)] = data.TelephoneNo
+			dataStore[stringPreferencesKey(RegisterName)] = data.RegisterName
+			dataStore[stringPreferencesKey(JobTitle)] = data.JobTitle
+			dataStore[stringPreferencesKey(NPWP)] = data.NPWP
+			dataStore[stringPreferencesKey(EFINNo)] = data.EFINNo.toString()
+			dataStore[stringPreferencesKey(UserGuid)] = data.UserGuid
+			dataStore[stringPreferencesKey(ECertEFilingExpiryDate)] = data.ECertEFilingExpiryDate.toString()
+			dataStore[stringPreferencesKey(ECertEFakturExpiryDate)] = data.ECertEFakturExpiryDate.toString()
 		}
 	}
 }

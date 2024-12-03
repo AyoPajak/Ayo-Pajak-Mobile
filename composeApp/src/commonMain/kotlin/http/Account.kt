@@ -21,6 +21,7 @@ import models.PertamaGeneralApiResponse
 import models.ReturnStatus
 import models.account.APITokenModel
 import models.account.ApiAuthenticationModel
+import models.account.ClientProfileResponseApiModel
 import util.NetworkError
 import util.Result
 
@@ -115,12 +116,13 @@ class Account (private val httpClient: HttpClient) {
         }
     }
     
-    suspend fun getUserProfile(apiToken: String) : Result<ReturnStatus, NetworkError> {
+    suspend fun getUserProfile(apiToken: String) : Result<ClientProfileResponseApiModel, NetworkError> {
         val response = try {
             httpClient.get (
                 urlString = "${Variables.AyoPajakApiBaseUrl}api/account/ClientProfile"
             ) {
                 header("Authorization", apiToken)
+                contentType(ContentType.Application.Json)
             }
         } catch (e: UnresolvedAddressException) {
             return Result.Error(NetworkError.NO_INTERNET)
@@ -130,7 +132,7 @@ class Account (private val httpClient: HttpClient) {
         
         return when (response.status.value) {
             200 -> {
-                val responseBody = response.body<ReturnStatus>()
+                val responseBody = response.body<ClientProfileResponseApiModel>()
                 Result.Success(responseBody)
             }
             401 -> Result.Error(NetworkError.UNAUTHORIZED)

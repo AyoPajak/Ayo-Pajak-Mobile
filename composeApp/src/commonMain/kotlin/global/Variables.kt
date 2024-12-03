@@ -66,5 +66,28 @@ class PreferencesKey {
         const val IsBiometricOn = "IsBiometricOn"
         const val TaxTypeList = "TaxTypeList"
         const val DepositTypeList = "DepositTypeList"
+        
+        //ClientProfile
+        const val TaxPayerTypeE = "TaxPayerTypeE"
+        const val WPNIK = "WPNIK"
+        const val WPName = "WPName"
+        const val GenderE = "GenderE"
+        const val MaritalStatusE = "MaritalStatusE"
+        const val TaxStatusE = "TaxStatusE"
+        const val SpouseNPWP = "SpouseNPWP"
+        const val JobId = "JobId"
+        const val KluId = "KluId"
+        const val Address = "Address"
+        const val CityId = "CityId"
+        const val TelephoneNo = "TelephoneNo"
+        const val RegisterName = "RegisterName"
+        const val JobTitle = "JobTitle"
+        const val NPWP = "NPWP"
+        const val NPWP_New = "NPWP_New"
+        const val NITKU = "NITKU"
+        const val EFINNo = "EFINNo"
+        const val UserGuid = "UserGuid"
+        const val ECertEFilingExpiryDate = "ECertEFilingExpiryDate"
+        const val ECertEFakturExpiryDate = "ECertEFakturExpiryDate"
     }
 }
