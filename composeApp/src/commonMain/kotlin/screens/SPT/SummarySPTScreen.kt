@@ -1,7 +1,9 @@
-package screens
+package screens.SPT
 
+import SPT.SPTManager
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,6 +20,12 @@ import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults.buttonColors
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -26,18 +34,140 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import ayopajakmobile.composeapp.generated.resources.Res
+import ayopajakmobile.composeapp.generated.resources.icon_spttick
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import global.Colors
+import global.PertamaSptFillingStep
+import global.universalUIComponents.loadingPopupBox
 import global.universalUIComponents.topBar
+import http.Account
+import http.Interfaces
+import kotlinx.coroutines.launch
+import models.transaction.Form1770HdResponseApiModel
+import org.jetbrains.compose.resources.painterResource
+import screens.divider
 
-class DetailCreateSPTScreen(private val formType: String, private val taxYear: String, private val correctionSeq: String): Screen {
+class SummarySPTScreen(private val id: Int, val client: Account, val sptPertamaClient: Interfaces, val prefs: DataStore<Preferences>): Screen {
+	
+	private val sptManager = SPTManager(prefs, client, sptPertamaClient)
 	
 	@Composable
 	override fun Content() {
 		
+		val scope = rememberCoroutineScope()
+		
+		var isReady by remember { mutableStateOf(false) }
+		
 		val navigator = LocalNavigator.currentOrThrow
+		var formType by remember { mutableStateOf("") }
+		var taxYear by remember { mutableStateOf("") }
+		var correctionSeq by remember { mutableStateOf(0) }
+		var status by remember { mutableStateOf(0) }
+		
+		var sptHd by remember {mutableStateOf<Form1770HdResponseApiModel?>(null)}
+		
+		LaunchedEffect(id) {
+			scope.launch {
+				sptHd = sptManager.getSptHdById(scope, id)
+				
+				if(sptHd == null) navigator.pop()
+				else {
+					formType = sptHd!!.SPTType
+					taxYear = sptHd!!.TaxYear
+					correctionSeq = sptHd!!.CorrectionSeq
+					status = sptHd!!.LastStep
+					isReady = true
+				}
+			}
+		}
+		
+		@Composable
+		fun step(number: Int, title: String, status: Boolean = false) {
+			Row(
+				modifier = Modifier.fillMaxWidth().padding(16.dp)
+					.clickable(true, onClick = {
+						when(number) {
+							1 -> {
+								navigator.push(SptStepOneScreen(sptHd, client, sptPertamaClient, prefs))
+							}
+							2 -> {
+							
+							}
+							3 -> {
+							
+							}
+							4 -> {
+							
+							}
+							5 -> {
+							
+							}
+							6 -> {
+							
+							}
+							7 -> {
+							
+							}
+							8 -> {
+							
+							}
+							9 -> {
+							
+							}
+							10 -> {
+							
+							}
+							11 -> {
+							
+							}
+							12 -> {
+							
+							}
+							13 -> {
+							
+							}
+							14 -> {
+							
+							}
+						}
+					}),
+				verticalAlignment = Alignment.CenterVertically
+			) {
+				Box (
+					modifier = Modifier
+						.padding(end = 8.dp)
+						.size(32.dp)
+						.clip(CircleShape)
+						.background(Colors().brandDark5)
+				) {
+					if(status) {
+						Image(
+							painterResource(Res.drawable.icon_spttick), null, alignment = Alignment.Center, modifier = Modifier.fillMaxSize()
+						)
+					} else {
+						Text(
+							text = "$number",
+							fontSize = 16.sp,
+							fontWeight = FontWeight.Bold,
+							color = Colors().brandDark40,
+							modifier = Modifier.align(Alignment.Center)
+						)
+					}
+				}
+				
+				Text (
+					text = title,
+					fontSize = 14.sp,
+				)
+			}
+		}
+		
+		loadingPopupBox(!isReady)
 		
 		Column (
 			modifier = Modifier
@@ -137,39 +267,40 @@ class DetailCreateSPTScreen(private val formType: String, private val taxYear: S
 							.background(Color.White)
 					) {
 						Column {
-							step(1, "Pengisian Identitas")
+							step(1, "Pengisian Identitas", status >= PertamaSptFillingStep.Identity.value)
 							divider(0.dp)
-							step(2, "Daftar Keluarga & Tanggungan")
+							step(2, "Daftar Keluarga & Tanggungan", status >= PertamaSptFillingStep.Dependent.value)
 							divider(0.dp)
-							step(3, "Harta")
+							step(3, "Harta", status >= PertamaSptFillingStep.Asset.value)
 							divider(0.dp)
-							step(4, "Utang")
+							step(4, "Utang", status >= PertamaSptFillingStep.Liability.value)
 							divider(0.dp)
-							step(5, "Penghasilan Pajak Final")
+							step(5, "Penghasilan Pajak Final", status >= PertamaSptFillingStep.FinalIncome.value)
 							divider(0.dp)
-							step(6, "Penghasilan Non Objek Pajak")
+							step(6, "Penghasilan Non Objek Pajak", status >= PertamaSptFillingStep.NonTaxedIncome.value)
 							divider(0.dp)
-							step(7, "Kredit Pajak")
+							step(7, "Kredit Pajak", status >= PertamaSptFillingStep.TaxCredit.value)
 							divider(0.dp)
-							step(8, "Penghasilan Neto Dalam Negeri")
+							step(8, "Penghasilan Neto Dalam Negeri", status >= PertamaSptFillingStep.IncomeNetJob.value)
 							divider(0.dp)
-							step(9, "Penghasilan Neto Lainnya")
+							step(9, "Penghasilan Neto Lainnya", status >= PertamaSptFillingStep.IncomeNetOther.value)
 							divider(0.dp)
-							step(10, "PPh Terutang (PH/MT)")
+							step(10, "PPh Terutang (PH/MT)", status >= PertamaSptFillingStep.IncomeSpousePHMT.value)
 							divider(0.dp)
-							step(11, "Detail Lainnya")
+							step(11, "Detail Lainnya", status >= PertamaSptFillingStep.OtherDetail.value)
 							divider(0.dp)
-							step(12, "Surat Setoran Pajak")
+							step(12, "Surat Setoran Pajak", status >= PertamaSptFillingStep.TaxPaymentSlip.value)
 							divider(0.dp)
-							step(13, "Data Pelengkap")
+							step(13, "Data Pelengkap", status >= PertamaSptFillingStep.Additional.value)
 							divider(0.dp)
-							step(14, "Konfirmasi")
+							step(14, "Konfirmasi", status >= PertamaSptFillingStep.Confirm.value)
 						}
 					}
 				}
 				
 				item {
 					Button(
+						enabled = status >= PertamaSptFillingStep.Confirm.value,
 						modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).padding(top = 22.dp, bottom = 88.dp),
 						colors = buttonColors(backgroundColor = Colors().buttonActive, contentColor = Color.White),
 						onClick = {
@@ -195,34 +326,5 @@ class DetailCreateSPTScreen(private val formType: String, private val taxYear: S
 			
 			}
 		}
-	}
-}
-
-@Composable
-fun step(number: Int, title: String, status: Boolean = false) {
-	Row(
-		modifier = Modifier.fillMaxWidth().padding(16.dp),
-		verticalAlignment = Alignment.CenterVertically
-	) {
-		Box (
-			modifier = Modifier
-				.padding(end = 8.dp)
-				.size(32.dp)
-				.clip(CircleShape)
-				.background(Colors().brandDark5)
-		) {
-			Text(
-				text = "$number",
-				fontSize = 16.sp,
-				fontWeight = FontWeight.Bold,
-				color = Colors().brandDark40,
-				modifier = Modifier.align(Alignment.Center)
-			)
-		}
-		
-		Text (
-			text = title,
-			fontSize = 14.sp,
-		)
 	}
 }

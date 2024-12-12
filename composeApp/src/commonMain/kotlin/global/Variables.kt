@@ -37,6 +37,7 @@ class PreferencesKey {
         const val Password = "Password"
         const val WPNPWP = "WPNPWP"
         const val IsLoggedIn = "IsLoggedIn"
+        const val IsSptFirstRun = "IsSptFirstRun"
         
         const val Pin = "Pin"
         const val IsPinAlreadyRequested = "IsPinAlreadyRequested"

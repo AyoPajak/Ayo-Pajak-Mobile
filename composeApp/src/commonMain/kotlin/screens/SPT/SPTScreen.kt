@@ -1,4 +1,4 @@
-package screens
+package screens.SPT
 
 import SPT.SPTManager
 import androidx.compose.foundation.Image
@@ -12,16 +12,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonColors
-import androidx.compose.material.ButtonDefaults.buttonColors
-import androidx.compose.material.Divider
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -43,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import ayopajakmobile.composeapp.generated.resources.Res
 import ayopajakmobile.composeapp.generated.resources.icon_notification_border
 import ayopajakmobile.composeapp.generated.resources.icon_tripledot_black
@@ -50,19 +46,20 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import global.Colors
+import global.PreferencesKey.Companion.IsSptFirstRun
+import global.universalUIComponents.loadingPopupBox
 import global.universalUIComponents.popUpBox
 import global.universalUIComponents.topBar
 import http.Account
 import http.Interfaces
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import models.ApiODataQueryModel
+import models.ODataQueryOrderDirection
 import models.transaction.Form1770HdResponseApiModel
 import org.jetbrains.compose.resources.painterResource
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
+import screens.divider
 
 class SPTScreen(val client: Account, val sptPertamaClient: Interfaces, val prefs: DataStore<Preferences>): Screen {
 	
@@ -73,19 +70,28 @@ class SPTScreen(val client: Account, val sptPertamaClient: Interfaces, val prefs
 		var dataList by remember { mutableStateOf<List<Form1770HdResponseApiModel>>(emptyList()) }
 		
 		val scope = rememberCoroutineScope()
+		var isReady by remember { mutableStateOf(false) }
 		
 		val navigator = LocalNavigator.currentOrThrow
 		var showTripleDotPopup by remember { mutableStateOf(false) }
 		
+		var isSptFirstRun by remember { mutableStateOf(true) }
+		
 		LaunchedEffect(dataList){
 			try {
 				scope.launch {
-					dataList = getSPTListByQuery(scope, ApiODataQueryModel(5)).second
+					dataList = getSPTListByQuery(scope, ApiODataQueryModel()).second
+					isReady = true
+				}
+				scope.launch {
+					isSptFirstRun = prefs.data.first()[booleanPreferencesKey(IsSptFirstRun)] ?: true
 				}
 			} catch (ex: Exception) {
 				print(ex.message)
 			}
 		}
+		
+		loadingPopupBox(!isReady)
 		
 		Column(
 			modifier = Modifier.fillMaxWidth().background(Colors().panel),
@@ -154,15 +160,11 @@ class SPTScreen(val client: Account, val sptPertamaClient: Interfaces, val prefs
 							fontWeight = FontWeight.Bold,
 							color = Colors().slate70
 						)
-//						sptCard("2024", "0", "SPT 1770 S", 0, 100000000, 10800000)
-//						sptCard("2023", "1", "SPT 1770 S", 1, 100000000, 10800000)
-//						sptCard("2023", "0", "SPT 1770 S", 2, 100000000, 10800000)
-//						sptCard("2022", "0", "SPT 1770 S", 3, 100000000, -10800000)
 						
 						// Display the list of SPT cards if data is available
 						if (dataList.isNotEmpty()) {
 							dataList.forEach {
-								sptCard(it.TaxYear, it.CorrectionSeq.toString(), it.SPTType, 0, 100000000, 10800000)
+								sptCard(it.TaxYear, it.CorrectionSeq.toString(), it.SPTType, 0, 100000000, 10800000, it.Id)
 							}
 						} else {
 							// Optionally display a loading indicator or empty state
@@ -195,7 +197,8 @@ class SPTScreen(val client: Account, val sptPertamaClient: Interfaces, val prefs
 		){
 			FloatingActionButton(
 				onClick = {
-					navigator.push(SPTTipsNTricksScreen(false))
+					if(isSptFirstRun) navigator.push(SPTTipsNTricksScreen(false, client, prefs, sptPertamaClient))
+					else navigator.push(CreateSPTForm(client, sptPertamaClient, prefs))
 				},
 				modifier = Modifier.size(64.dp).shadow(1.dp, CircleShape),
 				shape = CircleShape,
@@ -232,7 +235,7 @@ class SPTScreen(val client: Account, val sptPertamaClient: Interfaces, val prefs
 					Text(
 						modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp)
 							.clickable(true, onClick = {
-								navigator.push(SPTTipsNTricksScreen(true))
+								navigator.push(SPTTipsNTricksScreen(true, client, prefs, sptPertamaClient))
 							}),
 						text = "Tips & Trik",
 						fontSize = 14.sp,
@@ -268,79 +271,84 @@ class SPTScreen(val client: Account, val sptPertamaClient: Interfaces, val prefs
 		
 		return Pair(successCall, dataList)
 	}
-}
-
-@Composable
-fun sptCard(year: String, pembetulan: String, sptType: String, status: Int, value: Long, delta: Long) {
-	Box(
-		modifier = Modifier
-			.fillMaxWidth()
-			.padding(horizontal = 16.dp)
-			.padding(bottom = 12.dp)
-			.shadow(1.dp, RoundedCornerShape(8.dp))
-			.clip(RoundedCornerShape(8.dp))
-			.background(Color.White)
-	) {
-		Column(
-			modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).padding(vertical = 20.dp)
+	
+	@Composable
+	fun sptCard(year: String, pembetulan: String, sptType: String, status: Int, value: Long, delta: Long, sptHdId: Int) {
+		val navigator = LocalNavigator.currentOrThrow
+		
+		Box(
+			modifier = Modifier
+				.fillMaxWidth()
+				.padding(horizontal = 16.dp)
+				.padding(bottom = 12.dp)
+				.shadow(1.dp, RoundedCornerShape(8.dp))
+				.clip(RoundedCornerShape(8.dp))
+				.background(Color.White)
+				.clickable(true, onClick = {
+					navigator.push(SummarySPTScreen(sptHdId, client, sptPertamaClient, prefs))
+				})
 		) {
-			Row(
-				modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
-				horizontalArrangement = Arrangement.SpaceBetween,
-				verticalAlignment = Alignment.CenterVertically
+			Column(
+				modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).padding(vertical = 20.dp)
 			) {
-				Text(
-					text = "SPT $year - $pembetulan",
-					fontSize = 14.sp,
-					color = Color.Black,
-					fontWeight = FontWeight.Bold
-				)
+				Row(
+					modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+					horizontalArrangement = Arrangement.SpaceBetween,
+					verticalAlignment = Alignment.CenterVertically
+				) {
+					Text(
+						text = "SPT $year - $pembetulan",
+						fontSize = 14.sp,
+						color = Color.Black,
+						fontWeight = FontWeight.Bold
+					)
+					
+					//TODO("Create Status Chip")
+				}
 				
-				//TODO("Create Status Chip")
-			}
-			
-			Text(
-				modifier = Modifier.padding(bottom = 24.dp),
-				text = sptType,
-				fontSize = 10.sp,
-				color = Colors().textDarkGrey
-			)
-			
-			Row(
-				modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
-				horizontalArrangement = Arrangement.SpaceBetween,
-				verticalAlignment = Alignment.CenterVertically
-			) {
 				Text(
-					text = "Nilai SSP",
+					modifier = Modifier.padding(bottom = 24.dp),
+					text = sptType,
 					fontSize = 10.sp,
 					color = Colors().textDarkGrey
 				)
-				Text(
-					text = "PPH",
-					fontSize = 10.sp,
-					color = Colors().textDarkGrey
-				)
-			}
-			
-			Row(
-				modifier = Modifier.fillMaxWidth(),
-				horizontalArrangement = Arrangement.SpaceBetween,
-				verticalAlignment = Alignment.CenterVertically
-			) {
-				Text(
-					text = "Rp $value",
-					fontSize = 10.sp,
-					color = Color.Black,
-					fontWeight = FontWeight.Bold
-				)
 				
-				Text(
-					text = "Rp $delta",
-					fontSize = 10.sp,
-					color = if(delta >= 0) Colors().textGreen else Colors().textRed,
-					fontWeight = FontWeight.Bold
-				)
+				Row(
+					modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+					horizontalArrangement = Arrangement.SpaceBetween,
+					verticalAlignment = Alignment.CenterVertically
+				) {
+					Text(
+						text = "Nilai SSP",
+						fontSize = 10.sp,
+						color = Colors().textDarkGrey
+					)
+					Text(
+						text = "PPH",
+						fontSize = 10.sp,
+						color = Colors().textDarkGrey
+					)
+				}
+				
+				Row(
+					modifier = Modifier.fillMaxWidth(),
+					horizontalArrangement = Arrangement.SpaceBetween,
+					verticalAlignment = Alignment.CenterVertically
+				) {
+					Text(
+						text = "Rp $value",
+						fontSize = 10.sp,
+						color = Color.Black,
+						fontWeight = FontWeight.Bold
+					)
+					
+					Text(
+						text = "Rp $delta",
+						fontSize = 10.sp,
+						color = if(delta >= 0) Colors().textGreen else Colors().textRed,
+						fontWeight = FontWeight.Bold
+					)
+				}
 			}
 		}
 	}

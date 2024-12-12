@@ -31,7 +31,7 @@ class Colors {
     val slate10 = Color(0xFFF8F9FA)
     val slate20 = Color(0xFFF1F3F5)
     val slate30 = Color(0xFFE9ECEF)
-    val slate40 = Color(0xFF)
+    val slate40 = Color(0xFFDEE2E6)
     val slate50 = Color(0xFF)
     val slate60 = Color(0xFF)
     val slate70 = Color(0xFF868E96)

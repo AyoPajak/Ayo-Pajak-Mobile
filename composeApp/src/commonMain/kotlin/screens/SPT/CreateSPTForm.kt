@@ -1,5 +1,6 @@
-package screens
+package screens.SPT
 
+import SPT.SPTManager
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -11,32 +12,35 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults.buttonColors
-import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
-import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.TextFieldDefaults.textFieldColors
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.stringPreferencesKey
 import ayopajakmobile.composeapp.generated.resources.Res
 import ayopajakmobile.composeapp.generated.resources.placeholder_NPWP
 import ayopajakmobile.composeapp.generated.resources.placeholder_username
@@ -44,21 +48,49 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import global.Colors
+import global.PreferencesKey.Companion.NPWP
+import global.PreferencesKey.Companion.WPNPWP
+import global.PreferencesKey.Companion.WPName
 import global.universalUIComponents.topBar
+import http.Account
+import http.Interfaces
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+import kotlinx.datetime.Clock
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
+import models.transaction.Form1770HdRequestApiModel
 import org.jetbrains.compose.resources.stringResource
 
-class CreateSPTForm: Screen {
+class CreateSPTForm(val client: Account, val sptPertamaClient: Interfaces, val prefs: DataStore<Preferences>): Screen {
+	
+	val sptManager = SPTManager(prefs, client, sptPertamaClient)
 	
 	@Composable
 	override fun Content() {
 		
 		val navigator = LocalNavigator.currentOrThrow
+		val scope = rememberCoroutineScope()
 		
 		var taxPayerName by remember { mutableStateOf("") }
 		var taxPayerNPWP by remember { mutableStateOf("") }
 		var formType by remember { mutableStateOf("1770S") }
-		var taxYear by remember { mutableStateOf("") }
+		var taxYear by remember { mutableStateOf((Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).year - 1).toString()) }
 		var correctionSeq by remember { mutableStateOf("") }
+		
+		LaunchedEffect(null) {
+			try {
+				scope.launch {
+					taxPayerName = prefs.data.first()[stringPreferencesKey(WPName)] ?: ""
+					taxPayerNPWP = prefs.data.first()[stringPreferencesKey(NPWP)] ?: ""
+				}
+			} catch(ex: Exception) {
+				println(ex.message)
+			}
+		}
 		
 		Column(
 			modifier = Modifier.fillMaxSize().background(Colors().panel)
@@ -99,6 +131,10 @@ class CreateSPTForm: Screen {
 							focusedIndicatorColor = Color.Transparent,
 							unfocusedIndicatorColor = Color.Transparent,
 							disabledIndicatorColor = Colors().slate20
+						),
+						keyboardOptions = KeyboardOptions(
+							keyboardType = KeyboardType.Text,
+							imeAction = ImeAction.Next
 						)
 					)
 				}
@@ -136,6 +172,10 @@ class CreateSPTForm: Screen {
 							focusedIndicatorColor = Color.Transparent,
 							unfocusedIndicatorColor = Color.Transparent,
 							disabledIndicatorColor = Colors().slate20
+						),
+						keyboardOptions = KeyboardOptions(
+							keyboardType = KeyboardType.Number,
+							imeAction = ImeAction.Next
 						)
 					)
 				}
@@ -318,16 +358,25 @@ class CreateSPTForm: Screen {
 							.border(
 								border = BorderStroke(1.dp, Colors().textDarkGrey),
 								shape = RoundedCornerShape(4.dp)
-							),
+							)
+							.onFocusChanged {
+								if (!it.isFocused) {
+									try {
+										scope.launch { correctionSeq =  (sptManager.getLatestSPT(scope, taxYear).CorrectionSeq + 1).toString() }
+									} catch(ex: Exception) {
+										println(ex.message)
+									}
+								}
+							},
 						placeholder = {
 							Text(
-								"2024", fontSize = 16.sp,
+								(Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).year - 1).toString(), fontSize = 16.sp,
 								color = Colors().textDarkGrey
 							)
 						},
 						value = taxYear,
 						onValueChange = {
-							if (it == "") taxYear = "" else taxYear = it
+							taxYear = if (it == "") (Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).year - 1).toString() else it
 						},
 						singleLine = true,
 						colors = textFieldColors(
@@ -337,9 +386,9 @@ class CreateSPTForm: Screen {
 							disabledIndicatorColor = Color.Transparent
 						),
 						keyboardOptions = KeyboardOptions(
-							keyboardType = KeyboardType.Text,
+							keyboardType = KeyboardType.Number,
 							imeAction = ImeAction.Next
-						)
+						),
 					)
 				}
 				
@@ -378,7 +427,7 @@ class CreateSPTForm: Screen {
 							disabledIndicatorColor = Color.Transparent
 						),
 						keyboardOptions = KeyboardOptions(
-							keyboardType = KeyboardType.Text,
+							keyboardType = KeyboardType.Number,
 							imeAction = ImeAction.Done
 						)
 					)
@@ -389,8 +438,20 @@ class CreateSPTForm: Screen {
 						modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
 						colors = buttonColors(backgroundColor = Colors().buttonActive, contentColor = Color.White),
 						onClick = {
-							//TODO("Create HTTP Request")
-							navigator.push(DetailCreateSPTScreen(formType, taxYear, correctionSeq))
+							val model = Form1770HdRequestApiModel(
+								taxYear.toInt(),
+								formType,
+								correctionSeq.toInt()
+							)
+							
+							scope.launch {
+								val id = sptManager.createSpt(scope, model)?.Data?.jsonObject?.get("Id")?.jsonPrimitive?.content!!.toInt()
+								
+								id.let {
+									println("SPT ID: $id")
+									navigator.push(SummarySPTScreen(it, client, sptPertamaClient, prefs))
+								}
+							}
 						}
 					) {
 						Text(
