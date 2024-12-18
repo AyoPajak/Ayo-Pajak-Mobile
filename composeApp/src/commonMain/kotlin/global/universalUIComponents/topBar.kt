@@ -1,5 +1,6 @@
 package global.universalUIComponents
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Row
@@ -20,13 +21,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ayopajakmobile.composeapp.generated.resources.Res
 import ayopajakmobile.composeapp.generated.resources.arrow_back
+import ayopajakmobile.composeapp.generated.resources.icon_tripledot_black
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import org.jetbrains.compose.resources.vectorResource
 import global.Colors
+import org.jetbrains.compose.resources.painterResource
 
 @Composable
-fun topBar(title: String, textColor: Color = Color.Black, bgColor: Color = Colors().panel, buttonColor: Color = Colors().panel) {
+fun topBar(title: String,
+           textColor: Color = Color.Black,
+           bgColor: Color = Colors().panel,
+           buttonColor: Color = Colors().panel) {
     val navigator = LocalNavigator.currentOrThrow
 
     Row(

@@ -68,21 +68,8 @@ kotlin {
 
             api(libs.datastore.preferences)
             api(libs.datastore)
-
-//            // Koin integration
-//            implementation(libs.voyager.koin)
-//
-//            // Hilt integration
-//            implementation(libs.voyager.hilt)
-//
-//            // LiveData integration
-//            implementation(libs.voyager.livedata)
-//
-//            // Kodein integration
-//            implementation(libs.voyager.kodein)
-//
-//            // RxJava integration
-//            implementation(libs.voyager.rxjava)
+            
+            implementation(libs.kmp.date.time.picker)
         }
         nativeMain.dependencies {
              implementation(libs.ktor.client.darwin)

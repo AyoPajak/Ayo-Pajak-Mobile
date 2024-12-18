@@ -3,6 +3,7 @@ package screens.SPT
 import SPT.SPTManager
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -18,6 +20,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults.buttonColors
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -29,27 +34,34 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import ayopajakmobile.composeapp.generated.resources.Res
+import ayopajakmobile.composeapp.generated.resources.arrow_back
 import ayopajakmobile.composeapp.generated.resources.icon_spttick
+import ayopajakmobile.composeapp.generated.resources.icon_tripledot_black
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import global.Colors
 import global.PertamaSptFillingStep
 import global.universalUIComponents.loadingPopupBox
+import global.universalUIComponents.popUpBox
 import global.universalUIComponents.topBar
 import http.Account
 import http.Interfaces
 import kotlinx.coroutines.launch
 import models.transaction.Form1770HdResponseApiModel
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.vectorResource
 import screens.divider
 
 class SummarySPTScreen(private val id: Int, val client: Account, val sptPertamaClient: Interfaces, val prefs: DataStore<Preferences>): Screen {
@@ -60,18 +72,22 @@ class SummarySPTScreen(private val id: Int, val client: Account, val sptPertamaC
 	override fun Content() {
 		
 		val scope = rememberCoroutineScope()
+		val navigator = LocalNavigator.currentOrThrow
+		var sptHd by remember {mutableStateOf<Form1770HdResponseApiModel?>(null)}
 		
 		var isReady by remember { mutableStateOf(false) }
 		
-		val navigator = LocalNavigator.currentOrThrow
 		var formType by remember { mutableStateOf("") }
 		var taxYear by remember { mutableStateOf("") }
 		var correctionSeq by remember { mutableStateOf(0) }
 		var status by remember { mutableStateOf(0) }
 		
-		var sptHd by remember {mutableStateOf<Form1770HdResponseApiModel?>(null)}
+		var showPopup by remember { mutableStateOf(false) }
+		var showConfirmPopup by remember { mutableStateOf(false) }
 		
-		LaunchedEffect(id) {
+		var completedStep by remember { mutableStateOf(0) }
+		
+		LaunchedEffect(null) {
 			scope.launch {
 				sptHd = sptManager.getSptHdById(scope, id)
 				
@@ -81,8 +97,27 @@ class SummarySPTScreen(private val id: Int, val client: Account, val sptPertamaC
 					taxYear = sptHd!!.TaxYear
 					correctionSeq = sptHd!!.CorrectionSeq
 					status = sptHd!!.LastStep
-					isReady = true
+					completedStep = when(sptHd!!.LastStep) {
+						10 -> { 1 }
+						20 -> { 2 }
+						30 -> { 3 }
+						40 -> { 4 }
+						110 -> { 5 }
+						120 -> { 6 }
+						210 -> { 7 }
+						330 -> { 8 }
+						340 -> { 9 }
+						410 -> { 10 }
+						430 -> { 11 }
+						450 -> { 12 }
+						470 -> { 13 }
+						999 -> { 14 }
+						
+						else -> { 0 }
+					}
 				}
+				
+				isReady = true
 			}
 		}
 		
@@ -96,10 +131,10 @@ class SummarySPTScreen(private val id: Int, val client: Account, val sptPertamaC
 								navigator.push(SptStepOneScreen(sptHd, client, sptPertamaClient, prefs))
 							}
 							2 -> {
-							
+								navigator.push(SptStepTwoScreen(sptHd, client, sptPertamaClient, prefs))
 							}
 							3 -> {
-							
+								navigator.push(SptStepThreeScreen(sptHd, client, sptPertamaClient, prefs))
 							}
 							4 -> {
 							
@@ -179,7 +214,39 @@ class SummarySPTScreen(private val id: Int, val client: Account, val sptPertamaC
 					.fillMaxWidth()
 			) {
 				item{
-					topBar("")
+					Row(
+						modifier = Modifier.fillMaxWidth(),
+						horizontalArrangement = Arrangement.SpaceBetween,
+						verticalAlignment = Alignment.CenterVertically
+					) {
+						IconButton(
+							modifier = Modifier
+								.padding(horizontal = 16.dp)
+								.padding(vertical = 24.dp)
+								.clip(CircleShape)
+								.border(1.dp, Color.LightGray, CircleShape)
+								.background(Colors().panel)
+								.align(Alignment.CenterVertically),
+							onClick = {
+								navigator.pop()
+							}
+						) {
+							Icon(
+								modifier = Modifier.scale(1.2f),
+								imageVector = vectorResource(Res.drawable.arrow_back), contentDescription = null
+							)
+						}
+						
+						Image(
+							painter = painterResource(Res.drawable.icon_tripledot_black),
+							null,
+							modifier = Modifier
+								.padding(end = 16.dp)
+								.clickable(true, onClick = {
+									showPopup = true
+								})
+						)
+					}
 				}
 				
 				item{
@@ -243,7 +310,34 @@ class SummarySPTScreen(private val id: Int, val client: Account, val sptPertamaC
 								color = Colors().textDarkGrey
 							)
 							Spacer(modifier = Modifier.padding(bottom = 24.dp))
-							//TODO("Create Progress Bar")
+							Row(
+								modifier = Modifier.fillMaxWidth(),
+								verticalAlignment = Alignment.CenterVertically,
+								horizontalArrangement = Arrangement.SpaceBetween
+							) {
+								LinearProgressIndicator(
+									progress = completedStep.toFloat() / 14,
+									color = Colors().brandDark50,
+									backgroundColor = Colors().slate20,
+									modifier = Modifier.height(24.dp).clip(RoundedCornerShape(16.dp)),
+									strokeCap = StrokeCap.Square
+								)
+								
+								Row(
+									modifier = Modifier.padding(start = 16.dp),
+									verticalAlignment = Alignment.CenterVertically
+								) {
+									Text(
+										text = "$completedStep",
+										fontSize = 14.sp,
+										fontWeight = FontWeight.Bold
+									)
+									Text(
+										text = "/14",
+										fontSize = 10.sp,
+									)
+								}
+							}
 						}
 					}
 				}
@@ -298,6 +392,7 @@ class SummarySPTScreen(private val id: Int, val client: Account, val sptPertamaC
 					}
 				}
 				
+				//Lapor SPT Button
 				item {
 					Button(
 						enabled = status >= PertamaSptFillingStep.Confirm.value,
@@ -317,6 +412,7 @@ class SummarySPTScreen(private val id: Int, val client: Account, val sptPertamaC
 				}
 			}
 			
+			//Spacer
 			Box (
 				modifier =  Modifier
 					.fillMaxWidth()
@@ -326,5 +422,80 @@ class SummarySPTScreen(private val id: Int, val client: Account, val sptPertamaC
 			
 			}
 		}
+		
+		//Delete SPT Popup
+		popUpBox(
+			showPopup = showPopup,
+			onClickOutside = { showPopup = false },
+			content = {
+				Text(
+					text = "Hapus SPT",
+					fontSize = 16.sp,
+					color = Colors().textRed,
+					modifier = Modifier.padding(vertical = 24.dp)
+						.clickable(true, onClick = {
+							showPopup = false
+							showConfirmPopup = true
+						})
+				)
+			}
+		)
+		
+		//Confirm Delete Popup
+		popUpBox(
+			showPopup = showConfirmPopup,
+			onClickOutside = { showConfirmPopup = false },
+			content = {
+				Column(horizontalAlignment = Alignment.CenterHorizontally) {
+					Text(
+						modifier = Modifier.padding(vertical = 24.dp),
+						text = "Hapus SPT",
+						fontSize = 18.sp,
+						color = Colors().textBlack,
+						fontWeight = FontWeight.Bold
+					)
+					
+					Text(
+						modifier = Modifier.padding(vertical = 24.dp, horizontal = 16.dp),
+						text = "Apakah Anda yakin ingin menghapus SPT ini?",
+						fontSize = 16.sp,
+						textAlign = TextAlign.Center,
+						color = Colors().textBlack
+					)
+					
+					Text(
+						text = "Hapus",
+						fontSize = 14.sp,
+						color = Colors().textRed,
+						modifier = Modifier.padding(vertical = 24.dp)
+							.clickable(true, onClick = {
+								scope.launch{
+									isReady = false
+									sptManager.deleteSpt(scope, id)
+									navigator.pop()
+								}
+							})
+					)
+					
+					Box(
+						modifier = Modifier
+							.fillMaxWidth()
+							.padding(horizontal = 16.dp)
+							.height(1.dp)
+							.background(Colors().slate30)
+					)
+					
+					Text(
+						text = "Kembali",
+						fontSize = 14.sp,
+						color = Colors().textBlack,
+						modifier = Modifier.padding(vertical = 24.dp)
+							.clickable(true, onClick = {
+								showConfirmPopup = false
+							})
+					)
+				}
+			}
+		)
 	}
 }

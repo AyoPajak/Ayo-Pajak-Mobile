@@ -54,6 +54,7 @@ import ayopajakmobile.composeapp.generated.resources.Icon_Dropdown_Arrow
 import ayopajakmobile.composeapp.generated.resources.Res
 import ayopajakmobile.composeapp.generated.resources.icon_clear
 import ayopajakmobile.composeapp.generated.resources.icon_search
+import ayopajakmobile.composeapp.generated.resources.icon_tripledot_black
 import ayopajakmobile.composeapp.generated.resources.placeholder_NPWP
 import ayopajakmobile.composeapp.generated.resources.placeholder_username
 import cafe.adriel.voyager.core.screen.Screen
@@ -571,6 +572,7 @@ class SptStepOneScreen(val sptHd: Form1770HdResponseApiModel?, val client: Accou
 					)
 					TextField(
 						enabled = true,
+						isError = taxPayerPhoneNumber.length < 8 || taxPayerPhoneNumber.length > 30,
 						modifier = Modifier.fillMaxWidth().padding(bottom = 20.dp, top = 8.dp)
 							.padding(horizontal = 16.dp)
 							.border(
@@ -585,7 +587,7 @@ class SptStepOneScreen(val sptHd: Form1770HdResponseApiModel?, val client: Accou
 						},
 						value = taxPayerPhoneNumber,
 						onValueChange = {
-							taxPayerPhoneNumber = it
+							if(taxPayerPhoneNumber.length <= 30) { taxPayerPhoneNumber = it }
 						},
 						singleLine = true,
 						colors = textFieldColors(
@@ -872,7 +874,7 @@ class SptStepOneScreen(val sptHd: Form1770HdResponseApiModel?, val client: Accou
 						},
 						value = spouseName,
 						onValueChange = {
-							spouseName = it
+							if(spouseName.length <= 200) { spouseName = it }
 						},
 						singleLine = true,
 						colors = textFieldColors(

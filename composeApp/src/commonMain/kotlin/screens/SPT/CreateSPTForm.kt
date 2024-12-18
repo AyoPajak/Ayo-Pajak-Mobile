@@ -81,6 +81,8 @@ class CreateSPTForm(val client: Account, val sptPertamaClient: Interfaces, val p
 		var taxYear by remember { mutableStateOf((Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).year - 1).toString()) }
 		var correctionSeq by remember { mutableStateOf("") }
 		
+		var isLoading by remember { mutableStateOf(true) }
+		
 		LaunchedEffect(null) {
 			try {
 				scope.launch {
@@ -445,11 +447,12 @@ class CreateSPTForm(val client: Account, val sptPertamaClient: Interfaces, val p
 							)
 							
 							scope.launch {
+								isLoading = true
 								val id = sptManager.createSpt(scope, model)?.Data?.jsonObject?.get("Id")?.jsonPrimitive?.content!!.toInt()
 								
 								id.let {
 									println("SPT ID: $id")
-									navigator.push(SummarySPTScreen(it, client, sptPertamaClient, prefs))
+									navigator.replace(SummarySPTScreen(it, client, sptPertamaClient, prefs))
 								}
 							}
 						}

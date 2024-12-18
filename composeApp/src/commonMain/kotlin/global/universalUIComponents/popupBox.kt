@@ -18,8 +18,8 @@ import androidx.compose.ui.zIndex
 
 @Composable
 fun popUpBox(
-	popupWidth: Float,
-	popupHeight:Float,
+	popupWidth: Float = 0f,
+	popupHeight:Float = 0f,
 	showPopup: Boolean,
 	onClickOutside: () -> Unit,
 	content: @Composable() () -> Unit) {

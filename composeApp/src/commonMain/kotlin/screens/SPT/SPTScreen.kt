@@ -60,6 +60,7 @@ import models.ODataQueryOrderDirection
 import models.transaction.Form1770HdResponseApiModel
 import org.jetbrains.compose.resources.painterResource
 import screens.divider
+import util.CurrencyFormatter
 
 class SPTScreen(val client: Account, val sptPertamaClient: Interfaces, val prefs: DataStore<Preferences>): Screen {
 	
@@ -164,7 +165,7 @@ class SPTScreen(val client: Account, val sptPertamaClient: Interfaces, val prefs
 						// Display the list of SPT cards if data is available
 						if (dataList.isNotEmpty()) {
 							dataList.forEach {
-								sptCard(it.TaxYear, it.CorrectionSeq.toString(), it.SPTType, 0, 100000000, 10800000, it.Id)
+								sptCard(it.TaxYear, it.CorrectionSeq.toString(), it.SPTType, 0, it.SSPAmount?.toLong() ?: 0, it.TaxPayable?.toLong() ?: 0, it.Id)
 							}
 						} else {
 							// Optionally display a loading indicator or empty state
@@ -336,14 +337,14 @@ class SPTScreen(val client: Account, val sptPertamaClient: Interfaces, val prefs
 					verticalAlignment = Alignment.CenterVertically
 				) {
 					Text(
-						text = "Rp $value",
+						text = "Rp. ${CurrencyFormatter(value.toString())}",
 						fontSize = 10.sp,
 						color = Color.Black,
 						fontWeight = FontWeight.Bold
 					)
 					
 					Text(
-						text = "Rp $delta",
+						text = "Rp ${CurrencyFormatter(delta.toString())}",
 						fontSize = 10.sp,
 						color = if(delta >= 0) Colors().textGreen else Colors().textRed,
 						fontWeight = FontWeight.Bold

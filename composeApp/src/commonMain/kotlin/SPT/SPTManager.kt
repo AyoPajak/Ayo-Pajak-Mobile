@@ -38,10 +38,13 @@ import models.ODataQueryOrderDirection
 import models.PertamaGeneralApiResponse
 import models.ReturnStatus
 import models.master.CityModel
+import models.master.FamilyRelModel
 import models.master.JobModel
 import models.master.KluModel
 import models.transaction.Form1770HdRequestApiModel
 import models.transaction.Form1770HdResponseApiModel
+import models.transaction.FormDependentRequestApiModel
+import models.transaction.FormDependentResponseApiModel
 import models.transaction.FormIdentityRequestApiModel
 import models.transaction.FormIdentityResponseApiModel
 import util.onError
@@ -364,6 +367,145 @@ class SPTManager(val prefs: DataStore<Preferences>, val client: Account, val spt
 				sptPertamaClient.getIdentityById("Bearer $apiToken", sptHd)
 					.onSuccess {
 						result = it
+						cont.resume(result)
+					}
+					.onError {
+						println(it.name)
+					}
+			}
+		}
+	}
+	
+	suspend fun getDependentList(scope: CoroutineScope, sptId: Int, query: ApiODataQueryModel) : List<FormDependentResponseApiModel>? {
+		var dependentList : List<FormDependentResponseApiModel>? = null
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Fail: Api token is null")
+			return null
+		}
+		
+		val queryMap = mapQueryModel(query)
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.getDependentList("Bearer $apiToken", queryMap, sptId)
+					.onSuccess {
+						dependentList = it.Items ?: listOf()
+						cont.resume(dependentList)
+					}
+					.onError {
+						println(it.name)
+					}
+			}
+		}
+	}
+	
+	suspend fun getDependentById(scope: CoroutineScope, id: Int) : FormDependentResponseApiModel? {
+		var data: FormDependentResponseApiModel?
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Api token is null")
+			return null
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.getDependentById("Bearer $apiToken", id)
+					.onSuccess {
+						data = it
+						cont.resume(data)
+					}
+					.onError {
+						println(it.name)
+					}
+			}
+		}
+	}
+	
+	suspend fun getFamilyRel(scope: CoroutineScope): List<FamilyRelModel> {
+		var familyRelList: List<FamilyRelModel> = ArrayList()
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Api token is null")
+			return familyRelList
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.getFamilyRel("Bearer $apiToken")
+					.onSuccess {
+						familyRelList = it.Items ?: listOf()
+						cont.resume(familyRelList)
+					}
+					.onError {
+						println(it.name)
+					}
+			}
+		}
+	}
+	
+	suspend fun saveDependent(scope: CoroutineScope, body: FormDependentRequestApiModel): ReturnStatus {
+		val result = ReturnStatus()
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Api token is null")
+			result.SetError("Api token is null")
+			return result
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.saveDependent("Bearer $apiToken", body)
+					.onSuccess {
+						println(result.Message)
+						cont.resume(result)
+					}
+					.onError {
+						println(it.name)
+					}
+			}
+		}
+	}
+	
+	suspend fun deleteSpt(scope: CoroutineScope, id: Int): ReturnStatus {
+		val result = ReturnStatus()
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Api token is null")
+			result.SetError("Api token is null")
+			return result
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.deleteSpt("Bearer $apiToken", id)
+					.onSuccess {
+						cont.resume(result)
+					}
+					.onError {
+						println(it.name)
+					}
+			}
+		}
+	}
+	
+	suspend fun deleteDependent(scope: CoroutineScope, id: Int): ReturnStatus {
+		val result = ReturnStatus()
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Api token is null")
+			result.SetError("Api token is null")
+			return result
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.deleteDependent("Bearer $apiToken", id)
+					.onSuccess {
 						cont.resume(result)
 					}
 					.onError {
