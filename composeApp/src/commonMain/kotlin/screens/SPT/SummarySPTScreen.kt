@@ -46,6 +46,8 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import ayopajakmobile.composeapp.generated.resources.Res
 import ayopajakmobile.composeapp.generated.resources.arrow_back
+import ayopajakmobile.composeapp.generated.resources.icon_chevron_right
+import ayopajakmobile.composeapp.generated.resources.icon_chevron_right_grey
 import ayopajakmobile.composeapp.generated.resources.icon_spttick
 import ayopajakmobile.composeapp.generated.resources.icon_tripledot_black
 import cafe.adriel.voyager.core.screen.Screen
@@ -198,6 +200,12 @@ class SummarySPTScreen(private val id: Int, val client: Account, val sptPertamaC
 				Text (
 					text = title,
 					fontSize = 14.sp,
+					modifier = Modifier.weight(0.7f)
+				)
+				
+				Image(
+					painterResource(Res.drawable.icon_chevron_right_grey),
+					null
 				)
 			}
 		}
@@ -484,7 +492,7 @@ class SummarySPTScreen(private val id: Int, val client: Account, val sptPertamaC
 							.height(1.dp)
 							.background(Colors().slate30)
 					)
-					
+					divider(0.dp)
 					Text(
 						text = "Kembali",
 						fontSize = 14.sp,

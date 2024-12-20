@@ -23,6 +23,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -33,48 +34,118 @@ import androidx.compose.ui.unit.sp
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import ayopajakmobile.composeapp.generated.resources.Res
-import ayopajakmobile.composeapp.generated.resources.icon_chevron_right
 import ayopajakmobile.composeapp.generated.resources.icon_chevron_right_black
+import ayopajakmobile.composeapp.generated.resources.icon_edit_grey
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import global.AssetApiSaveCode
+import global.AssetCode
 import global.Colors
+import global.CurrRateEntryMode
 import global.universalUIComponents.loadingPopupBox
 import global.universalUIComponents.topBar
 import http.Account
 import http.Interfaces
-import models.ApiODataQueryModel
-import models.transaction.AssetGroupResponseApiModel
 import models.transaction.Form1770HdResponseApiModel
+import models.transaction.FormWealthResponseApiModel
 import org.jetbrains.compose.resources.painterResource
+import screens.divider
 import util.BigDeciToString
 import util.CurrencyFormatter
 
-class SptStepThreeScreen(val sptHd: Form1770HdResponseApiModel?, val client: Account, val sptPertamaClient: Interfaces, val prefs: DataStore<Preferences>): Screen {
-	
-	val sptManager = SPTManager(prefs, client, sptPertamaClient)
+class WealthTypeDetailScreen(
+	private val sptHd: Form1770HdResponseApiModel?,
+	private val wealthTypeId: String,
+	val client: Account,
+	val sptPertamaClient: Interfaces,
+	val prefs: DataStore<Preferences>,
+	val assetCode: String,
+	val assetName: String
+): Screen {
+	private val sptManager = SPTManager(prefs, client, sptPertamaClient)
 	
 	@Composable
 	override fun Content() {
-		
 		val scope = rememberCoroutineScope()
 		val navigator = LocalNavigator.currentOrThrow
 		
-		var totalWealthAcrossAllType by remember { mutableStateOf(0.0) }
-		var wealthCountAcrossAllType by remember { mutableStateOf(0) }
-		var wealthListByType by remember { mutableStateOf<List<AssetGroupResponseApiModel>>(emptyList()) }
+		var category by remember { mutableStateOf("") }
+		var wealthList by remember { mutableStateOf<List<FormWealthResponseApiModel>>(emptyList()) }
+		val totalWealthInType by remember { mutableStateOf(0.0) }
 		
 		var isReady by remember { mutableStateOf(false) }
 		
 		LaunchedEffect(null) {
-			totalWealthAcrossAllType = sptManager.getWealthTotal(scope, sptHd!!.Id.toString())
-			wealthListByType = sptManager.getWealthSummaryByType(scope, sptHd.Id.toString())
-			println(wealthListByType)
+			wealthList = sptManager.getWealthData(scope, sptHd!!.Id.toString(), wealthTypeId)
+			
+			when (assetCode) {
+				AssetCode.UANG_TUNAI.value -> {
+					category = AssetApiSaveCode.A.toString()
+				}
+				AssetCode.TABUNGAN.value, AssetCode.GIRO.value -> {
+					category = AssetApiSaveCode.B.toString()
+				}
+				AssetCode.DEPOSITO.value -> {
+					category = AssetApiSaveCode.C.toString()
+				}
+				AssetCode.PIUTANG.value,
+				AssetCode.PIUTANG_AFILIASI.value,
+				AssetCode.PIUTANG_LAINNYA.value,
+				AssetCode.OBLIGASI_PERUSAHAAN.value,
+				AssetCode.OBLIGASI_PEMERINTAH_INDONESIA.value,
+				AssetCode.SURAT_UTANG_LAINNYA.value,
+				AssetCode.INSTRUMEN_DERIVATIF.value -> {
+					category = AssetApiSaveCode.D.toString()
+				}
+				AssetCode.PERSEDIAAN_USAHA.value -> {
+					category = AssetApiSaveCode.E.toString()
+				}
+				AssetCode.SAHAM_YANG_DIBELI_UNTUK_DIJUAL_KEMBALI.value,
+				AssetCode.SAHAM.value -> {
+					category = AssetApiSaveCode.F.toString()
+				}
+				AssetCode.PENYERTAAN_MODAL_DALAM_PERUSAHAAN_LAIN_YANG_TIDAK_ATAS_SAHAM.value,
+				AssetCode.INVESTASI_LAINNYA.value -> {
+					category = AssetApiSaveCode.G.toString()
+				}
+				AssetCode.SEPEDA.value,
+				AssetCode.SEPEDA_MOTOR.value,
+				AssetCode.MOBIL.value,
+				AssetCode.ALAT_TRANSPORTASI_LAINNYA.value,
+				AssetCode.KAPAL_PESIAR_PESAWAT_TERBANG_HELIKOPTER_JETSKI_PERALATAN_OLAH_RAGA_KHUSUS.value,
+				AssetCode.PERALATAN_ELEKTRONIK_FURINITURE.value,
+				AssetCode.HARTA_BERGERAK_LAINNYA.value-> {
+					category = AssetApiSaveCode.H.toString()
+				}
+				AssetCode.LOGAM_MULIA.value,
+				AssetCode.BATU_MULIA.value,
+				AssetCode.BARANG_SENI_DAN_ANTIK.value -> {
+					category = AssetApiSaveCode.I.toString()
+				}
+				AssetCode.TANAH_DAN_ATAU_BANGUNAN_UNTUK_TEMPAT_TINGGAL.value,
+				AssetCode.TANAH_DAN_ATAU_BANGUNAN_UNTUK_USAHA.value,
+				AssetCode.TANAH_ATAU_LAHAN_UNTUK_USAHA.value,
+				AssetCode.HARTA_TIDAK_GERAK_LAINNYA.value-> {
+					category = AssetApiSaveCode.J.toString()
+				}
+				AssetCode.PATEN.value,
+				AssetCode.ROYALTI.value,
+				AssetCode.MEREK_DAGANG.value,
+				AssetCode.HARTA_TIDAK_BERWUJUD_LAINNYA.value-> {
+					category = AssetApiSaveCode.K.toString()
+				}
+				AssetCode.SETARA_KAS_LAINNYA.value,
+				AssetCode.REKSADANA.value-> {
+					category = AssetApiSaveCode.L.toString()
+				}
+			}
+			
 			isReady = true
 		}
 		
 		@Composable
-		fun wealthCard(assetCode: String, assetName: String, dataCount: Int, total: Double, wealthTypeId: String) {
+		fun wealthCard(assetName: String, acquisitionYear: String, currencyAmmount: Double, id: String) {
 			Box(
 				modifier = Modifier
 					.fillMaxWidth()
@@ -92,34 +163,35 @@ class SptStepThreeScreen(val sptHd: Form1770HdResponseApiModel?, val client: Acc
 						horizontalArrangement = Arrangement.SpaceBetween
 					) {
 						Text(
-							text = "$assetCode - $assetName",
+							text = assetName,
 							fontSize = 12.sp,
 							color = Colors().textBlack,
 							modifier = Modifier.weight(0.2f)
 						)
-						Text(
-							text = "$dataCount data",
-							fontSize = 10.sp,
-							fontWeight = FontWeight.Bold,
-							color = Colors().textDarkGrey
+						Image(
+							painterResource(Res.drawable.icon_edit_grey),
+							contentDescription = null,
+							modifier = Modifier.clickable(true, onClick = {
+								navigator.push(AssetFormScreen(id.toInt(), sptHd!!.Id, client, sptPertamaClient, prefs))
+							})
 						)
 					}
 					Row(
 						modifier = Modifier.fillMaxWidth(),
-						horizontalArrangement = Arrangement.SpaceBetween
+						horizontalArrangement = Arrangement.SpaceBetween,
+						verticalAlignment = Alignment.CenterVertically
 					) {
 						Text(
-							text = "Rp ${CurrencyFormatter(BigDeciToString(total.toString()))}",
+							text = acquisitionYear,
+							fontSize = 10.sp,
+							fontWeight = FontWeight.Bold,
+							color = Colors().textDarkGrey
+						)
+						Text(
+							text = "Rp ${CurrencyFormatter(BigDeciToString(currencyAmmount.toString()))}",
 							fontSize = 12.sp,
 							fontWeight = FontWeight.Bold,
 							color = Colors().textBlack
-						)
-						Image(
-							painterResource(Res.drawable.icon_chevron_right_black),
-							contentDescription = null,
-							modifier = Modifier.clickable(true, onClick = {
-								navigator.push(WealthTypeDetailScreen(sptHd, wealthTypeId, client, sptPertamaClient, prefs, assetCode, assetName))
-							})
 						)
 					}
 				}
@@ -133,7 +205,7 @@ class SptStepThreeScreen(val sptHd: Form1770HdResponseApiModel?, val client: Acc
 		) {
 			LazyColumn {
 				//Top Bar
-				item { topBar("Harta") }
+				item { topBar("Detail Harta") }
 				
 				//Summary Box
 				item {
@@ -148,68 +220,48 @@ class SptStepThreeScreen(val sptHd: Form1770HdResponseApiModel?, val client: Acc
 							modifier = Modifier.padding(horizontal = 16.dp, vertical = 24.dp).padding(top = 16.dp)
 						) {
 							Text(
+								text = "$assetCode - $assetName",
+								fontSize = 14.sp,
+								color = Color.White,
+								fontWeight = FontWeight.Bold,
+								modifier = Modifier.padding(bottom = 12.dp)
+							)
+							divider(0.dp)
+							Text(
 								text = "Total Harta",
 								fontSize = 10.sp,
 								color = Color.White,
-								modifier = Modifier.padding(bottom = 8.dp)
+								modifier = Modifier.padding(bottom = 8.dp, top = 24.dp)
 							)
 							Text(
-								text = "Rp ${CurrencyFormatter(BigDeciToString(totalWealthAcrossAllType.toString()))}",
+								text = "Rp ${CurrencyFormatter(BigDeciToString(totalWealthInType.toString()))}",
 								fontSize = 16.sp,
 								color = Color.White,
 								fontWeight = FontWeight.Bold
 							)
-							Row(
-								modifier = Modifier.padding(top = 32.dp)
-							){
-								Box(
-									modifier = Modifier
-										.padding(end = 8.dp)
-										.clip(RoundedCornerShape(4.dp))
-										.background(Color(0xff598dff))
-										.weight(0.5f)
+							Box(
+								modifier = Modifier
+									.fillMaxWidth()
+									.padding(top = 24.dp)
+									.clip(RoundedCornerShape(4.dp))
+									.background(Color(0xff598dff))
+							) {
+								Row(
+									modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 24.dp),
+									verticalAlignment = Alignment.CenterVertically,
+									horizontalArrangement = Arrangement.SpaceBetween
 								) {
-									Column(
-										modifier = Modifier.padding(horizontal = 16.dp, vertical = 24.dp)
-									) {
-										Text(
-											text = "Jenis Harta",
-											fontSize = 10.sp,
-											color = Color.White,
-											modifier = Modifier.padding(bottom = 8.dp)
-										)
-										Text(
-											text = "${wealthListByType.size}",
-											fontSize = 14.sp,
-											color = Color.White,
-											fontWeight = FontWeight.Bold
-										)
-									}
-								}
-								
-								Box(
-									modifier = Modifier
-										.padding(start = 8.dp)
-										.clip(RoundedCornerShape(4.dp))
-										.background(Color(0xff598dff))
-										.weight(0.5f)
-								) {
-									Column(
-										modifier = Modifier.padding(horizontal = 16.dp, vertical = 24.dp)
-									) {
-										Text(
-											text = "Jumlah Harta",
-											fontSize = 10.sp,
-											color = Color.White,
-											modifier = Modifier.padding(bottom = 8.dp)
-										)
-										Text(
-											text = wealthCountAcrossAllType.toString(),
-											fontSize = 14.sp,
-											color = Color.White,
-											fontWeight = FontWeight.Bold
-										)
-									}
+									Text(
+										text = "Jumlah Harta",
+										fontSize = 10.sp,
+										color = Color.White
+									)
+									Text(
+										text = "${wealthList.size}",
+										fontSize = 14.sp,
+										color = Color.White,
+										fontWeight = FontWeight.Bold
+									)
 								}
 							}
 						}
@@ -260,13 +312,11 @@ class SptStepThreeScreen(val sptHd: Form1770HdResponseApiModel?, val client: Acc
 					}
 				}
 				
-				//List Wealth by Type
-				wealthListByType.forEach {
+				//List Wealth
+				wealthList.forEach {
 					item {
-						wealthCard(it.AssetCode, it.AssetName, it.DataCount, it.Total, it.WealthTypeId.toString())
+						wealthCard(it.Description ?: "-", it.AcquisitionYear, it.CurrencyAmountIDR, it.Id.toString())
 					}
-					
-					wealthCountAcrossAllType += it.DataCount
 				}
 				
 				//Spacer

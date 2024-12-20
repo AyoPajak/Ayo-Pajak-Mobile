@@ -23,12 +23,14 @@ import models.master.CityModel
 import models.master.FamilyRelModel
 import models.master.JobModel
 import models.master.KluModel
+import models.transaction.AssetGroupResponseApiModel
 import models.transaction.Form1770HdRequestApiModel
 import models.transaction.Form1770HdResponseApiModel
 import models.transaction.FormDependentRequestApiModel
 import models.transaction.FormDependentResponseApiModel
 import models.transaction.FormIdentityRequestApiModel
 import models.transaction.FormIdentityResponseApiModel
+import models.transaction.FormWealthResponseApiModel
 import util.NetworkError
 import util.Result
 
@@ -527,6 +529,139 @@ class Interfaces(private val httpClient: HttpClient) {
 			200 -> {
 				val body = response.body<PertamaGeneralApiResponse>()
 				Result.Success(body)
+			}
+			401 -> Result.Error(NetworkError.UNAUTHORIZED)
+			409 -> Result.Error(NetworkError.CONFLICT)
+			408 -> Result.Error(NetworkError.REQUEST_TIMEOUT)
+			413 -> Result.Error(NetworkError.PAYLOAD_TOO_LARGE)
+			in 500..599 -> Result.Error(NetworkError.SERVER_ERROR)
+			else -> Result.Error(NetworkError.UNKNOWN)
+		}
+	}
+	
+	suspend fun getWealthSummaryPerCode(apiToken: String, hdId: String) : Result<PagedListModel<AssetGroupResponseApiModel>, NetworkError> {
+		val response = try {
+			httpClient.get (
+				urlString = "${Variables.PertamaApiBaseUrl}api/SPTTahunanOP/GetWealthSummaryPerCode"
+			) {
+				header("Authorization", apiToken)
+				url {
+					encodedParameters.append("hdId", hdId)
+				}
+				contentType(ContentType.Application.Json)
+			}
+		} catch (e: UnresolvedAddressException) {
+			return Result.Error(NetworkError.NO_INTERNET)
+		} catch (e: SerializationException) {
+			return Result.Error(NetworkError.SERIALIZATION)
+		}
+		
+		return when (response.status.value) {
+			200 -> {
+				val responseBody = response.body<PagedListModel<AssetGroupResponseApiModel>>()
+				Result.Success(responseBody)
+			}
+			401 -> Result.Error(NetworkError.UNAUTHORIZED)
+			409 -> Result.Error(NetworkError.CONFLICT)
+			408 -> Result.Error(NetworkError.REQUEST_TIMEOUT)
+			413 -> Result.Error(NetworkError.PAYLOAD_TOO_LARGE)
+			in 500..599 -> Result.Error(NetworkError.SERVER_ERROR)
+			else -> Result.Error(NetworkError.UNKNOWN)
+		}
+	}
+	
+	suspend fun getWealthTotal(apiToken: String, hdId: String, wealthTypeId: String? = null): Result<Double, NetworkError> {
+		val response = try {
+			httpClient.get (
+				urlString = "${Variables.PertamaApiBaseUrl}api/SPTTahunanOP/GetWealthTotal"
+			) {
+				header("Authorization", apiToken)
+				url {
+					encodedParameters.append("hdId", hdId)
+				}
+				if(!wealthTypeId.isNullOrBlank()) {
+					url {encodedParameters.append("wealthTypeId", wealthTypeId)}
+				}
+				
+				contentType(ContentType.Application.Json)
+			}
+		} catch (e: UnresolvedAddressException) {
+			return Result.Error(NetworkError.NO_INTERNET)
+		} catch (e: SerializationException) {
+			return Result.Error(NetworkError.SERIALIZATION)
+		}
+		
+		return when (response.status.value) {
+			200 -> {
+				val responseBody = response.body<Double>()
+				Result.Success(responseBody)
+			}
+			401 -> Result.Error(NetworkError.UNAUTHORIZED)
+			409 -> Result.Error(NetworkError.CONFLICT)
+			408 -> Result.Error(NetworkError.REQUEST_TIMEOUT)
+			413 -> Result.Error(NetworkError.PAYLOAD_TOO_LARGE)
+			in 500..599 -> Result.Error(NetworkError.SERVER_ERROR)
+			else -> Result.Error(NetworkError.UNKNOWN)
+		}
+	}
+	
+	suspend fun getWealthData(apiToken: String, hdId: String, wealthTypeId: String? = null): Result<PagedListModel<FormWealthResponseApiModel>, NetworkError> {
+		val response = try {
+			httpClient.get (
+				urlString = "${Variables.PertamaApiBaseUrl}api/SPTTahunanOP/GetWealthData"
+			) {
+				header("Authorization", apiToken)
+				url {
+					encodedParameters.append("hdId", hdId)
+				}
+				if(!wealthTypeId.isNullOrBlank()) {
+					url {encodedParameters.append("wealthTypeId", wealthTypeId)}
+				}
+				
+				contentType(ContentType.Application.Json)
+			}
+		} catch (e: UnresolvedAddressException) {
+			return Result.Error(NetworkError.NO_INTERNET)
+		} catch (e: SerializationException) {
+			return Result.Error(NetworkError.SERIALIZATION)
+		}
+		
+		return when (response.status.value) {
+			200 -> {
+				val responseBody = response.body<PagedListModel<FormWealthResponseApiModel>>()
+				Result.Success(responseBody)
+			}
+			401 -> Result.Error(NetworkError.UNAUTHORIZED)
+			409 -> Result.Error(NetworkError.CONFLICT)
+			408 -> Result.Error(NetworkError.REQUEST_TIMEOUT)
+			413 -> Result.Error(NetworkError.PAYLOAD_TOO_LARGE)
+			in 500..599 -> Result.Error(NetworkError.SERVER_ERROR)
+			else -> Result.Error(NetworkError.UNKNOWN)
+		}
+	}
+	
+	suspend fun getWealthDataById(apiToken: String, id: String): Result<FormWealthResponseApiModel, NetworkError> {
+		val response = try {
+			httpClient.get (
+				urlString = "${Variables.PertamaApiBaseUrl}api/SPTTahunanOP/GetWealthDataById"
+			) {
+				header("Authorization", apiToken)
+				url {
+					encodedParameters.append("id", id)
+				}
+				
+				contentType(ContentType.Application.Json)
+			}
+		} catch (e: UnresolvedAddressException) {
+			return Result.Error(NetworkError.NO_INTERNET)
+		} catch (e: SerializationException) {
+			return Result.Error(NetworkError.SERIALIZATION)
+		}
+		
+		return when (response.status.value) {
+			200 -> {
+				val responseBody = response.body<FormWealthResponseApiModel>()
+				Result.Success(responseBody)
 			}
 			401 -> Result.Error(NetworkError.UNAUTHORIZED)
 			409 -> Result.Error(NetworkError.CONFLICT)
