@@ -20,6 +20,7 @@ import models.account.APITokenModel
 import models.master.CityModel
 import models.master.CurrencyModel
 import models.master.CurrencyRateModel
+import models.master.DebtTypeModel
 import models.master.FamilyRelModel
 import models.master.InterestTypeModel
 import models.master.JobModel
@@ -28,6 +29,8 @@ import models.master.WealthTypeModel
 import models.transaction.AssetGroupResponseApiModel
 import models.transaction.Form1770HdRequestApiModel
 import models.transaction.Form1770HdResponseApiModel
+import models.transaction.FormDebtRequestApiModel
+import models.transaction.FormDebtResponseApiModel
 import models.transaction.FormDependentRequestApiModel
 import models.transaction.FormDependentResponseApiModel
 import models.transaction.FormIdentityRequestApiModel
@@ -553,6 +556,7 @@ class Interfaces(private val httpClient: HttpClient) {
 		}
 	}
 	
+	//Wealth
 	suspend fun getWealthSummaryPerCode(apiToken: String, hdId: String) : Result<PagedListModel<AssetGroupResponseApiModel>, NetworkError> {
 		val response = try {
 			httpClient.get (
@@ -1169,6 +1173,195 @@ class Interfaces(private val httpClient: HttpClient) {
 		val response = try {
 			httpClient.post  (
 				urlString = "${Variables.PertamaApiBaseUrl}api/SPTTahunanOP/SaveWealthL"
+			) {
+				header("Authorization", apiToken)
+				setBody(request)
+				contentType(ContentType.Application.Json)
+			}
+		} catch (e: UnresolvedAddressException) {
+			return Result.Error(NetworkError.NO_INTERNET)
+		} catch (e: SerializationException) {
+			return Result.Error(NetworkError.SERIALIZATION)
+		}
+		
+		return when (response.status.value) {
+			200 -> {
+				val body = response.body<PertamaGeneralApiResponse>()
+				println(body)
+				Result.Success(body)
+			}
+			401 -> Result.Error(NetworkError.UNAUTHORIZED)
+			409 -> Result.Error(NetworkError.CONFLICT)
+			408 -> Result.Error(NetworkError.REQUEST_TIMEOUT)
+			413 -> Result.Error(NetworkError.PAYLOAD_TOO_LARGE)
+			in 500..599 -> Result.Error(NetworkError.SERVER_ERROR)
+			else -> Result.Error(NetworkError.UNKNOWN)
+		}
+	}
+	
+	//Debt
+	suspend fun getDebtTotal(apiToken: String, hdId: String): Result<Double, NetworkError> {
+		val response = try {
+			httpClient.get (
+				urlString = "${Variables.PertamaApiBaseUrl}api/SPTTahunanOP/GetDebtTotal"
+			) {
+				header("Authorization", apiToken)
+				url {
+					encodedParameters.append("hdId", hdId)
+				}
+				contentType(ContentType.Application.Json)
+			}
+		} catch (e: UnresolvedAddressException) {
+			return Result.Error(NetworkError.NO_INTERNET)
+		} catch (e: SerializationException) {
+			return Result.Error(NetworkError.SERIALIZATION)
+		}
+		
+		return when (response.status.value) {
+			200 -> {
+				val responseBody = response.body<Double>()
+				Result.Success(responseBody)
+			}
+			401 -> Result.Error(NetworkError.UNAUTHORIZED)
+			409 -> Result.Error(NetworkError.CONFLICT)
+			408 -> Result.Error(NetworkError.REQUEST_TIMEOUT)
+			413 -> Result.Error(NetworkError.PAYLOAD_TOO_LARGE)
+			in 500..599 -> Result.Error(NetworkError.SERVER_ERROR)
+			else -> Result.Error(NetworkError.UNKNOWN)
+		}
+	}
+	
+	suspend fun getDebtData(apiToken: String, hdId: String, debtTypeId: String? = null): Result<PagedListModel<FormDebtResponseApiModel>, NetworkError> {
+		val response = try {
+			httpClient.get (
+				urlString = "${Variables.PertamaApiBaseUrl}api/SPTTahunanOP/GetDebtData"
+			) {
+				header("Authorization", apiToken)
+				url {
+					encodedParameters.append("hdId", hdId)
+				}
+				if(!debtTypeId.isNullOrBlank()) {
+					url {encodedParameters.append("debtTypeId", debtTypeId)}
+				}
+				
+				contentType(ContentType.Application.Json)
+			}
+		} catch (e: UnresolvedAddressException) {
+			return Result.Error(NetworkError.NO_INTERNET)
+		} catch (e: SerializationException) {
+			return Result.Error(NetworkError.SERIALIZATION)
+		}
+		
+		return when (response.status.value) {
+			200 -> {
+				val responseBody = response.body<PagedListModel<FormDebtResponseApiModel>>()
+				Result.Success(responseBody)
+			}
+			401 -> Result.Error(NetworkError.UNAUTHORIZED)
+			409 -> Result.Error(NetworkError.CONFLICT)
+			408 -> Result.Error(NetworkError.REQUEST_TIMEOUT)
+			413 -> Result.Error(NetworkError.PAYLOAD_TOO_LARGE)
+			in 500..599 -> Result.Error(NetworkError.SERVER_ERROR)
+			else -> Result.Error(NetworkError.UNKNOWN)
+		}
+	}
+	
+	suspend fun getDebtDataById(apiToken: String, id: String): Result<FormDebtResponseApiModel, NetworkError> {
+		val response = try {
+			httpClient.get (
+				urlString = "${Variables.PertamaApiBaseUrl}api/SPTTahunanOP/GetDebtDataById"
+			) {
+				header("Authorization", apiToken)
+				url {
+					encodedParameters.append("id", id)
+				}
+				
+				contentType(ContentType.Application.Json)
+			}
+		} catch (e: UnresolvedAddressException) {
+			return Result.Error(NetworkError.NO_INTERNET)
+		} catch (e: SerializationException) {
+			return Result.Error(NetworkError.SERIALIZATION)
+		}
+		
+		return when (response.status.value) {
+			200 -> {
+				val responseBody = response.body<FormDebtResponseApiModel>()
+				Result.Success(responseBody)
+			}
+			401 -> Result.Error(NetworkError.UNAUTHORIZED)
+			409 -> Result.Error(NetworkError.CONFLICT)
+			408 -> Result.Error(NetworkError.REQUEST_TIMEOUT)
+			413 -> Result.Error(NetworkError.PAYLOAD_TOO_LARGE)
+			in 500..599 -> Result.Error(NetworkError.SERVER_ERROR)
+			else -> Result.Error(NetworkError.UNKNOWN)
+		}
+	}
+	
+	suspend fun getDebtType(apiToken: String): Result<PagedListModel<DebtTypeModel>, NetworkError> {
+		val response = try {
+			httpClient.get (
+				urlString = "${Variables.PertamaApiBaseUrl}api/SPTTahunanOP/GetDebtType"
+			) {
+				header("Authorization", apiToken)
+				
+				contentType(ContentType.Application.Json)
+			}
+		} catch (e: UnresolvedAddressException) {
+			return Result.Error(NetworkError.NO_INTERNET)
+		} catch (e: SerializationException) {
+			return Result.Error(NetworkError.SERIALIZATION)
+		}
+		
+		return when (response.status.value) {
+			200 -> {
+				val responseBody = response.body<PagedListModel<DebtTypeModel>>()
+				Result.Success(responseBody)
+			}
+			401 -> Result.Error(NetworkError.UNAUTHORIZED)
+			409 -> Result.Error(NetworkError.CONFLICT)
+			408 -> Result.Error(NetworkError.REQUEST_TIMEOUT)
+			413 -> Result.Error(NetworkError.PAYLOAD_TOO_LARGE)
+			in 500..599 -> Result.Error(NetworkError.SERVER_ERROR)
+			else -> Result.Error(NetworkError.UNKNOWN)
+		}
+	}
+	
+	suspend fun deleteDebt(apiToken: String, id: String): Result<PertamaGeneralApiResponse, NetworkError> {
+		val response = try {
+			httpClient.post  (
+				urlString = "${Variables.PertamaApiBaseUrl}api/SPTTahunanOP/DeleteDebt"
+			) {
+				header("Authorization", apiToken)
+				url {
+					encodedParameters.append("key", id)
+				}
+				contentType(ContentType.Application.Json)
+			}
+		} catch (e: UnresolvedAddressException) {
+			return Result.Error(NetworkError.NO_INTERNET)
+		} catch (e: SerializationException) {
+			return Result.Error(NetworkError.SERIALIZATION)
+		}
+		
+		return when (response.status.value) {
+			200 -> {
+				val body = response.body<PertamaGeneralApiResponse>()
+				Result.Success(body)
+			}
+			401 -> Result.Error(NetworkError.UNAUTHORIZED)
+			409 -> Result.Error(NetworkError.CONFLICT)
+			408 -> Result.Error(NetworkError.REQUEST_TIMEOUT)
+			413 -> Result.Error(NetworkError.PAYLOAD_TOO_LARGE)
+			in 500..599 -> Result.Error(NetworkError.SERVER_ERROR)
+			else -> Result.Error(NetworkError.UNKNOWN)
+		}
+	}
+	
+	suspend fun saveDebt(apiToken: String, request: FormDebtRequestApiModel) : Result<PertamaGeneralApiResponse, NetworkError> {
+		val response = try {
+			httpClient.post  (
+				urlString = "${Variables.PertamaApiBaseUrl}api/SPTTahunanOP/SaveDebt"
 			) {
 				header("Authorization", apiToken)
 				setBody(request)

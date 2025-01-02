@@ -28,6 +28,7 @@ import models.ReturnStatus
 import models.master.CityModel
 import models.master.CurrencyModel
 import models.master.CurrencyRateModel
+import models.master.DebtTypeModel
 import models.master.FamilyRelModel
 import models.master.InterestTypeModel
 import models.master.JobModel
@@ -36,6 +37,8 @@ import models.master.WealthTypeModel
 import models.transaction.AssetGroupResponseApiModel
 import models.transaction.Form1770HdRequestApiModel
 import models.transaction.Form1770HdResponseApiModel
+import models.transaction.FormDebtRequestApiModel
+import models.transaction.FormDebtResponseApiModel
 import models.transaction.FormDependentRequestApiModel
 import models.transaction.FormDependentResponseApiModel
 import models.transaction.FormIdentityRequestApiModel
@@ -529,6 +532,7 @@ class SPTManager(val prefs: DataStore<Preferences>, val client: Account, val spt
 		}
 	}
 	
+	//Wealth
 	suspend fun getWealthSummaryByType(scope: CoroutineScope, hdId: String) : List<AssetGroupResponseApiModel> {
 		var wealthList: List<AssetGroupResponseApiModel> = ArrayList()
 		
@@ -1033,6 +1037,152 @@ class SPTManager(val prefs: DataStore<Preferences>, val client: Account, val spt
 		return suspendCoroutine { cont ->
 			scope.launch {
 				sptPertamaClient.saveWealthL("Bearer $apiToken", body)
+					.onSuccess {
+						println(result.Message)
+						cont.resume(result)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(result)
+					}
+			}
+		}
+	}
+	
+	//Debt
+	suspend fun getDebtTotal(scope: CoroutineScope, hdId: String) : Double {
+		var total = 0.0
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Fail: Api token is null")
+			return total
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.getDebtTotal("Bearer $apiToken", hdId)
+					.onSuccess {
+						total = it
+						cont.resume(total)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(total)
+					}
+			}
+		}
+	}
+	
+	suspend fun getDebtData(scope: CoroutineScope, hdId: String, debtTypeId: String? = null): List<FormDebtResponseApiModel> {
+		var debtData: List<FormDebtResponseApiModel> = ArrayList()
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Fail: Api token is null")
+			return debtData
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.getDebtData("Bearer $apiToken", hdId, debtTypeId)
+					.onSuccess {
+						debtData = it.Items ?: listOf()
+						cont.resume(debtData)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(debtData)
+					}
+			}
+		}
+	}
+	
+	suspend fun getDebtDataById(scope: CoroutineScope, id: String): FormDebtResponseApiModel? {
+		var debtData: FormDebtResponseApiModel? = null
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Fail: Api token is null")
+			return debtData
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.getDebtDataById("Bearer $apiToken", id)
+					.onSuccess {
+						debtData = it
+						cont.resume(debtData)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(debtData)
+					}
+			}
+		}
+	}
+	
+	suspend fun getDebtTypeList(scope: CoroutineScope): List<DebtTypeModel>? {
+		var debtTypeList: List<DebtTypeModel>? = null
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Fail: Api token is null")
+			return debtTypeList
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.getDebtType("Bearer $apiToken")
+					.onSuccess {
+						debtTypeList = it.Items ?: listOf()
+						cont.resume(debtTypeList)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(debtTypeList)
+					}
+			}
+		}
+	}
+	
+	suspend fun deleteDebt(scope: CoroutineScope, id: String): ReturnStatus {
+		val result = ReturnStatus()
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Api token is null")
+			result.SetError("Api token is null")
+			return result
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.deleteDebt("Bearer $apiToken", id)
+					.onSuccess {
+						cont.resume(result)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(result)
+					}
+			}
+		}
+	}
+	
+	suspend fun saveDebt(scope: CoroutineScope, body: FormDebtRequestApiModel): ReturnStatus {
+		val result = ReturnStatus()
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Api token is null")
+			result.SetError("Api token is null")
+			return result
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.saveDebt("Bearer $apiToken", body)
 					.onSuccess {
 						println(result.Message)
 						cont.resume(result)

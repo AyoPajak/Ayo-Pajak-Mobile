@@ -127,7 +127,7 @@ class SummarySPTScreen(private val id: Int, val client: Account, val sptPertamaC
 		fun step(number: Int, title: String, status: Boolean = false) {
 			Row(
 				modifier = Modifier.fillMaxWidth().padding(16.dp)
-					.clickable(true, onClick = {
+					.clickable(completedStep + 1 >= number, onClick = {
 						when(number) {
 							1 -> {
 								navigator.push(SptStepOneScreen(sptHd, client, sptPertamaClient, prefs))
@@ -139,7 +139,7 @@ class SummarySPTScreen(private val id: Int, val client: Account, val sptPertamaC
 								navigator.push(SptStepThreeScreen(sptHd, client, sptPertamaClient, prefs))
 							}
 							4 -> {
-							
+								navigator.push(SptStepFourScreen(sptHd, client, sptPertamaClient, prefs))
 							}
 							5 -> {
 							
@@ -180,7 +180,7 @@ class SummarySPTScreen(private val id: Int, val client: Account, val sptPertamaC
 						.padding(end = 8.dp)
 						.size(32.dp)
 						.clip(CircleShape)
-						.background(Colors().brandDark5)
+						.background(if(completedStep + 1 >= number) Colors().brandDark5 else Colors().slate20)
 				) {
 					if(status) {
 						Image(
@@ -191,7 +191,7 @@ class SummarySPTScreen(private val id: Int, val client: Account, val sptPertamaC
 							text = "$number",
 							fontSize = 16.sp,
 							fontWeight = FontWeight.Bold,
-							color = Colors().brandDark40,
+							color = if(completedStep + 1 >= number) Colors().brandDark40 else Colors().textDarkGrey,
 							modifier = Modifier.align(Alignment.Center)
 						)
 					}
@@ -200,6 +200,7 @@ class SummarySPTScreen(private val id: Int, val client: Account, val sptPertamaC
 				Text (
 					text = title,
 					fontSize = 14.sp,
+					color = if(completedStep + 1 >= number) Colors().textBlack else Colors().textDarkGrey,
 					modifier = Modifier.weight(0.7f)
 				)
 				
