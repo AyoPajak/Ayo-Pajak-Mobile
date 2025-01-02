@@ -366,7 +366,7 @@ class SptStepOneScreen(val sptHd: Form1770HdResponseApiModel?, val client: Accou
 				item {
 					Column(
 						modifier = Modifier.padding(horizontal = 16.dp)
-					){
+					) {
 						Text(
 							text = "Jenis Kelamin",
 							fontSize = 12.sp,

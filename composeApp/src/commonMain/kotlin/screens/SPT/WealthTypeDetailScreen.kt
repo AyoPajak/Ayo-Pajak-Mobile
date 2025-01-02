@@ -172,7 +172,7 @@ class WealthTypeDetailScreen(
 							painterResource(Res.drawable.icon_edit_grey),
 							contentDescription = null,
 							modifier = Modifier.clickable(true, onClick = {
-								navigator.push(AssetFormScreen(id.toInt(), sptHd!!.Id, client, sptPertamaClient, prefs))
+								navigator.push(AssetFormScreen(id.toInt(), sptHd, client, sptPertamaClient, prefs))
 							})
 						)
 					}
@@ -276,7 +276,7 @@ class WealthTypeDetailScreen(
 							.clip(RoundedCornerShape(4.dp))
 							.border(1.dp, Colors().brandDark40, RoundedCornerShape(4.dp))
 							.clickable(true, onClick = {
-								navigator.push(AssetFormScreen(0, sptHd!!.Id, client, sptPertamaClient, prefs))
+								navigator.push(AssetFormScreen(0, sptHd, client, sptPertamaClient, prefs))
 							})
 					) {
 						Text(

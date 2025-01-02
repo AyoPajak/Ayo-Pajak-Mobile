@@ -1,46 +1,38 @@
 package SPT
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import global.JobName
 import global.KluCode
-import global.PreferencesKey
 import global.PreferencesKey.Companion.PertamaUserApiToken
 import global.PreferencesKey.Companion.UserApiKey
 import global.PreferencesKey.Companion.UserApiSecret
 import global.QueryKeyword
 import global.TaxStatus
-import global.Variables
 import http.Account
 import http.Interfaces
-import io.ktor.util.reflect.Type
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
-import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
 import models.ApiODataQueryModel
 import models.ODataFilterType
 import models.ODataQueryOrderDirection
 import models.PertamaGeneralApiResponse
 import models.ReturnStatus
 import models.master.CityModel
+import models.master.CurrencyModel
+import models.master.CurrencyRateModel
 import models.master.FamilyRelModel
+import models.master.InterestTypeModel
 import models.master.JobModel
 import models.master.KluModel
+import models.master.WealthTypeModel
 import models.transaction.AssetGroupResponseApiModel
 import models.transaction.Form1770HdRequestApiModel
 import models.transaction.Form1770HdResponseApiModel
@@ -48,6 +40,18 @@ import models.transaction.FormDependentRequestApiModel
 import models.transaction.FormDependentResponseApiModel
 import models.transaction.FormIdentityRequestApiModel
 import models.transaction.FormIdentityResponseApiModel
+import models.transaction.FormWealthARequestApiModel
+import models.transaction.FormWealthBRequestApiModel
+import models.transaction.FormWealthCRequestApiModel
+import models.transaction.FormWealthDRequestApiModel
+import models.transaction.FormWealthERequestApiModel
+import models.transaction.FormWealthFRequestApiModel
+import models.transaction.FormWealthGRequestApiModel
+import models.transaction.FormWealthHRequestApiModel
+import models.transaction.FormWealthIRequestApiModel
+import models.transaction.FormWealthJRequestApiModel
+import models.transaction.FormWealthKRequestApiModel
+import models.transaction.FormWealthLRequestApiModel
 import models.transaction.FormWealthResponseApiModel
 import util.onError
 import util.onSuccess
@@ -350,6 +354,7 @@ class SPTManager(val prefs: DataStore<Preferences>, val client: Account, val spt
 					}
 					.onError {
 						println(it.name)
+						cont.resume(result)
 					}
 			}
 		}
@@ -373,6 +378,7 @@ class SPTManager(val prefs: DataStore<Preferences>, val client: Account, val spt
 					}
 					.onError {
 						println(it.name)
+						cont.resume(result)
 					}
 			}
 		}
@@ -397,13 +403,14 @@ class SPTManager(val prefs: DataStore<Preferences>, val client: Account, val spt
 					}
 					.onError {
 						println(it.name)
+						cont.resume(dependentList)
 					}
 			}
 		}
 	}
 	
 	suspend fun getDependentById(scope: CoroutineScope, id: Int) : FormDependentResponseApiModel? {
-		var data: FormDependentResponseApiModel?
+		var data: FormDependentResponseApiModel? = null
 		val apiToken = getUserApiToken(scope, true)
 		if (apiToken.isBlank()) {
 			println("Api token is null")
@@ -419,6 +426,7 @@ class SPTManager(val prefs: DataStore<Preferences>, val client: Account, val spt
 					}
 					.onError {
 						println(it.name)
+						cont.resume(data)
 					}
 			}
 		}
@@ -442,6 +450,7 @@ class SPTManager(val prefs: DataStore<Preferences>, val client: Account, val spt
 					}
 					.onError {
 						println(it.name)
+						cont.resume(familyRelList)
 					}
 			}
 		}
@@ -466,6 +475,7 @@ class SPTManager(val prefs: DataStore<Preferences>, val client: Account, val spt
 					}
 					.onError {
 						println(it.name)
+						cont.resume(result)
 					}
 			}
 		}
@@ -489,6 +499,7 @@ class SPTManager(val prefs: DataStore<Preferences>, val client: Account, val spt
 					}
 					.onError {
 						println(it.name)
+						cont.resume(result)
 					}
 			}
 		}
@@ -512,6 +523,7 @@ class SPTManager(val prefs: DataStore<Preferences>, val client: Account, val spt
 					}
 					.onError {
 						println(it.name)
+						cont.resume(result)
 					}
 			}
 		}
@@ -535,6 +547,7 @@ class SPTManager(val prefs: DataStore<Preferences>, val client: Account, val spt
 					}
 					.onError {
 						println(it.name)
+						cont.resume(wealthList)
 					}
 			}
 		}
@@ -558,6 +571,7 @@ class SPTManager(val prefs: DataStore<Preferences>, val client: Account, val spt
 					}
 					.onError {
 						println(it.name)
+						cont.resume(total)
 					}
 			}
 		}
@@ -581,6 +595,7 @@ class SPTManager(val prefs: DataStore<Preferences>, val client: Account, val spt
 					}
 					.onError {
 						println(it.name)
+						cont.resume(wealthData)
 					}
 			}
 		}
@@ -604,6 +619,427 @@ class SPTManager(val prefs: DataStore<Preferences>, val client: Account, val spt
 					}
 					.onError {
 						println(it.name)
+						cont.resume(wealthData)
+					}
+			}
+		}
+	}
+	
+	suspend fun getWealthTypeList(scope: CoroutineScope): List<WealthTypeModel>? {
+		var wealthTypeList: List<WealthTypeModel>? = null
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Fail: Api token is null")
+			return wealthTypeList
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.getWealthType("Bearer $apiToken")
+					.onSuccess {
+						wealthTypeList = it.Items ?: listOf()
+						cont.resume(wealthTypeList)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(wealthTypeList)
+					}
+			}
+		}
+	}
+	
+	suspend fun getCurrencyList(scope: CoroutineScope): List<CurrencyModel>? {
+		var currencyList: List<CurrencyModel>? = null
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Fail: Api token is null")
+			return currencyList
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.getCurrency("Bearer $apiToken")
+					.onSuccess {
+						currencyList = it.Items ?: listOf()
+						cont.resume(currencyList)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(currencyList)
+					}
+			}
+		}
+	}
+	
+	suspend fun deleteWealth(scope: CoroutineScope, id: String): ReturnStatus {
+		val result = ReturnStatus()
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Api token is null")
+			result.SetError("Api token is null")
+			return result
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.deleteWealth("Bearer $apiToken", id)
+					.onSuccess {
+						cont.resume(result)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(result)
+					}
+			}
+		}
+	}
+	
+	suspend fun getCurrencyRate(scope: CoroutineScope, year: String): List<CurrencyRateModel>? {
+		var currencyRateList: List<CurrencyRateModel>? = null
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Fail: Api token is null")
+			return currencyRateList
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.getCurrencyRateByYear("Bearer $apiToken", year)
+					.onSuccess {
+						currencyRateList = it.Items ?: listOf()
+						cont.resume(currencyRateList)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(currencyRateList)
+					}
+			}
+		}
+	}
+	
+	suspend fun getInterestTypeList(scope: CoroutineScope): List<InterestTypeModel>? {
+		var interestTypeList: List<InterestTypeModel>? = null
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Fail: Api token is null")
+			return interestTypeList
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.getInterestType("Bearer $apiToken")
+					.onSuccess {
+						interestTypeList = it.Items ?: listOf()
+						cont.resume(interestTypeList)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(interestTypeList)
+					}
+			}
+		}
+	}
+	
+	suspend fun saveWealthA(scope: CoroutineScope, body: FormWealthARequestApiModel): ReturnStatus {
+		val result = ReturnStatus()
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Api token is null")
+			result.SetError("Api token is null")
+			return result
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.saveWealthA("Bearer $apiToken", body)
+					.onSuccess {
+						println(result.Message)
+						cont.resume(result)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(result)
+					}
+			}
+		}
+	}
+	
+	suspend fun saveWealthB(scope: CoroutineScope, body: FormWealthBRequestApiModel): ReturnStatus {
+		val result = ReturnStatus()
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Api token is null")
+			result.SetError("Api token is null")
+			return result
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.saveWealthB("Bearer $apiToken", body)
+					.onSuccess {
+						println(result.Message)
+						cont.resume(result)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(result)
+					}
+			}
+		}
+	}
+	
+	suspend fun saveWealthC(scope: CoroutineScope, body: FormWealthCRequestApiModel): ReturnStatus {
+		val result = ReturnStatus()
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Api token is null")
+			result.SetError("Api token is null")
+			return result
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.saveWealthC("Bearer $apiToken", body)
+					.onSuccess {
+						println(result.Message)
+						cont.resume(result)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(result)
+					}
+			}
+		}
+	}
+	
+	suspend fun saveWealthD(scope: CoroutineScope, body: FormWealthDRequestApiModel): ReturnStatus {
+		val result = ReturnStatus()
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Api token is null")
+			result.SetError("Api token is null")
+			return result
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.saveWealthD("Bearer $apiToken", body)
+					.onSuccess {
+						println(result.Message)
+						cont.resume(result)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(result)
+					}
+			}
+		}
+	}
+	
+	suspend fun saveWealthE(scope: CoroutineScope, body: FormWealthERequestApiModel): ReturnStatus {
+		val result = ReturnStatus()
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Api token is null")
+			result.SetError("Api token is null")
+			return result
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.saveWealthE("Bearer $apiToken", body)
+					.onSuccess {
+						println(result.Message)
+						cont.resume(result)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(result)
+					}
+			}
+		}
+	}
+	
+	suspend fun saveWealthF(scope: CoroutineScope, body: FormWealthFRequestApiModel): ReturnStatus {
+		val result = ReturnStatus()
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Api token is null")
+			result.SetError("Api token is null")
+			return result
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.saveWealthF("Bearer $apiToken", body)
+					.onSuccess {
+						println(result.Message)
+						cont.resume(result)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(result)
+					}
+			}
+		}
+	}
+	
+	suspend fun saveWealthG(scope: CoroutineScope, body: FormWealthGRequestApiModel): ReturnStatus {
+		val result = ReturnStatus()
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Api token is null")
+			result.SetError("Api token is null")
+			return result
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.saveWealthG("Bearer $apiToken", body)
+					.onSuccess {
+						println(result.Message)
+						cont.resume(result)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(result)
+					}
+			}
+		}
+	}
+	
+	suspend fun saveWealthH(scope: CoroutineScope, body: FormWealthHRequestApiModel): ReturnStatus {
+		val result = ReturnStatus()
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Api token is null")
+			result.SetError("Api token is null")
+			return result
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.saveWealthH("Bearer $apiToken", body)
+					.onSuccess {
+						println(result.Message)
+						cont.resume(result)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(result)
+					}
+			}
+		}
+	}
+	
+	suspend fun saveWealthI(scope: CoroutineScope, body: FormWealthIRequestApiModel): ReturnStatus {
+		val result = ReturnStatus()
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Api token is null")
+			result.SetError("Api token is null")
+			return result
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.saveWealthI("Bearer $apiToken", body)
+					.onSuccess {
+						println(result.Message)
+						cont.resume(result)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(result)
+					}
+			}
+		}
+	}
+	
+	suspend fun saveWealthJ(scope: CoroutineScope, body: FormWealthJRequestApiModel): ReturnStatus {
+		val result = ReturnStatus()
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Api token is null")
+			result.SetError("Api token is null")
+			return result
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.saveWealthJ("Bearer $apiToken", body)
+					.onSuccess {
+						println(result.Message)
+						cont.resume(result)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(result)
+					}
+			}
+		}
+	}
+	
+	suspend fun saveWealthK(scope: CoroutineScope, body: FormWealthKRequestApiModel): ReturnStatus {
+		val result = ReturnStatus()
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Api token is null")
+			result.SetError("Api token is null")
+			return result
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.saveWealthK("Bearer $apiToken", body)
+					.onSuccess {
+						println(result.Message)
+						cont.resume(result)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(result)
+					}
+			}
+		}
+	}
+	
+	suspend fun saveWealthL(scope: CoroutineScope, body: FormWealthLRequestApiModel): ReturnStatus {
+		val result = ReturnStatus()
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Api token is null")
+			result.SetError("Api token is null")
+			return result
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.saveWealthL("Bearer $apiToken", body)
+					.onSuccess {
+						println(result.Message)
+						cont.resume(result)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(result)
 					}
 			}
 		}

@@ -74,6 +74,7 @@ import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.minus
 import kotlinx.datetime.toLocalDate
+import models.master.CurrencyModel
 import models.master.FamilyRelModel
 import models.master.JobModel
 import models.transaction.Form1770HdResponseApiModel
@@ -121,6 +122,7 @@ class DependentFormScreen(val id: Int, val sptHd: Form1770HdResponseApiModel?, v
 		
 		var familyRelList by remember { mutableStateOf<List<FamilyRelModel>>(emptyList()) }
 		var jobList by remember { mutableStateOf<List<JobModel>>(emptyList()) }
+		
 		var selectedJob by remember { mutableStateOf("") }
 		var selectedFamilyRel by remember { mutableStateOf("") }
 		
@@ -189,24 +191,26 @@ class DependentFormScreen(val id: Int, val sptHd: Form1770HdResponseApiModel?, v
 							)
 						}
 						
-						Text(
-							text = if(id == 0) "Tambah Tanggungan" else "Edit Tanggungan",
-							fontWeight = FontWeight.Bold,
-							fontSize = 16.sp,
-							color = Colors().textBlack,
-							modifier = Modifier.align(Alignment.CenterVertically).padding(end = 120.dp)
-						)
-						
-						if(id != 0){
-							Image(
-								painter = painterResource(Res.drawable.icon_tripledot_black),
-								null,
-								modifier = Modifier
-									.padding(end = 16.dp)
-									.clickable(true, onClick = {
-										showDeletePopup = true
-									})
+						Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+							Text(
+								text = if (id == 0) "Tambah Tanggungan" else "Edit Tanggungan",
+								fontWeight = FontWeight.Bold,
+								fontSize = 16.sp,
+								color = Colors().textBlack,
+								modifier = Modifier.align(Alignment.CenterVertically)
 							)
+							
+							if (id != 0) {
+								Image(
+									painter = painterResource(Res.drawable.icon_tripledot_black),
+									null,
+									modifier = Modifier
+										.padding(end = 16.dp)
+										.clickable(true, onClick = {
+											showDeletePopup = true
+										})
+								)
+							}
 						}
 					}
 				}
@@ -598,8 +602,6 @@ class DependentFormScreen(val id: Int, val sptHd: Form1770HdResponseApiModel?, v
 		
 		//Date Picker Popup
 		popUpBox(
-			popupWidth = 300f,
-			popupHeight = 200f,
 			showPopup = showDatePicker,
 			onClickOutside = { showDatePicker = false },
 			content = {
@@ -634,7 +636,7 @@ class DependentFormScreen(val id: Int, val sptHd: Form1770HdResponseApiModel?, v
 					modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 12.dp)
 				) {
 					Text(
-						text = "Pekerjaan Wajib Pajak",
+						text = "Pekerjaan Tanggungan",
 						fontSize = 12.sp,
 						color = Colors().textBlack,
 						fontWeight = FontWeight.Bold,

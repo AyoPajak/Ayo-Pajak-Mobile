@@ -224,7 +224,7 @@ class SptStepThreeScreen(val sptHd: Form1770HdResponseApiModel?, val client: Acc
 							.clip(RoundedCornerShape(4.dp))
 							.border(1.dp, Colors().brandDark40, RoundedCornerShape(4.dp))
 							.clickable(true, onClick = {
-								navigator.push(AssetFormScreen(0, sptHd!!.Id, client, sptPertamaClient, prefs))
+								navigator.push(AssetFormScreen(0, sptHd, client, sptPertamaClient, prefs))
 							})
 					) {
 						Text(
