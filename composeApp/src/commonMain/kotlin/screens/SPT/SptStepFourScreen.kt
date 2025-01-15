@@ -193,7 +193,7 @@ class SptStepFourScreen(val sptHd: Form1770HdResponseApiModel?, val client: Acco
 					}
 				}
 				
-				//New Asset
+				//New Debt
 				item {
 					Box(
 						modifier = Modifier.padding(horizontal = 16.dp).padding(bottom = 24.dp)
@@ -232,7 +232,7 @@ class SptStepFourScreen(val sptHd: Form1770HdResponseApiModel?, val client: Acco
 					}
 				}
 				
-				//List Wealth by Type
+				//List Debt by Type
 				debtListByType.forEach {
 					item {
 						debtCard(it.DebtType.DebtTypeName, it.DebtYear, it.Outstanding_IDR, it.Id)

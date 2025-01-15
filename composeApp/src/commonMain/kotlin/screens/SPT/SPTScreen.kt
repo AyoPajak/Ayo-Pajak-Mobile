@@ -298,7 +298,7 @@ class SPTScreen(val client: Account, val sptPertamaClient: Interfaces, val prefs
 					verticalAlignment = Alignment.CenterVertically
 				) {
 					Text(
-						text = "SPT $year - $pembetulan",
+						text = if(pembetulan == "0") "SPT $year - normal" else "SPT $year - $pembetulan",
 						fontSize = 14.sp,
 						color = Color.Black,
 						fontWeight = FontWeight.Bold

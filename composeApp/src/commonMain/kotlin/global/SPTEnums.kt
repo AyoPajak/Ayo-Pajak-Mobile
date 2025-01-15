@@ -303,28 +303,40 @@ enum class FinalIncomeType(val value: Int) : IBaseEnum {
 	
 	override var resourceSuffix: String = "final_income_"
 	
-//	override fun toString(): String {
-//		val applicationContext: Context = TaxpediaApplication.applicationContext()
-//
-//		return applicationContext.resources.getString(applicationContext.resources.getIdentifier("${resourceSuffix}${this.value}", "string", applicationContext.packageName))
-//	}
-//
-//	companion object: IBaseEnumAdapter<Int>
-//	{
-//		override fun toSpinnerAdapterList(): Map<Int, String>
-//		{
-//			return values().associate {
-//				it.value to it.toString()
-//			}
-//		}
-//
-//		override fun toAutoCompleteAdapterList(): List<AutoCompleteTextViewItemViewModel<Int>>
-//		{
-//			return values().map {
-//				AutoCompleteTextViewItemViewModel(it.value, it.toString())
-//			}
-//		}
-//	}
+	companion object {
+		// Method to get the enum name by its value
+		fun fromValue(value: Int): String? {
+			when (value) {
+				10 -> { return "Bunga Deposito, Tabungan, Diskonto SBI, Surat Berharga Negara" }
+				20 -> { return "Bunga/Diskonto Obligasi" }
+				30 -> { return "Penjualan Saham di Bursa Efek" }
+				40 -> { return "Hadiah Undian" }
+				50 -> { return "Pesangon, Tunjangan Hari Tua, dan Tebusan Pensiun"}
+				60 -> { return "Honorarium Atas Beban APBN/APBD" }
+				70 -> { return "Pengalihan Hak Atas Tanah dan/atau Bangunan" }
+				80 -> { return "Bangunan Guna Serah" }
+				90 -> { return "Sewa Atas Tanah dan/atau Bangunan" }
+				100 -> { return "Usaha Jasa Konstruksi" }
+				110 -> { return "Penyalur / Dealer / Agen Produk BBM" }
+				120 -> { return "Bunga Koperasi" }
+				140 -> { return "Dividen"}
+				150 -> { return "Penghasilan Isteri Bekerja" }
+				160 -> { return "Penghasilan Lain" }
+				else -> { return null }
+			}
+		}
+		
+		fun formTypeFromValue(value: Int): String? {
+			when (value) {
+				10, 20, 30, 80, 120, 140 -> { return "A" }
+				40, 50, 60, 100, 110, 150 -> { return "B" }
+				70 -> { return "C" }
+				160 -> { return "D" }
+				90 -> { return "E" }
+				else -> { return null }
+			}
+		}
+	}
 }
 
 enum class NonTaxedIncomeType(val value: Int) : IBaseEnum {

@@ -35,12 +35,21 @@ import models.master.JobModel
 import models.master.KluModel
 import models.master.WealthTypeModel
 import models.transaction.AssetGroupResponseApiModel
+import models.transaction.Form1770FinalIncomeUmkm2023BusinessRequestModel
+import models.transaction.Form1770FinalIncomeUmkm2023ResponseApiModel
+import models.transaction.Form1770FinalIncomeUmkm2023SummaryRequestModel
 import models.transaction.Form1770HdRequestApiModel
 import models.transaction.Form1770HdResponseApiModel
 import models.transaction.FormDebtRequestApiModel
 import models.transaction.FormDebtResponseApiModel
 import models.transaction.FormDependentRequestApiModel
 import models.transaction.FormDependentResponseApiModel
+import models.transaction.FormFinalIncomeARequestApiModel
+import models.transaction.FormFinalIncomeBRequestApiModel
+import models.transaction.FormFinalIncomeCRequestApiModel
+import models.transaction.FormFinalIncomeDRequestApiModel
+import models.transaction.FormFinalIncomeERequestApiModel
+import models.transaction.FormFinalIncomeResponseApiModel
 import models.transaction.FormIdentityRequestApiModel
 import models.transaction.FormIdentityResponseApiModel
 import models.transaction.FormWealthARequestApiModel
@@ -56,6 +65,7 @@ import models.transaction.FormWealthJRequestApiModel
 import models.transaction.FormWealthKRequestApiModel
 import models.transaction.FormWealthLRequestApiModel
 import models.transaction.FormWealthResponseApiModel
+import models.transaction.SPTSummaryResponseApiModel
 import util.onError
 import util.onSuccess
 import kotlin.coroutines.resume
@@ -332,7 +342,10 @@ class SPTManager(val prefs: DataStore<Preferences>, val client: Account, val spt
 	
 	fun getJobKluMap() : Map<JobName, List<String>> {
 		val jobKluMap: HashMap<JobName, List<String>> = hashMapOf()
-		jobKluMap[JobName.Pegawai] = listOf(KluCode.PNS.value, KluCode.PegawaiBUMN.value, KluCode.PegawaiSwasta.value, KluCode.Pensiunan.value)
+		jobKluMap[JobName.Pegawai] = listOf(KluCode.PNS.value,
+			KluCode.PegawaiBUMN.value,
+			KluCode.PegawaiSwasta.value,
+			KluCode.Pensiunan.value)
 		jobKluMap[JobName.Mahasiswa] = listOf(KluCode.JasaPeroranganLainnya.value)
 		jobKluMap[JobName.Pelajar] = listOf(KluCode.JasaPeroranganLainnya.value)
 		
@@ -1183,6 +1196,301 @@ class SPTManager(val prefs: DataStore<Preferences>, val client: Account, val spt
 		return suspendCoroutine { cont ->
 			scope.launch {
 				sptPertamaClient.saveDebt("Bearer $apiToken", body)
+					.onSuccess {
+						println(result.Message)
+						cont.resume(result)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(result)
+					}
+			}
+		}
+	}
+	
+	//Final Income
+	suspend fun getFinalIncomeData(scope: CoroutineScope, hdId: String, incomeTypeE: String? = null): List<FormFinalIncomeResponseApiModel> {
+		var finalIncomeData: List<FormFinalIncomeResponseApiModel> = ArrayList()
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Fail: Api token is null")
+			return finalIncomeData
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.getFinalIncomeData("Bearer $apiToken", hdId, incomeTypeE)
+					.onSuccess {
+						finalIncomeData = it.Items ?: listOf()
+						cont.resume(finalIncomeData)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(finalIncomeData)
+					}
+			}
+		}
+	}
+	
+	suspend fun getSPTIncomeSummary(scope: CoroutineScope, hdId: String, incomeGroupE: String, incomeTypeE: String): SPTSummaryResponseApiModel? {
+		var sptIncomeSummary: SPTSummaryResponseApiModel? = null
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Fail: Api token is null")
+			return sptIncomeSummary
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.getSPTIncomeSummary("Bearer $apiToken", hdId, incomeGroupE, incomeTypeE)
+					.onSuccess {
+						sptIncomeSummary = it
+						cont.resume(sptIncomeSummary)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(sptIncomeSummary)
+					}
+			}
+		}
+	}
+	
+	suspend fun getFinalIncomeDataById(scope: CoroutineScope, id: String): FormFinalIncomeResponseApiModel? {
+		var finalIncomeData: FormFinalIncomeResponseApiModel? = null
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Fail: Api token is null")
+			return finalIncomeData
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.getFinalIncomeDataById("Bearer $apiToken", id)
+					.onSuccess {
+						finalIncomeData = it
+						cont.resume(finalIncomeData)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(finalIncomeData)
+					}
+			}
+		}
+	}
+	
+	suspend fun deleteIncome(scope: CoroutineScope, id: String): ReturnStatus {
+		val result = ReturnStatus()
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Api token is null")
+			result.SetError("Api token is null")
+			return result
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.deleteIncome("Bearer $apiToken", id)
+					.onSuccess {
+						cont.resume(result)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(result)
+					}
+			}
+		}
+	}
+	
+	suspend fun saveFinalIncomeA(scope: CoroutineScope, body: FormFinalIncomeARequestApiModel): ReturnStatus {
+		val result = ReturnStatus()
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Api token is null")
+			result.SetError("Api token is null")
+			return result
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.saveFinalIncomeA("Bearer $apiToken", body)
+					.onSuccess {
+						println(result.Message)
+						cont.resume(result)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(result)
+					}
+			}
+		}
+	}
+	
+	suspend fun saveFinalIncomeB(scope: CoroutineScope, body: FormFinalIncomeBRequestApiModel): ReturnStatus {
+		val result = ReturnStatus()
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Api token is null")
+			result.SetError("Api token is null")
+			return result
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.saveFinalIncomeB("Bearer $apiToken", body)
+					.onSuccess {
+						println(result.Message)
+						cont.resume(result)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(result)
+					}
+			}
+		}
+	}
+	
+	suspend fun saveFinalIncomeC(scope: CoroutineScope, body: FormFinalIncomeCRequestApiModel): ReturnStatus {
+		val result = ReturnStatus()
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Api token is null")
+			result.SetError("Api token is null")
+			return result
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.saveFinalIncomeC("Bearer $apiToken", body)
+					.onSuccess {
+						println(result.Message)
+						cont.resume(result)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(result)
+					}
+			}
+		}
+	}
+	
+	suspend fun saveFinalIncomeD(scope: CoroutineScope, body: FormFinalIncomeDRequestApiModel): ReturnStatus {
+		val result = ReturnStatus()
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Api token is null")
+			result.SetError("Api token is null")
+			return result
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.saveFinalIncomeD("Bearer $apiToken", body)
+					.onSuccess {
+						println(result.Message)
+						cont.resume(result)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(result)
+					}
+			}
+		}
+	}
+	
+	suspend fun saveFinalIncomeE(scope: CoroutineScope, body: FormFinalIncomeERequestApiModel): ReturnStatus {
+		val result = ReturnStatus()
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Api token is null")
+			result.SetError("Api token is null")
+			return result
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.saveFinalIncomeE("Bearer $apiToken", body)
+					.onSuccess {
+						println(result.Message)
+						cont.resume(result)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(result)
+					}
+			}
+		}
+	}
+	
+	//UMKM
+	suspend fun saveFinalIncomeUmkm2023Business(scope: CoroutineScope, body: Form1770FinalIncomeUmkm2023BusinessRequestModel): ReturnStatus {
+		val result = ReturnStatus()
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Api token is null")
+			result.SetError("Api token is null")
+			return result
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.saveFinalIncomeUmkm2023Business("Bearer $apiToken", body)
+					.onSuccess {
+						println(result.Message)
+						cont.resume(result)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(result)
+					}
+			}
+		}
+	}
+	suspend fun getFinalIncomeUMKMByHdId(scope: CoroutineScope, id: String): Form1770FinalIncomeUmkm2023ResponseApiModel? {
+		var finalIncomeData: Form1770FinalIncomeUmkm2023ResponseApiModel? = null
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Fail: Api token is null")
+			return finalIncomeData
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.getFinalIncomeUMKMByHdId("Bearer $apiToken", id)
+					.onSuccess {
+						finalIncomeData = it
+						cont.resume(finalIncomeData)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(finalIncomeData)
+					}
+			}
+		}
+	}
+	suspend fun saveFinalIncomeUmkm2023Summary(scope: CoroutineScope, body: Form1770FinalIncomeUmkm2023SummaryRequestModel): ReturnStatus {
+		val result = ReturnStatus()
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Api token is null")
+			result.SetError("Api token is null")
+			return result
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.saveFinalIncomeUmkm2023Summary("Bearer $apiToken", body)
 					.onSuccess {
 						println(result.Message)
 						cont.resume(result)

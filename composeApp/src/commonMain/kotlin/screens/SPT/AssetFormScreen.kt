@@ -166,7 +166,7 @@ class AssetFormScreen(val id: Int, val sptHd: Form1770HdResponseApiModel?, val c
 		var isARO by remember { mutableStateOf(false) }
 		var bilyetNo by remember { mutableStateOf("") }
 		
-		var interestTypeId by remember { mutableStateOf(0) }
+		var interestTypeId by remember { mutableStateOf<Int?>(null) }
 		var debitorName by remember { mutableStateOf("") }
 		var relation by remember { mutableStateOf("") }
 		var debitorAddress by remember { mutableStateOf("") }
@@ -297,7 +297,7 @@ class AssetFormScreen(val id: Int, val sptHd: Form1770HdResponseApiModel?, val c
 							interestRatePerc = BigDeciToString(oldAssetData.InterestRatePerc.toString())
 							dueDate = oldAssetData.DueDate ?: ""
 							
-							interestTypeId = oldAssetData.InterestType!!.Id
+							interestTypeId = oldAssetData.InterestType?.Id
 							debitorName = oldAssetData.DebitorName ?: ""
 							relation = oldAssetData.Relation ?: ""
 							debitorAddress = oldAssetData.DebitorAddress ?: ""
@@ -2624,7 +2624,7 @@ class AssetFormScreen(val id: Int, val sptHd: Form1770HdResponseApiModel?, val c
 										StartDate = startDate.ifBlank { null },
 										InterestRatePerc = interestRatePerc.ifBlank { null }?.toLong(),
 										DueDate = dueDate.ifBlank { null },
-										InterestTypeId = interestTypeId,
+										InterestTypeId = interestTypeId ?: 0,
 										DebitorName = debitorName.ifBlank { null },
 										Relation = relation.ifBlank { null },
 										DebitorAddress = debitorAddress.ifBlank { null },

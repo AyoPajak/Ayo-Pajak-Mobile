@@ -28,6 +28,8 @@ class Colors {
     val brandDark100 = Color(0xFF151b56)
     
     val redMain50 = Color(0xFFEA3D5B)
+    
+    val greenMain50 = Color(0xFF00C48F)
 
     val slate5 = Color(0xFFFFFFFF)
     val slate10 = Color(0xFFF8F9FA)
