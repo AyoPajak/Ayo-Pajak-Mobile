@@ -1261,7 +1261,7 @@ class FinalIncomeUMKMFormScreen(val id: Int, val formData: Form1770FinalIncomeUm
 							.clickable(true, onClick = {
 								scope.launch{
 									isReady = false
-//									sptManager.deleteIncome(scope, id.toString())
+									sptManager.deleteFinalIncomeUmkm2023Business(scope, id.toString())
 									navigator.pop()
 								}
 							})

@@ -1455,6 +1455,7 @@ class SPTManager(val prefs: DataStore<Preferences>, val client: Account, val spt
 			}
 		}
 	}
+	
 	suspend fun getFinalIncomeUMKMByHdId(scope: CoroutineScope, id: String): Form1770FinalIncomeUmkm2023ResponseApiModel? {
 		var finalIncomeData: Form1770FinalIncomeUmkm2023ResponseApiModel? = null
 		
@@ -1478,6 +1479,7 @@ class SPTManager(val prefs: DataStore<Preferences>, val client: Account, val spt
 			}
 		}
 	}
+	
 	suspend fun saveFinalIncomeUmkm2023Summary(scope: CoroutineScope, body: Form1770FinalIncomeUmkm2023SummaryRequestModel): ReturnStatus {
 		val result = ReturnStatus()
 		
@@ -1493,6 +1495,30 @@ class SPTManager(val prefs: DataStore<Preferences>, val client: Account, val spt
 				sptPertamaClient.saveFinalIncomeUmkm2023Summary("Bearer $apiToken", body)
 					.onSuccess {
 						println(result.Message)
+						cont.resume(result)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(result)
+					}
+			}
+		}
+	}
+	
+	suspend fun deleteFinalIncomeUmkm2023Business(scope: CoroutineScope, id: String): ReturnStatus {
+		val result = ReturnStatus()
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Api token is null")
+			result.SetError("Api token is null")
+			return result
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.deleteFinalIncomeUmkm2023Business("Bearer $apiToken", id)
+					.onSuccess {
 						cont.resume(result)
 					}
 					.onError {

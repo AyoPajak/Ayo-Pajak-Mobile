@@ -145,7 +145,7 @@ class SummarySPTScreen(private val id: Int, val client: Account, val sptPertamaC
 								navigator.push(SptStepFiveScreen(sptHd, client, sptPertamaClient, prefs))
 							}
 							6 -> {
-							
+								navigator.push(SptStepSixScreen(sptHd, client, sptPertamaClient, prefs))
 							}
 							7 -> {
 							
@@ -325,7 +325,7 @@ class SummarySPTScreen(private val id: Int, val client: Account, val sptPertamaC
 								horizontalArrangement = Arrangement.SpaceBetween
 							) {
 								LinearProgressIndicator(
-									progress = completedStep.toFloat() / 14,
+									progress = completedStep.toFloat() / if(sptHd!!.SPTType == "1770S") 14 else 16,
 									color = Colors().brandDark50,
 									backgroundColor = Colors().slate20,
 									modifier = Modifier.height(24.dp).clip(RoundedCornerShape(16.dp)),
@@ -342,7 +342,7 @@ class SummarySPTScreen(private val id: Int, val client: Account, val sptPertamaC
 										fontWeight = FontWeight.Bold
 									)
 									Text(
-										text = "/14",
+										text = if(sptHd!!.SPTType == "1770S") "/14" else "/16",
 										fontSize = 10.sp,
 									)
 								}
