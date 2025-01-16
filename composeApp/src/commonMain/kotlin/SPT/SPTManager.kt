@@ -52,6 +52,7 @@ import models.transaction.FormFinalIncomeERequestApiModel
 import models.transaction.FormFinalIncomeResponseApiModel
 import models.transaction.FormIdentityRequestApiModel
 import models.transaction.FormIdentityResponseApiModel
+import models.transaction.FormNonTaxedIncomeResponseApiModel
 import models.transaction.FormWealthARequestApiModel
 import models.transaction.FormWealthBRequestApiModel
 import models.transaction.FormWealthCRequestApiModel
@@ -1524,6 +1525,55 @@ class SPTManager(val prefs: DataStore<Preferences>, val client: Account, val spt
 					.onError {
 						println(it.name)
 						cont.resume(result)
+					}
+			}
+		}
+	}
+	
+	//Non Taxed Income
+	suspend fun getNonTaxedIncomeData(scope: CoroutineScope, hdId: String, incomeTypeE: String? = null): List<FormNonTaxedIncomeResponseApiModel> {
+		var nonTaxedIncomeData: List<FormNonTaxedIncomeResponseApiModel> = ArrayList()
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Fail: Api token is null")
+			return nonTaxedIncomeData
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.getNonTaxedIncomeData("Bearer $apiToken", hdId, incomeTypeE)
+					.onSuccess {
+						nonTaxedIncomeData = it.Items ?: listOf()
+						cont.resume(nonTaxedIncomeData)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(nonTaxedIncomeData)
+					}
+			}
+		}
+	}
+	
+	suspend fun getNonTaxedIncomeDataById(scope: CoroutineScope, id: String): FormNonTaxedIncomeResponseApiModel? {
+		var nonTaxedIncomeData: FormNonTaxedIncomeResponseApiModel? = null
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Fail: Api token is null")
+			return nonTaxedIncomeData
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.getNonTaxedIncomeDataById("Bearer $apiToken", id)
+					.onSuccess {
+						nonTaxedIncomeData = it
+						cont.resume(nonTaxedIncomeData)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(nonTaxedIncomeData)
 					}
 			}
 		}

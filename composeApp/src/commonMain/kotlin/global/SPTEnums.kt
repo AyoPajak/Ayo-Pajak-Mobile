@@ -349,6 +349,41 @@ enum class NonTaxedIncomeType(val value: Int) : IBaseEnum {
 	
 	override var resourceSuffix: String = "non_taxed_income_"
 	
+	companion object {
+		// Method to get the enum name by its value
+		fun fromValue(value: Int): String? {
+			return when (value) {
+				310 -> {
+					"Bantuan / Sumbangan / Hibah"
+				}
+				
+				320 -> {
+					"Warisan"
+				}
+				
+				330 -> {
+					"Bagian Laba Anggota Perseroan Komanditer Tidak Atas Saham, Persekutuan, Perkumpulan, Firma, Kongsi"
+				}
+				
+				340 -> {
+					"Klaim Asuransi Kesehatan, Kecelakaan, Jiwa, Dwiguna, Beasiswa"
+				}
+				
+				350 -> {
+					"Beasiswa"
+				}
+				
+				360 -> {
+					"Penghasilan Lain Yang Tidak Termasuk Objek Pajak"
+				}
+				
+				else -> {
+					null
+				}
+			}
+		}
+	}
+	
 //	override fun toString(): String {
 //		val applicationContext: Context = TaxpediaApplication.applicationContext()
 //
