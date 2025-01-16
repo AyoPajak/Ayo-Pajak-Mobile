@@ -52,6 +52,7 @@ import models.transaction.FormFinalIncomeERequestApiModel
 import models.transaction.FormFinalIncomeResponseApiModel
 import models.transaction.FormIdentityRequestApiModel
 import models.transaction.FormIdentityResponseApiModel
+import models.transaction.FormNonTaxedIncomeRequestApiModel
 import models.transaction.FormNonTaxedIncomeResponseApiModel
 import models.transaction.FormWealthARequestApiModel
 import models.transaction.FormWealthBRequestApiModel
@@ -1574,6 +1575,31 @@ class SPTManager(val prefs: DataStore<Preferences>, val client: Account, val spt
 					.onError {
 						println(it.name)
 						cont.resume(nonTaxedIncomeData)
+					}
+			}
+		}
+	}
+	
+	suspend fun saveNonTaxedIncome(scope: CoroutineScope, body: FormNonTaxedIncomeRequestApiModel): ReturnStatus {
+		val result = ReturnStatus()
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Api token is null")
+			result.SetError("Api token is null")
+			return result
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.saveNonTaxedIncome("Bearer $apiToken", body)
+					.onSuccess {
+						println(result.Message)
+						cont.resume(result)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(result)
 					}
 			}
 		}

@@ -1,6 +1,7 @@
 package screens.SPT
 
 import SPT.SPTManager
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -18,9 +19,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults.buttonColors
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
+import androidx.compose.material.TextField
+import androidx.compose.material.TextFieldDefaults.textFieldColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -34,6 +40,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -54,9 +62,14 @@ import global.universalUIComponents.popUpBox
 import http.Account
 import http.Interfaces
 import kotlinx.coroutines.launch
+import models.transaction.Form1770FinalIncomeUmkm2023BusinessRequestModel
 import models.transaction.Form1770HdResponseApiModel
+import models.transaction.FormNonTaxedIncomeRequestApiModel
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.vectorResource
+import util.BigDeciToLong
+import util.BigDeciToString
+import util.CurrencyFormatter
 
 class NonTaxedIncomeFormScreen(val id: Int, val sptHd: Form1770HdResponseApiModel?, val client: Account, val sptPertamaClient: Interfaces, val prefs: DataStore<Preferences>): Screen {
 	
@@ -72,9 +85,14 @@ class NonTaxedIncomeFormScreen(val id: Int, val sptHd: Form1770HdResponseApiMode
 		var showConfirmPopup by remember { mutableStateOf(false) }
 		var showIncomeTypePopup by remember { mutableStateOf(false) }
 		
-		
 		var incomeTypeE by remember { mutableStateOf(0) }
 		var selectedIncomeType by remember { mutableStateOf("") }
+		
+		var incomeIDR by remember { mutableStateOf("") }
+		var incomeIDRActual by remember { mutableStateOf(0L) }
+		
+		var employerName by remember { mutableStateOf("") }
+		var description by remember { mutableStateOf("") }
 		
 		var isReady by remember { mutableStateOf(false) }
 		
@@ -85,6 +103,10 @@ class NonTaxedIncomeFormScreen(val id: Int, val sptHd: Form1770HdResponseApiMode
 			if (oldData != null) {
 				selectedIncomeType = NonTaxedIncomeType.fromValue(oldData.IncomeTypeE) ?: ""
 				incomeTypeE = oldData.IncomeTypeE
+				incomeIDR = "Rp ${CurrencyFormatter(BigDeciToString(oldData.IncomeIDR.toString()))}"
+				incomeIDRActual = BigDeciToLong(oldData.IncomeIDR.toString())
+				employerName = oldData.EmployerName ?: ""
+				description = oldData.Description ?: ""
 			}
 			
 			println(oldData)
@@ -123,6 +145,112 @@ class NonTaxedIncomeFormScreen(val id: Int, val sptHd: Form1770HdResponseApiMode
 					Image(painterResource(Res.drawable.Icon_Dropdown_Arrow), null, modifier = Modifier.size(24.dp))
 				}
 			}
+		}
+		
+		@Composable
+		fun incomeTextField() {
+			Text(
+				modifier = Modifier.padding(horizontal = 16.dp).padding(top = 8.dp),
+				text = "Penghasilan Bruto (IDR)",
+				fontSize = 12.sp,
+				color = Color.Black,
+				fontWeight = FontWeight.Bold
+			)
+			TextField(
+				enabled = true,
+				modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
+					.padding(horizontal = 16.dp)
+					.border(
+						border = BorderStroke(1.dp, Colors().textDarkGrey),
+						shape = RoundedCornerShape(4.dp)
+					),
+				value = incomeIDR,
+				onValueChange = {
+					incomeIDR = it
+					incomeIDRActual = if(incomeIDR.isBlank() || incomeIDR == "-") 0 else incomeIDR.toLong()
+				},
+				singleLine = true,
+				colors = textFieldColors(
+					backgroundColor = Color.White,
+					focusedIndicatorColor = Color.Transparent,
+					unfocusedIndicatorColor = Color.Transparent,
+					disabledIndicatorColor = Colors().slate20
+				),
+				keyboardOptions = KeyboardOptions(
+					keyboardType = KeyboardType.Number,
+					imeAction = ImeAction.Next
+				)
+			)
+		}
+		
+		@Composable
+		fun employerNameTextField() {
+			Text(
+				modifier = Modifier.padding(horizontal = 16.dp).padding(top = 8.dp),
+				text = "Nama Pemberi Penghasilan",
+				fontSize = 12.sp,
+				color = Color.Black,
+				fontWeight = FontWeight.Bold
+			)
+			TextField(
+				enabled = true,
+				modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
+					.padding(horizontal = 16.dp)
+					.border(
+						border = BorderStroke(1.dp, Colors().textDarkGrey),
+						shape = RoundedCornerShape(4.dp)
+					),
+				value = employerName,
+				onValueChange = {
+					if(employerName.length <= 200 ) { employerName = it }
+				},
+				singleLine = true,
+				colors = textFieldColors(
+					backgroundColor = Color.White,
+					focusedIndicatorColor = Color.Transparent,
+					unfocusedIndicatorColor = Color.Transparent,
+					disabledIndicatorColor = Colors().slate20
+				),
+				keyboardOptions = KeyboardOptions(
+					keyboardType = KeyboardType.Text,
+					imeAction = ImeAction.Next
+				)
+			)
+		}
+		
+		@Composable
+		fun descriptionTextField() {
+			Text(
+				modifier = Modifier.padding(horizontal = 16.dp).padding(top = 8.dp),
+				text = "Keterangan",
+				fontSize = 12.sp,
+				color = Color.Black,
+				fontWeight = FontWeight.Bold
+			)
+			TextField(
+				enabled = true,
+				modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
+					.padding(horizontal = 16.dp)
+					.border(
+						border = BorderStroke(1.dp, Colors().textDarkGrey),
+						shape = RoundedCornerShape(4.dp)
+					),
+				value = description,
+				onValueChange = {
+					if(description.length <= 500 ) { description = it }
+				},
+				singleLine = true,
+				colors = textFieldColors(
+					backgroundColor = Color.White,
+					focusedIndicatorColor = Color.Transparent,
+					unfocusedIndicatorColor = Color.Transparent,
+					disabledIndicatorColor = Colors().slate20
+				),
+				keyboardOptions = KeyboardOptions(
+					keyboardType = KeyboardType.Text,
+					imeAction = ImeAction.Next
+				)
+			)
 		}
 		
 		loadingPopupBox(!isReady)
@@ -187,6 +315,55 @@ class NonTaxedIncomeFormScreen(val id: Int, val sptHd: Form1770HdResponseApiMode
 				
 				//Income Type
 				item { incomeTypeSelector() }
+				
+				//Income
+				item { incomeTextField() }
+				
+				//Employer Name
+				item { employerNameTextField() }
+				
+				//Description
+				item { descriptionTextField() }
+				
+				//Submit Button
+				item {
+					Button(
+						enabled = incomeTypeE != 0 && incomeIDR.isNotBlank(),
+						modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).padding(top = 22.dp),
+						colors = buttonColors(backgroundColor = Colors().buttonActive, contentColor = Color.White),
+						onClick = {
+							
+							val dataModel = FormNonTaxedIncomeRequestApiModel(
+								Id = id,
+								Tr1770HdId = sptHd!!.Id,
+								IncomeTypeE = incomeTypeE,
+								IncomeIDR = incomeIDRActual,
+								EmployerName = employerName.ifBlank { null },
+								Description = description.ifBlank { null }
+							)
+							
+							scope.launch {
+								isReady = false
+								sptManager.saveNonTaxedIncome(scope, dataModel)
+								navigator.pop()
+							}
+						}
+					) {
+						Text(
+							modifier = Modifier.padding(vertical = 6.dp),
+							text = "Simpan",
+							fontSize = 16.sp,
+							fontWeight = FontWeight.Bold
+						)
+					}
+				}
+				
+				//Spacer
+				item {
+					Box(
+						modifier = Modifier.height(88.dp)
+					)
+				}
 			}
 		}
 		
@@ -277,7 +454,7 @@ class NonTaxedIncomeFormScreen(val id: Int, val sptHd: Form1770HdResponseApiMode
 							.clickable(true, onClick = {
 								scope.launch{
 									isReady = false
-//									sptManager.deleteIncome(scope, id.toString())
+									sptManager.deleteIncome(scope, id.toString())
 									navigator.pop()
 								}
 							})

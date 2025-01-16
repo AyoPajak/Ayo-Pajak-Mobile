@@ -1363,9 +1363,9 @@ class FinalIncomeFormScreen(val id: Int, val sptHd: Form1770HdResponseApiModel?,
 						onClick = {
 							when(formType) {
 								"A" -> {
-									incomeIDR = incomeIDR.replace("Rp. ", "")
+									incomeIDR = incomeIDR.replace("Rp ", "")
 									incomeIDR = incomeIDR.replace(",", "")
-									taxPayableIDR = taxPayableIDR.replace("Rp. ", "")
+									taxPayableIDR = taxPayableIDR.replace("Rp ", "")
 									taxPayableIDR = taxPayableIDR.replace(",", "")
 									
 									val dataModel = FormFinalIncomeARequestApiModel(
@@ -1386,9 +1386,9 @@ class FinalIncomeFormScreen(val id: Int, val sptHd: Form1770HdResponseApiModel?,
 									}
 								}
 								"B" -> {
-									incomeIDR = incomeIDR.replace("Rp. ", "")
+									incomeIDR = incomeIDR.replace("Rp ", "")
 									incomeIDR = incomeIDR.replace(",", "")
-									taxPayableIDR = taxPayableIDR.replace("Rp. ", "")
+									taxPayableIDR = taxPayableIDR.replace("Rp ", "")
 									taxPayableIDR = taxPayableIDR.replace(",", "")
 									
 									val dataModel = FormFinalIncomeBRequestApiModel(
@@ -1407,11 +1407,11 @@ class FinalIncomeFormScreen(val id: Int, val sptHd: Form1770HdResponseApiModel?,
 									}
 								}
 								"C" -> {
-									incomeIDR = incomeIDR.replace("Rp. ", "")
+									incomeIDR = incomeIDR.replace("Rp ", "")
 									incomeIDR = incomeIDR.replace(",", "")
-									taxPayableIDR = taxPayableIDR.replace("Rp. ", "")
+									taxPayableIDR = taxPayableIDR.replace("Rp ", "")
 									taxPayableIDR = taxPayableIDR.replace(",", "")
-									sellPriceIDR = sellPriceIDR.replace("Rp. ", "")
+									sellPriceIDR = sellPriceIDR.replace("Rp ", "")
 									sellPriceIDR = sellPriceIDR.replace(",", "")
 									
 									val dataModel = FormFinalIncomeCRequestApiModel(
@@ -1431,11 +1431,11 @@ class FinalIncomeFormScreen(val id: Int, val sptHd: Form1770HdResponseApiModel?,
 									}
 								}
 								"D" -> {
-									incomeIDR = incomeIDR.replace("Rp. ", "")
+									incomeIDR = incomeIDR.replace("Rp ", "")
 									incomeIDR = incomeIDR.replace(",", "")
-									taxPayableIDR = taxPayableIDR.replace("Rp. ", "")
+									taxPayableIDR = taxPayableIDR.replace("Rp ", "")
 									taxPayableIDR = taxPayableIDR.replace(",", "")
-									sellPriceIDR = sellPriceIDR.replace("Rp. ", "")
+									sellPriceIDR = sellPriceIDR.replace("Rp ", "")
 									sellPriceIDR = sellPriceIDR.replace(",", "")
 									
 									val brutoList: List<BrutoCirculationRequestApiModel> = listOf(
@@ -1544,9 +1544,9 @@ class FinalIncomeFormScreen(val id: Int, val sptHd: Form1770HdResponseApiModel?,
 									}
 								}
 								"E" -> {
-									incomeIDR = incomeIDR.replace("Rp. ", "")
+									incomeIDR = incomeIDR.replace("Rp ", "")
 									incomeIDR = incomeIDR.replace(",", "")
-									taxPayableIDR = taxPayableIDR.replace("Rp. ", "")
+									taxPayableIDR = taxPayableIDR.replace("Rp ", "")
 									taxPayableIDR = taxPayableIDR.replace(",", "")
 									
 									val dataModel = FormFinalIncomeERequestApiModel(
