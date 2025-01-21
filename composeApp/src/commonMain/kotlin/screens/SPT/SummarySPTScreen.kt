@@ -148,7 +148,7 @@ class SummarySPTScreen(private val id: Int, val client: Account, val sptPertamaC
 								navigator.push(SptStepSixScreen(sptHd, client, sptPertamaClient, prefs))
 							}
 							7 -> {
-							
+								navigator.push(SptStepSevenScreen(sptHd, client, sptPertamaClient, prefs))
 							}
 							8 -> {
 							

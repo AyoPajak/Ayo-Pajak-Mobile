@@ -10,12 +10,15 @@ import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.util.network.UnresolvedAddressException
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlinx.serialization.SerializationException
 import models.PagedListModel
 import models.PertamaGeneralApiResponse
+import models.ReturnStatus
 import models.account.APITokenModel
 import models.master.CityModel
 import models.master.CurrencyModel
@@ -44,8 +47,12 @@ import models.transaction.FormFinalIncomeERequestApiModel
 import models.transaction.FormFinalIncomeResponseApiModel
 import models.transaction.FormIdentityRequestApiModel
 import models.transaction.FormIdentityResponseApiModel
+import models.transaction.FormNetOtherIncomeResponseApiModel
 import models.transaction.FormNonTaxedIncomeRequestApiModel
 import models.transaction.FormNonTaxedIncomeResponseApiModel
+import models.transaction.FormTaxCreditARequestApiModel
+import models.transaction.FormTaxCreditBRequestApiModel
+import models.transaction.FormTaxCreditResponseApiModel
 import models.transaction.FormWealthARequestApiModel
 import models.transaction.FormWealthBRequestApiModel
 import models.transaction.FormWealthCRequestApiModel
@@ -60,8 +67,13 @@ import models.transaction.FormWealthKRequestApiModel
 import models.transaction.FormWealthLRequestApiModel
 import models.transaction.FormWealthResponseApiModel
 import models.transaction.SPTSummaryResponseApiModel
+import models.transaction.TaxCreditTotalResponseApiModel
 import util.NetworkError
 import util.Result
+import util.onError
+import util.onSuccess
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 class Interfaces(private val httpClient: HttpClient) {
 	
@@ -1904,4 +1916,235 @@ class Interfaces(private val httpClient: HttpClient) {
 			else -> Result.Error(NetworkError.UNKNOWN)
 		}
 	}
+	
+	//Tax Credit
+	suspend fun getTaxCreditTotal(apiToken: String, id: String): Result<TaxCreditTotalResponseApiModel, NetworkError> {
+		val response = try {
+			httpClient.get (
+				urlString = "${Variables.PertamaApiBaseUrl}api/SPTTahunanOP/GetTaxCreditTotal"
+			) {
+				header("Authorization", apiToken)
+				url {
+					encodedParameters.append("hdId", id)
+				}
+				
+				contentType(ContentType.Application.Json)
+			}
+		} catch (e: UnresolvedAddressException) {
+			return Result.Error(NetworkError.NO_INTERNET)
+		} catch (e: SerializationException) {
+			return Result.Error(NetworkError.SERIALIZATION)
+		}
+		
+		return when (response.status.value) {
+			200 -> {
+				val responseBody = response.body<TaxCreditTotalResponseApiModel>()
+				Result.Success(responseBody)
+			}
+			401 -> Result.Error(NetworkError.UNAUTHORIZED)
+			409 -> Result.Error(NetworkError.CONFLICT)
+			408 -> Result.Error(NetworkError.REQUEST_TIMEOUT)
+			413 -> Result.Error(NetworkError.PAYLOAD_TOO_LARGE)
+			in 500..599 -> Result.Error(NetworkError.SERVER_ERROR)
+			else -> Result.Error(NetworkError.UNKNOWN)
+		}
+	}
+	
+	suspend fun getTaxCreditDataById(apiToken: String, id: String): Result<FormTaxCreditResponseApiModel, NetworkError> {
+		val response = try {
+			httpClient.get (
+				urlString = "${Variables.PertamaApiBaseUrl}api/SPTTahunanOP/GetTaxCreditDataById"
+			) {
+				header("Authorization", apiToken)
+				url {
+					encodedParameters.append("id", id)
+				}
+				
+				contentType(ContentType.Application.Json)
+			}
+		} catch (e: UnresolvedAddressException) {
+			return Result.Error(NetworkError.NO_INTERNET)
+		} catch (e: SerializationException) {
+			return Result.Error(NetworkError.SERIALIZATION)
+		}
+		
+		return when (response.status.value) {
+			200 -> {
+				val responseBody = response.body<FormTaxCreditResponseApiModel>()
+				Result.Success(responseBody)
+			}
+			401 -> Result.Error(NetworkError.UNAUTHORIZED)
+			409 -> Result.Error(NetworkError.CONFLICT)
+			408 -> Result.Error(NetworkError.REQUEST_TIMEOUT)
+			413 -> Result.Error(NetworkError.PAYLOAD_TOO_LARGE)
+			in 500..599 -> Result.Error(NetworkError.SERVER_ERROR)
+			else -> Result.Error(NetworkError.UNKNOWN)
+		}
+	}
+	
+	suspend fun getTaxCreditData(apiToken: String, hdId: String, taxTypeE: String? = null): Result<PagedListModel<FormTaxCreditResponseApiModel>, NetworkError> {
+		val response = try {
+			httpClient.get (
+				urlString = "${Variables.PertamaApiBaseUrl}api/SPTTahunanOP/GetTaxCreditData"
+			) {
+				header("Authorization", apiToken)
+				url {
+					encodedParameters.append("hdId", hdId)
+				}
+				if(!taxTypeE.isNullOrBlank()) {
+					url {encodedParameters.append("incomeTypeE", taxTypeE)}
+				}
+				
+				contentType(ContentType.Application.Json)
+			}
+		} catch (e: UnresolvedAddressException) {
+			return Result.Error(NetworkError.NO_INTERNET)
+		} catch (e: SerializationException) {
+			return Result.Error(NetworkError.SERIALIZATION)
+		}
+		
+		return when (response.status.value) {
+			200 -> {
+				val responseBody = response.body<PagedListModel<FormTaxCreditResponseApiModel>>()
+				Result.Success(responseBody)
+			}
+			401 -> Result.Error(NetworkError.UNAUTHORIZED)
+			409 -> Result.Error(NetworkError.CONFLICT)
+			408 -> Result.Error(NetworkError.REQUEST_TIMEOUT)
+			413 -> Result.Error(NetworkError.PAYLOAD_TOO_LARGE)
+			in 500..599 -> Result.Error(NetworkError.SERVER_ERROR)
+			else -> Result.Error(NetworkError.UNKNOWN)
+		}
+	}
+	
+	suspend fun deleteTaxCredit(apiToken: String, id: String): Result<PertamaGeneralApiResponse, NetworkError> {
+		val response = try {
+			httpClient.post  (
+				urlString = "${Variables.PertamaApiBaseUrl}api/SPTTahunanOP/DeleteTaxCredit"
+			) {
+				header("Authorization", apiToken)
+				url {
+					encodedParameters.append("key", id)
+				}
+				contentType(ContentType.Application.Json)
+			}
+		} catch (e: UnresolvedAddressException) {
+			return Result.Error(NetworkError.NO_INTERNET)
+		} catch (e: SerializationException) {
+			return Result.Error(NetworkError.SERIALIZATION)
+		}
+		
+		return when (response.status.value) {
+			200 -> {
+				val body = response.body<PertamaGeneralApiResponse>()
+				Result.Success(body)
+			}
+			401 -> Result.Error(NetworkError.UNAUTHORIZED)
+			409 -> Result.Error(NetworkError.CONFLICT)
+			408 -> Result.Error(NetworkError.REQUEST_TIMEOUT)
+			413 -> Result.Error(NetworkError.PAYLOAD_TOO_LARGE)
+			in 500..599 -> Result.Error(NetworkError.SERVER_ERROR)
+			else -> Result.Error(NetworkError.UNKNOWN)
+		}
+	}
+	
+	suspend fun saveTaxCreditA(apiToken: String, request: FormTaxCreditARequestApiModel) : Result<PertamaGeneralApiResponse, NetworkError> {
+		val response = try {
+			httpClient.post  (
+				urlString = "${Variables.PertamaApiBaseUrl}api/SPTTahunanOP/SaveTaxCreditA"
+			) {
+				header("Authorization", apiToken)
+				setBody(request)
+				contentType(ContentType.Application.Json)
+			}
+		} catch (e: UnresolvedAddressException) {
+			return Result.Error(NetworkError.NO_INTERNET)
+		} catch (e: SerializationException) {
+			return Result.Error(NetworkError.SERIALIZATION)
+		}
+		
+		return when (response.status.value) {
+			200 -> {
+				val body = response.body<PertamaGeneralApiResponse>()
+				println(body)
+				Result.Success(body)
+			}
+			401 -> Result.Error(NetworkError.UNAUTHORIZED)
+			409 -> Result.Error(NetworkError.CONFLICT)
+			408 -> Result.Error(NetworkError.REQUEST_TIMEOUT)
+			413 -> Result.Error(NetworkError.PAYLOAD_TOO_LARGE)
+			in 500..599 -> Result.Error(NetworkError.SERVER_ERROR)
+			else -> Result.Error(NetworkError.UNKNOWN)
+		}
+	}
+	
+	suspend fun saveTaxCreditB(apiToken: String, request: FormTaxCreditBRequestApiModel) : Result<PertamaGeneralApiResponse, NetworkError> {
+		val response = try {
+			httpClient.post  (
+				urlString = "${Variables.PertamaApiBaseUrl}api/SPTTahunanOP/SaveTaxCreditB"
+			) {
+				header("Authorization", apiToken)
+				setBody(request)
+				contentType(ContentType.Application.Json)
+			}
+		} catch (e: UnresolvedAddressException) {
+			return Result.Error(NetworkError.NO_INTERNET)
+		} catch (e: SerializationException) {
+			return Result.Error(NetworkError.SERIALIZATION)
+		}
+		
+		return when (response.status.value) {
+			200 -> {
+				val body = response.body<PertamaGeneralApiResponse>()
+				println(body)
+				Result.Success(body)
+			}
+			401 -> Result.Error(NetworkError.UNAUTHORIZED)
+			409 -> Result.Error(NetworkError.CONFLICT)
+			408 -> Result.Error(NetworkError.REQUEST_TIMEOUT)
+			413 -> Result.Error(NetworkError.PAYLOAD_TOO_LARGE)
+			in 500..599 -> Result.Error(NetworkError.SERVER_ERROR)
+			else -> Result.Error(NetworkError.UNKNOWN)
+		}
+	}
+	
+	//Income Net Other
+	suspend fun getIncomeNetOtherData(apiToken: String, hdId: String, isOverseas: Boolean? = null, netIncomeE: String? = null): Result<PagedListModel<FormNetOtherIncomeResponseApiModel>, NetworkError> {
+		val response = try {
+			httpClient.get (
+				urlString = "${Variables.PertamaApiBaseUrl}api/SPTTahunanOP/GetIncomeNetOtherData"
+			) {
+				header("Authorization", apiToken)
+				url {
+					encodedParameters.append("hdId", hdId)
+				}
+				if(isOverseas != null) {
+					url {encodedParameters.append("isOverseas", isOverseas.toString())}
+				}
+				if(!netIncomeE.isNullOrBlank()) {
+					url {encodedParameters.append("incomeTypeE", netIncomeE)}
+				}
+				
+				contentType(ContentType.Application.Json)
+			}
+		} catch (e: UnresolvedAddressException) {
+			return Result.Error(NetworkError.NO_INTERNET)
+		} catch (e: SerializationException) {
+			return Result.Error(NetworkError.SERIALIZATION)
+		}
+		
+		return when (response.status.value) {
+			200 -> {
+				val responseBody = response.body<PagedListModel<FormNetOtherIncomeResponseApiModel>>()
+				Result.Success(responseBody)
+			}
+			401 -> Result.Error(NetworkError.UNAUTHORIZED)
+			409 -> Result.Error(NetworkError.CONFLICT)
+			408 -> Result.Error(NetworkError.REQUEST_TIMEOUT)
+			413 -> Result.Error(NetworkError.PAYLOAD_TOO_LARGE)
+			in 500..599 -> Result.Error(NetworkError.SERVER_ERROR)
+			else -> Result.Error(NetworkError.UNKNOWN)
+		}
+	}
+	
 }

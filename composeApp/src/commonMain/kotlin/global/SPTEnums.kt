@@ -191,6 +191,22 @@ enum class TaxType(val value: Int) : IBaseEnum {
 	
 	override var resourceSuffix: String = "tax_type_"
 	
+	companion object {
+		// Method to get the enum name by its value
+		fun fromValue(value: Int): String? {
+			when (value) {
+				1 -> { return "Pasal 21" }
+				3 -> { return "Pasal 22" }
+				5 -> { return "Pasal 23" }
+				7 -> { return "Pasal 24" }
+				9 -> { return "Pasal 26" }
+				99 -> { return "DTP (Ditanggung Pemerintah)" }
+				
+				else -> { return null }
+			}
+		}
+	}
+	
 //	override fun toString(): String {
 //		val applicationContext: Context = TaxpediaApplication.applicationContext()
 //

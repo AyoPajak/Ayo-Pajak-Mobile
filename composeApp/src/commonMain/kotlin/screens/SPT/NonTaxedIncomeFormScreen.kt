@@ -98,18 +98,18 @@ class NonTaxedIncomeFormScreen(val id: Int, val sptHd: Form1770HdResponseApiMode
 		
 		LaunchedEffect(null) {
 			
-			val oldData = sptManager.getNonTaxedIncomeDataById(scope, id.toString())
-			
-			if (oldData != null) {
-				selectedIncomeType = NonTaxedIncomeType.fromValue(oldData.IncomeTypeE) ?: ""
-				incomeTypeE = oldData.IncomeTypeE
-				incomeIDR = "Rp ${CurrencyFormatter(BigDeciToString(oldData.IncomeIDR.toString()))}"
-				incomeIDRActual = BigDeciToLong(oldData.IncomeIDR.toString())
-				employerName = oldData.EmployerName ?: ""
-				description = oldData.Description ?: ""
+			if(id != 0){
+				val oldData = sptManager.getNonTaxedIncomeDataById(scope, id.toString())
+				
+				if (oldData != null) {
+					selectedIncomeType = NonTaxedIncomeType.fromValue(oldData.IncomeTypeE) ?: ""
+					incomeTypeE = oldData.IncomeTypeE
+					incomeIDR = "Rp ${CurrencyFormatter(BigDeciToString(oldData.IncomeIDR.toString()))}"
+					incomeIDRActual = BigDeciToLong(oldData.IncomeIDR.toString())
+					employerName = oldData.EmployerName ?: ""
+					description = oldData.Description ?: ""
+				}
 			}
-			
-			println(oldData)
 			
 			isReady = true
 		}
@@ -393,9 +393,6 @@ class NonTaxedIncomeFormScreen(val id: Int, val sptHd: Form1770HdResponseApiMode
 										.clickable(true, onClick = {
 											selectedIncomeType = NonTaxedIncomeType.fromValue(it.value).toString()
 											incomeTypeE = it.value
-//											formType = FinalIncomeType.formTypeFromValue(it.value).toString()
-//											if( formType == "A" || formType == "C" || formType == "E" ) selectedAssetList = getFilteredAsset()
-//											if(sptHd?.TaxYear?.toInt()!! >= 2023 && incomeTypeE == "160") navigator.push(FinalIncomeUMKMScreen(sptHd, client, sptPertamaClient, prefs))
 											showIncomeTypePopup = false
 										})
 								)

@@ -52,8 +52,12 @@ import models.transaction.FormFinalIncomeERequestApiModel
 import models.transaction.FormFinalIncomeResponseApiModel
 import models.transaction.FormIdentityRequestApiModel
 import models.transaction.FormIdentityResponseApiModel
+import models.transaction.FormNetOtherIncomeResponseApiModel
 import models.transaction.FormNonTaxedIncomeRequestApiModel
 import models.transaction.FormNonTaxedIncomeResponseApiModel
+import models.transaction.FormTaxCreditARequestApiModel
+import models.transaction.FormTaxCreditBRequestApiModel
+import models.transaction.FormTaxCreditResponseApiModel
 import models.transaction.FormWealthARequestApiModel
 import models.transaction.FormWealthBRequestApiModel
 import models.transaction.FormWealthCRequestApiModel
@@ -68,6 +72,7 @@ import models.transaction.FormWealthKRequestApiModel
 import models.transaction.FormWealthLRequestApiModel
 import models.transaction.FormWealthResponseApiModel
 import models.transaction.SPTSummaryResponseApiModel
+import models.transaction.TaxCreditTotalResponseApiModel
 import util.onError
 import util.onSuccess
 import kotlin.coroutines.resume
@@ -1604,4 +1609,178 @@ class SPTManager(val prefs: DataStore<Preferences>, val client: Account, val spt
 			}
 		}
 	}
+	
+	//Tax Credit
+	suspend fun getTaxCreditTotal(scope: CoroutineScope, id: String): TaxCreditTotalResponseApiModel? {
+		var taxCreditTotal: TaxCreditTotalResponseApiModel? = null
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Fail: Api token is null")
+			return taxCreditTotal
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.getTaxCreditTotal("Bearer $apiToken", id)
+					.onSuccess {
+						taxCreditTotal = it
+						cont.resume(taxCreditTotal)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(taxCreditTotal)
+					}
+			}
+		}
+	}
+	
+	suspend fun getTaxCreditDataById(scope: CoroutineScope, id: String): FormTaxCreditResponseApiModel? {
+		var taxCreditData: FormTaxCreditResponseApiModel? = null
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Fail: Api token is null")
+			return taxCreditData
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.getTaxCreditDataById("Bearer $apiToken", id)
+					.onSuccess {
+						taxCreditData = it
+						cont.resume(taxCreditData)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(taxCreditData)
+					}
+			}
+		}
+	}
+	
+	suspend fun getTaxCreditData(scope: CoroutineScope, hdId: String, taxTypeE: String? = null): List<FormTaxCreditResponseApiModel> {
+		var taxCreditData: List<FormTaxCreditResponseApiModel> = ArrayList()
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Fail: Api token is null")
+			return taxCreditData
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.getTaxCreditData("Bearer $apiToken", hdId, taxTypeE)
+					.onSuccess {
+						taxCreditData = it.Items ?: listOf()
+						cont.resume(taxCreditData)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(taxCreditData)
+					}
+			}
+		}
+	}
+	
+	suspend fun deleteTaxCredit(scope: CoroutineScope, id: String): ReturnStatus {
+		val result = ReturnStatus()
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Api token is null")
+			result.SetError("Api token is null")
+			return result
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.deleteTaxCredit("Bearer $apiToken", id)
+					.onSuccess {
+						cont.resume(result)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(result)
+					}
+			}
+		}
+	}
+	
+	suspend fun saveTaxCreditA(scope: CoroutineScope, body: FormTaxCreditARequestApiModel): ReturnStatus {
+		val result = ReturnStatus()
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Api token is null")
+			result.SetError("Api token is null")
+			return result
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.saveTaxCreditA("Bearer $apiToken", body)
+					.onSuccess {
+						println(result.Message)
+						cont.resume(result)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(result)
+					}
+			}
+		}
+	}
+	
+	suspend fun saveTaxCreditB(scope: CoroutineScope, body: FormTaxCreditBRequestApiModel): ReturnStatus {
+		val result = ReturnStatus()
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Api token is null")
+			result.SetError("Api token is null")
+			return result
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.saveTaxCreditB("Bearer $apiToken", body)
+					.onSuccess {
+						println(result.Message)
+						cont.resume(result)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(result)
+					}
+			}
+		}
+	}
+	
+	//Income Net Other
+	suspend fun getIncomeNetOtherData(scope: CoroutineScope, hdId: String, isOverseas: Boolean? = null, netIncomeE: String? = null): List<FormNetOtherIncomeResponseApiModel> {
+		var incomeNetOtherData: List<FormNetOtherIncomeResponseApiModel> = ArrayList()
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Fail: Api token is null")
+			return incomeNetOtherData
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.getIncomeNetOtherData("Bearer $apiToken", hdId, isOverseas, netIncomeE)
+					.onSuccess {
+						incomeNetOtherData = it.Items ?: listOf()
+						cont.resume(incomeNetOtherData)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(incomeNetOtherData)
+					}
+			}
+		}
+	}
+	
+	
 }

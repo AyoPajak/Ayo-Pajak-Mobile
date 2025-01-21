@@ -268,8 +268,8 @@ class FinalIncomeFormScreen(val id: Int, val sptHd: Form1770HdResponseApiModel?,
 					
 					sellPriceIDR = "Rp ${CurrencyFormatter(BigDeciToString(oldData.SellPriceIDR.toString()))}"
 					
-					rentStartDate = DateFormatter(oldData.RentStartDate ?: "")
-					rentEndDate = DateFormatter(oldData.RentEndDate ?: "")
+					rentStartDate = oldData.RentStartDate ?: ""
+					rentEndDate = oldData.RentEndDate ?: ""
 					
 					selectedAssetList = getFilteredAsset()
 					println(oldData)
