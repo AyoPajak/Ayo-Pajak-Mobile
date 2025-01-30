@@ -345,7 +345,7 @@ class TaxCreditFormScreen(val id: Int, val sptHd: Form1770HdResponseApiModel?, v
 				value = withholdingTaxAmountIDR,
 				onValueChange = {
 					withholdingTaxAmountIDR = it
-					withholdingTaxAmountIDRActual = it.replace("Rp ", "").replace(".", "").toLong()
+					withholdingTaxAmountIDRActual = withholdingTaxAmountIDR.replace("Rp", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
 				},
 				singleLine = true,
 				colors = textFieldColors(

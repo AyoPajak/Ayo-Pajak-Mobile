@@ -55,6 +55,7 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import global.Colors
 import global.PertamaSptFillingStep
+import global.SptType
 import global.universalUIComponents.loadingPopupBox
 import global.universalUIComponents.popUpBox
 import global.universalUIComponents.topBar
@@ -128,48 +129,44 @@ class SummarySPTScreen(private val id: Int, val client: Account, val sptPertamaC
 			Row(
 				modifier = Modifier.fillMaxWidth().padding(16.dp)
 					.clickable(completedStep + 1 >= number, onClick = {
-						when(number) {
-							1 -> {
-								navigator.push(SptStepOneScreen(sptHd, client, sptPertamaClient, prefs))
+						when(formType){
+							"1770S" -> {
+								when (number) {
+									1 -> { navigator.push(SptStepOneScreen(sptHd, client, sptPertamaClient, prefs)) }
+									2 -> { navigator.push(SptStepTwoScreen(sptHd, client, sptPertamaClient, prefs)) }
+									3 -> { navigator.push(SptStepThreeScreen(sptHd, client, sptPertamaClient, prefs)) }
+									4 -> { navigator.push(SptStepFourScreen(sptHd, client, sptPertamaClient, prefs)) }
+									5 -> { navigator.push(SptStepFiveScreen(sptHd, client, sptPertamaClient, prefs)) }
+									6 -> { navigator.push(SptStepSixScreen(sptHd, client, sptPertamaClient, prefs)) }
+									7 -> { navigator.push(SptStepSevenScreen(sptHd, client, sptPertamaClient, prefs)) }
+									8 -> {  }
+									9 -> {  }
+									10 -> {  }
+									11 -> {  }
+									12 -> {  }
+									13 -> {  }
+									14 -> {  }
+								}
 							}
-							2 -> {
-								navigator.push(SptStepTwoScreen(sptHd, client, sptPertamaClient, prefs))
-							}
-							3 -> {
-								navigator.push(SptStepThreeScreen(sptHd, client, sptPertamaClient, prefs))
-							}
-							4 -> {
-								navigator.push(SptStepFourScreen(sptHd, client, sptPertamaClient, prefs))
-							}
-							5 -> {
-								navigator.push(SptStepFiveScreen(sptHd, client, sptPertamaClient, prefs))
-							}
-							6 -> {
-								navigator.push(SptStepSixScreen(sptHd, client, sptPertamaClient, prefs))
-							}
-							7 -> {
-								navigator.push(SptStepSevenScreen(sptHd, client, sptPertamaClient, prefs))
-							}
-							8 -> {
-							
-							}
-							9 -> {
-							
-							}
-							10 -> {
-							
-							}
-							11 -> {
-							
-							}
-							12 -> {
-							
-							}
-							13 -> {
-							
-							}
-							14 -> {
-							
+							"1770" -> {
+								when (number) {
+									1 -> { navigator.push(SptStepOneScreen(sptHd, client, sptPertamaClient, prefs)) }
+									2 -> { navigator.push(SptStepTwoScreen(sptHd, client, sptPertamaClient, prefs)) }
+									3 -> { navigator.push(SptStepThreeScreen(sptHd, client, sptPertamaClient, prefs)) }
+									4 -> { navigator.push(SptStepFourScreen(sptHd, client, sptPertamaClient, prefs)) }
+									5 -> { navigator.push(SptStepFiveScreen(sptHd, client, sptPertamaClient, prefs)) }
+									6 -> { navigator.push(SptStepSixScreen(sptHd, client, sptPertamaClient, prefs)) }
+									7 -> { navigator.push(SptStepSevenScreen(sptHd, client, sptPertamaClient, prefs)) }
+									8 -> { navigator.push(IncomeBookKeepFormScreen(sptHd, client, sptPertamaClient, prefs)) }
+									9 -> {  }
+									10 -> {  }
+									11 -> {  }
+									12 -> {  }
+									13 -> {  }
+									14 -> {  }
+									15 -> {  }
+									16 -> {  }
+								}
 							}
 						}
 					}),
@@ -370,33 +367,68 @@ class SummarySPTScreen(private val id: Int, val client: Account, val sptPertamaC
 							.background(Color.White)
 					) {
 						Column {
-							step(1, "Pengisian Identitas", status >= PertamaSptFillingStep.Identity.value)
-							divider(0.dp)
-							step(2, "Daftar Keluarga & Tanggungan", status >= PertamaSptFillingStep.Dependent.value)
-							divider(0.dp)
-							step(3, "Harta", status >= PertamaSptFillingStep.Asset.value)
-							divider(0.dp)
-							step(4, "Utang", status >= PertamaSptFillingStep.Liability.value)
-							divider(0.dp)
-							step(5, "Penghasilan Pajak Final", status >= PertamaSptFillingStep.FinalIncome.value)
-							divider(0.dp)
-							step(6, "Penghasilan Non Objek Pajak", status >= PertamaSptFillingStep.NonTaxedIncome.value)
-							divider(0.dp)
-							step(7, "Kredit Pajak", status >= PertamaSptFillingStep.TaxCredit.value)
-							divider(0.dp)
-							step(8, "Penghasilan Neto Dalam Negeri", status >= PertamaSptFillingStep.IncomeNetJob.value)
-							divider(0.dp)
-							step(9, "Penghasilan Neto Lainnya", status >= PertamaSptFillingStep.IncomeNetOther.value)
-							divider(0.dp)
-							step(10, "PPh Terutang (PH/MT)", status >= PertamaSptFillingStep.IncomeSpousePHMT.value)
-							divider(0.dp)
-							step(11, "Detail Lainnya", status >= PertamaSptFillingStep.OtherDetail.value)
-							divider(0.dp)
-							step(12, "Surat Setoran Pajak", status >= PertamaSptFillingStep.TaxPaymentSlip.value)
-							divider(0.dp)
-							step(13, "Data Pelengkap", status >= PertamaSptFillingStep.Additional.value)
-							divider(0.dp)
-							step(14, "Konfirmasi", status >= PertamaSptFillingStep.Confirm.value)
+							if(formType == "1770S") {
+								step(1, "Pengisian Identitas", status >= PertamaSptFillingStep.Identity.value)
+								divider(0.dp)
+								step(2, "Daftar Keluarga & Tanggungan", status >= PertamaSptFillingStep.Dependent.value)
+								divider(0.dp)
+								step(3, "Harta", status >= PertamaSptFillingStep.Asset.value)
+								divider(0.dp)
+								step(4, "Utang", status >= PertamaSptFillingStep.Liability.value)
+								divider(0.dp)
+								step(5, "Penghasilan Pajak Final", status >= PertamaSptFillingStep.FinalIncome.value)
+								divider(0.dp)
+								step(6, "Penghasilan Non Objek Pajak", status >= PertamaSptFillingStep.NonTaxedIncome.value)
+								divider(0.dp)
+								step(7, "Kredit Pajak", status >= PertamaSptFillingStep.TaxCredit.value)
+								divider(0.dp)
+								step(8, "Penghasilan Neto Dalam Negeri", status >= PertamaSptFillingStep.IncomeNetJob.value)
+								divider(0.dp)
+								step(9, "Penghasilan Neto Lainnya", status >= PertamaSptFillingStep.IncomeNetOther.value)
+								divider(0.dp)
+								step(10, "PPh Terutang (PH/MT)", status >= PertamaSptFillingStep.IncomeSpousePHMT.value)
+								divider(0.dp)
+								step(11, "Detail Lainnya", status >= PertamaSptFillingStep.OtherDetail.value)
+								divider(0.dp)
+								step(12, "Surat Setoran Pajak", status >= PertamaSptFillingStep.TaxPaymentSlip.value)
+								divider(0.dp)
+								step(13, "Data Pelengkap", status >= PertamaSptFillingStep.Additional.value)
+								divider(0.dp)
+								step(14, "Konfirmasi", status >= PertamaSptFillingStep.Confirm.value)
+							}
+							if(formType == "1770") {
+								step(1, "Pengisian Identitas", status >= PertamaSptFillingStep.Identity.value)
+								divider(0.dp)
+								step(2, "Daftar Keluarga & Tanggungan", status >= PertamaSptFillingStep.Dependent.value)
+								divider(0.dp)
+								step(3, "Harta", status >= PertamaSptFillingStep.Asset.value)
+								divider(0.dp)
+								step(4, "Utang", status >= PertamaSptFillingStep.Liability.value)
+								divider(0.dp)
+								step(5, "Penghasilan Pajak Final", status >= PertamaSptFillingStep.FinalIncome.value)
+								divider(0.dp)
+								step(6, "Penghasilan Non Objek Pajak", status >= PertamaSptFillingStep.NonTaxedIncome.value)
+								divider(0.dp)
+								step(7, "Kredit Pajak", status >= PertamaSptFillingStep.TaxCredit.value)
+								divider(0.dp)
+								step(8, "Penghasilan Non Final (Pembukuan)", status >= PertamaSptFillingStep.IncomeBookKeep.value)
+								divider(0.dp)
+								step(9, "Penghasilan Non Final (Pencatatan)", status >= PertamaSptFillingStep.IncomeNonFinal.value)
+								divider(0.dp)
+								step(10, "Penghasilan Neto Dalam Negeri", status >= PertamaSptFillingStep.IncomeNetJob.value)
+								divider(0.dp)
+								step(11, "Penghasilan Neto Lainnya", status >= PertamaSptFillingStep.IncomeNetOther.value)
+								divider(0.dp)
+								step(12, "PPh Terutang (PH/MT)", status >= PertamaSptFillingStep.IncomeSpousePHMT.value)
+								divider(0.dp)
+								step(13, "Detail Lainnya", status >= PertamaSptFillingStep.OtherDetail.value)
+								divider(0.dp)
+								step(14, "Surat Setoran Pajak", status >= PertamaSptFillingStep.TaxPaymentSlip.value)
+								divider(0.dp)
+								step(15, "Data Pelengkap", status >= PertamaSptFillingStep.Additional.value)
+								divider(0.dp)
+								step(16, "Konfirmasi", status >= PertamaSptFillingStep.Confirm.value)
+							}
 						}
 					}
 				}

@@ -275,6 +275,32 @@ enum class AuditOpinion(val value: Int) {
 	
 	var resourceSuffix: String = "audit_opinion_"
 	
+	companion object{
+		fun fromValue(value: Int): String? {
+			return when (value) {
+				1 -> {
+					"Wajar Tanpa Pengecualian"
+				}
+				
+				2 -> {
+					"Wajar Dengan Pengecualian"
+				}
+				
+				3 -> {
+					"Tidak Wajar"
+				}
+				
+				4 -> {
+					"Tidak Ada Opini"
+				}
+				
+				else -> {
+					null
+				}
+			}
+		}
+	}
+	
 //	override fun toString(): String {
 //		val applicationContext: Context = TaxpediaApplication.applicationContext()
 //

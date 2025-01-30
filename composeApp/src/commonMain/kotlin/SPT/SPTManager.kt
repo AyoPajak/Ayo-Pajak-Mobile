@@ -40,6 +40,8 @@ import models.transaction.Form1770FinalIncomeUmkm2023ResponseApiModel
 import models.transaction.Form1770FinalIncomeUmkm2023SummaryRequestModel
 import models.transaction.Form1770HdRequestApiModel
 import models.transaction.Form1770HdResponseApiModel
+import models.transaction.FormBookKeepingRequestApiModel
+import models.transaction.FormBookKeepingResponseApiModel
 import models.transaction.FormDebtRequestApiModel
 import models.transaction.FormDebtResponseApiModel
 import models.transaction.FormDependentRequestApiModel
@@ -1745,6 +1747,57 @@ class SPTManager(val prefs: DataStore<Preferences>, val client: Account, val spt
 		return suspendCoroutine { cont ->
 			scope.launch {
 				sptPertamaClient.saveTaxCreditB("Bearer $apiToken", body)
+					.onSuccess {
+						println(result.Message)
+						cont.resume(result)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(result)
+					}
+			}
+		}
+	}
+	
+	
+	//Book Keep
+	suspend fun getBookKeepingData(scope: CoroutineScope, id: String): FormBookKeepingResponseApiModel? {
+		var bookKeepingData: FormBookKeepingResponseApiModel? = null
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Fail: Api token is null")
+			return bookKeepingData
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.getBookKeepingData("Bearer $apiToken", id)
+					.onSuccess {
+						bookKeepingData = it
+						cont.resume(bookKeepingData)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(bookKeepingData)
+					}
+			}
+		}
+	}
+	
+	suspend fun saveIncomeBookKeep(scope: CoroutineScope, body: FormBookKeepingRequestApiModel): ReturnStatus {
+		val result = ReturnStatus()
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Api token is null")
+			result.SetError("Api token is null")
+			return result
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.saveIncomeBookKeep("Bearer $apiToken", body)
 					.onSuccess {
 						println(result.Message)
 						cont.resume(result)
