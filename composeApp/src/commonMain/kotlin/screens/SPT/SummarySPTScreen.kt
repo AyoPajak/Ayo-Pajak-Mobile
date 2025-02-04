@@ -46,7 +46,6 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import ayopajakmobile.composeapp.generated.resources.Res
 import ayopajakmobile.composeapp.generated.resources.arrow_back
-import ayopajakmobile.composeapp.generated.resources.icon_chevron_right
 import ayopajakmobile.composeapp.generated.resources.icon_chevron_right_grey
 import ayopajakmobile.composeapp.generated.resources.icon_spttick
 import ayopajakmobile.composeapp.generated.resources.icon_tripledot_black
@@ -55,10 +54,8 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import global.Colors
 import global.PertamaSptFillingStep
-import global.SptType
 import global.universalUIComponents.loadingPopupBox
 import global.universalUIComponents.popUpBox
-import global.universalUIComponents.topBar
 import http.Account
 import http.Interfaces
 import kotlinx.coroutines.launch
@@ -158,7 +155,7 @@ class SummarySPTScreen(private val id: Int, val client: Account, val sptPertamaC
 									6 -> { navigator.push(SptStepSixScreen(sptHd, client, sptPertamaClient, prefs)) }
 									7 -> { navigator.push(SptStepSevenScreen(sptHd, client, sptPertamaClient, prefs)) }
 									8 -> { navigator.push(IncomeBookKeepFormScreen(sptHd, client, sptPertamaClient, prefs)) }
-									9 -> {  }
+									9 -> { navigator.push(IncomeNonFinalScreen(sptHd, client, sptPertamaClient, prefs)) }
 									10 -> {  }
 									11 -> {  }
 									12 -> {  }

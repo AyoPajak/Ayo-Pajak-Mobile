@@ -55,6 +55,8 @@ import models.transaction.FormFinalIncomeResponseApiModel
 import models.transaction.FormIdentityRequestApiModel
 import models.transaction.FormIdentityResponseApiModel
 import models.transaction.FormNetOtherIncomeResponseApiModel
+import models.transaction.FormNonFinalIncomeRequestApiModel
+import models.transaction.FormNonFinalIncomeResponseApiModel
 import models.transaction.FormNonTaxedIncomeRequestApiModel
 import models.transaction.FormNonTaxedIncomeResponseApiModel
 import models.transaction.FormTaxCreditARequestApiModel
@@ -1798,6 +1800,80 @@ class SPTManager(val prefs: DataStore<Preferences>, val client: Account, val spt
 		return suspendCoroutine { cont ->
 			scope.launch {
 				sptPertamaClient.saveIncomeBookKeep("Bearer $apiToken", body)
+					.onSuccess {
+						println(result.Message)
+						cont.resume(result)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(result)
+					}
+			}
+		}
+	}
+	
+	//Non Final Income
+	suspend fun getIncomeNonFinalData(scope: CoroutineScope, hdId: String, businessTypeE: String? = null): List<FormNonFinalIncomeResponseApiModel> {
+		var nonFinalIncomeData: List<FormNonFinalIncomeResponseApiModel> = ArrayList()
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Fail: Api token is null")
+			return nonFinalIncomeData
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.getIncomeNonFinalData("Bearer $apiToken", hdId, businessTypeE)
+					.onSuccess {
+						nonFinalIncomeData = it.Items ?: listOf()
+						cont.resume(nonFinalIncomeData)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(nonFinalIncomeData)
+					}
+			}
+		}
+	}
+	
+	suspend fun getIncomeNonFinalDataById(scope: CoroutineScope, id: String): FormNonFinalIncomeResponseApiModel? {
+		var incomeData: FormNonFinalIncomeResponseApiModel? = null
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Fail: Api token is null")
+			return incomeData
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.getIncomeNonFinalDataById("Bearer $apiToken", id)
+					.onSuccess {
+						incomeData = it
+						cont.resume(incomeData)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(incomeData)
+					}
+			}
+		}
+	}
+	
+	suspend fun saveIncomeNonFinal(scope: CoroutineScope, body: FormNonFinalIncomeRequestApiModel): ReturnStatus {
+		val result = ReturnStatus()
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Api token is null")
+			result.SetError("Api token is null")
+			return result
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.saveIncomeNonFinal("Bearer $apiToken", body)
 					.onSuccess {
 						println(result.Message)
 						cont.resume(result)

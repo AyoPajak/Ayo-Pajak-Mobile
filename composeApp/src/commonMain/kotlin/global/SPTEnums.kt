@@ -488,6 +488,33 @@ enum class NonFinalIncomeType(val value: Int) : IBaseEnum {
 	
 	override var resourceSuffix: String = "non_final_income_"
 	
+	companion object {
+		// Method to get the enum name by its value
+		fun fromValue(value: Int): String? {
+			return when (value) {
+				5 -> {
+					"Dagang"
+				}
+				10 -> {
+					"Industri"
+				}
+				15 -> {
+					"Jasa"
+				}
+				20 -> {
+					"Pekerjaan Bebas"
+				}
+				99 -> {
+					"Usaha Lainnya"
+				}
+				
+				else -> {
+					null
+				}
+			}
+		}
+	}
+	
 //	override fun toString(): String {
 //		val applicationContext: Context = TaxpediaApplication.applicationContext()
 //
