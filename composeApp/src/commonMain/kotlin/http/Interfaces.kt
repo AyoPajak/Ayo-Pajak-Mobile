@@ -49,6 +49,8 @@ import models.transaction.FormFinalIncomeERequestApiModel
 import models.transaction.FormFinalIncomeResponseApiModel
 import models.transaction.FormIdentityRequestApiModel
 import models.transaction.FormIdentityResponseApiModel
+import models.transaction.FormIncomeNetJobRequestApiModel
+import models.transaction.FormIncomeNetJobResponseApiModel
 import models.transaction.FormNetOtherIncomeResponseApiModel
 import models.transaction.FormNonFinalIncomeRequestApiModel
 import models.transaction.FormNonFinalIncomeResponseApiModel
@@ -2273,6 +2275,163 @@ class Interfaces(private val httpClient: HttpClient) {
 		}
 	}
 	
+	suspend fun deleteIncomeNonFinal(apiToken: String, id: String): Result<PertamaGeneralApiResponse, NetworkError> {
+		val response = try {
+			httpClient.post  (
+				urlString = "${Variables.PertamaApiBaseUrl}api/SPTTahunanOP/DeleteIncomeNonFinal"
+			) {
+				header("Authorization", apiToken)
+				url {
+					encodedParameters.append("key", id)
+				}
+				contentType(ContentType.Application.Json)
+			}
+		} catch (e: UnresolvedAddressException) {
+			return Result.Error(NetworkError.NO_INTERNET)
+		} catch (e: SerializationException) {
+			return Result.Error(NetworkError.SERIALIZATION)
+		}
+		
+		return when (response.status.value) {
+			200 -> {
+				val body = response.body<PertamaGeneralApiResponse>()
+				Result.Success(body)
+			}
+			401 -> Result.Error(NetworkError.UNAUTHORIZED)
+			409 -> Result.Error(NetworkError.CONFLICT)
+			408 -> Result.Error(NetworkError.REQUEST_TIMEOUT)
+			413 -> Result.Error(NetworkError.PAYLOAD_TOO_LARGE)
+			in 500..599 -> Result.Error(NetworkError.SERVER_ERROR)
+			else -> Result.Error(NetworkError.UNKNOWN)
+		}
+	}
+	
+	//Income Net Job
+	suspend fun getIncomeNetJobData(apiToken: String, hdId: String): Result<PagedListModel<FormIncomeNetJobResponseApiModel>, NetworkError> {
+		val response = try {
+			httpClient.get (
+				urlString = "${Variables.PertamaApiBaseUrl}api/SPTTahunanOP/GetIncomeNetJobData"
+			) {
+				header("Authorization", apiToken)
+				url {
+					encodedParameters.append("hdId", hdId)
+				}
+				
+				contentType(ContentType.Application.Json)
+			}
+		} catch (e: UnresolvedAddressException) {
+			return Result.Error(NetworkError.NO_INTERNET)
+		} catch (e: SerializationException) {
+			return Result.Error(NetworkError.SERIALIZATION)
+		}
+		
+		return when (response.status.value) {
+			200 -> {
+				val responseBody = response.body<PagedListModel<FormIncomeNetJobResponseApiModel>>()
+				Result.Success(responseBody)
+			}
+			401 -> Result.Error(NetworkError.UNAUTHORIZED)
+			409 -> Result.Error(NetworkError.CONFLICT)
+			408 -> Result.Error(NetworkError.REQUEST_TIMEOUT)
+			413 -> Result.Error(NetworkError.PAYLOAD_TOO_LARGE)
+			in 500..599 -> Result.Error(NetworkError.SERVER_ERROR)
+			else -> Result.Error(NetworkError.UNKNOWN)
+		}
+	}
+	
+	suspend fun getIncomeNetJobDataById(apiToken: String, id: String): Result<FormIncomeNetJobResponseApiModel, NetworkError> {
+		val response = try {
+			httpClient.get (
+				urlString = "${Variables.PertamaApiBaseUrl}api/SPTTahunanOP/GetIncomeNetJobDataById"
+			) {
+				header("Authorization", apiToken)
+				url {
+					encodedParameters.append("id", id)
+				}
+				
+				contentType(ContentType.Application.Json)
+			}
+		} catch (e: UnresolvedAddressException) {
+			return Result.Error(NetworkError.NO_INTERNET)
+		} catch (e: SerializationException) {
+			return Result.Error(NetworkError.SERIALIZATION)
+		}
+		
+		return when (response.status.value) {
+			200 -> {
+				val responseBody = response.body<FormIncomeNetJobResponseApiModel>()
+				Result.Success(responseBody)
+			}
+			401 -> Result.Error(NetworkError.UNAUTHORIZED)
+			409 -> Result.Error(NetworkError.CONFLICT)
+			408 -> Result.Error(NetworkError.REQUEST_TIMEOUT)
+			413 -> Result.Error(NetworkError.PAYLOAD_TOO_LARGE)
+			in 500..599 -> Result.Error(NetworkError.SERVER_ERROR)
+			else -> Result.Error(NetworkError.UNKNOWN)
+		}
+	}
+	
+	suspend fun deleteIncomeNetJob(apiToken: String, id: String): Result<PertamaGeneralApiResponse, NetworkError> {
+		val response = try {
+			httpClient.post  (
+				urlString = "${Variables.PertamaApiBaseUrl}api/SPTTahunanOP/DeleteIncomeNetJob"
+			) {
+				header("Authorization", apiToken)
+				url {
+					encodedParameters.append("key", id)
+				}
+				contentType(ContentType.Application.Json)
+			}
+		} catch (e: UnresolvedAddressException) {
+			return Result.Error(NetworkError.NO_INTERNET)
+		} catch (e: SerializationException) {
+			return Result.Error(NetworkError.SERIALIZATION)
+		}
+		
+		return when (response.status.value) {
+			200 -> {
+				val body = response.body<PertamaGeneralApiResponse>()
+				Result.Success(body)
+			}
+			401 -> Result.Error(NetworkError.UNAUTHORIZED)
+			409 -> Result.Error(NetworkError.CONFLICT)
+			408 -> Result.Error(NetworkError.REQUEST_TIMEOUT)
+			413 -> Result.Error(NetworkError.PAYLOAD_TOO_LARGE)
+			in 500..599 -> Result.Error(NetworkError.SERVER_ERROR)
+			else -> Result.Error(NetworkError.UNKNOWN)
+		}
+	}
+	
+	suspend fun saveIncomeNetJob(apiToken: String, request: FormIncomeNetJobRequestApiModel) : Result<PertamaGeneralApiResponse, NetworkError> {
+		val response = try {
+			httpClient.post  (
+				urlString = "${Variables.PertamaApiBaseUrl}api/SPTTahunanOP/SaveIncomeNetJob"
+			) {
+				header("Authorization", apiToken)
+				setBody(request)
+				contentType(ContentType.Application.Json)
+			}
+		} catch (e: UnresolvedAddressException) {
+			return Result.Error(NetworkError.NO_INTERNET)
+		} catch (e: SerializationException) {
+			return Result.Error(NetworkError.SERIALIZATION)
+		}
+		
+		return when (response.status.value) {
+			200 -> {
+				val body = response.body<PertamaGeneralApiResponse>()
+				println(body)
+				Result.Success(body)
+			}
+			401 -> Result.Error(NetworkError.UNAUTHORIZED)
+			409 -> Result.Error(NetworkError.CONFLICT)
+			408 -> Result.Error(NetworkError.REQUEST_TIMEOUT)
+			413 -> Result.Error(NetworkError.PAYLOAD_TOO_LARGE)
+			in 500..599 -> Result.Error(NetworkError.SERVER_ERROR)
+			else -> Result.Error(NetworkError.UNKNOWN)
+		}
+	}
+	
 	//Income Net Other
 	suspend fun getIncomeNetOtherData(apiToken: String, hdId: String, isOverseas: Boolean? = null, netIncomeE: String? = null): Result<PagedListModel<FormNetOtherIncomeResponseApiModel>, NetworkError> {
 		val response = try {
@@ -2311,5 +2470,4 @@ class Interfaces(private val httpClient: HttpClient) {
 			else -> Result.Error(NetworkError.UNKNOWN)
 		}
 	}
-	
 }

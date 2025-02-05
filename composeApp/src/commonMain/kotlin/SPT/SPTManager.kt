@@ -54,6 +54,8 @@ import models.transaction.FormFinalIncomeERequestApiModel
 import models.transaction.FormFinalIncomeResponseApiModel
 import models.transaction.FormIdentityRequestApiModel
 import models.transaction.FormIdentityResponseApiModel
+import models.transaction.FormIncomeNetJobRequestApiModel
+import models.transaction.FormIncomeNetJobResponseApiModel
 import models.transaction.FormNetOtherIncomeResponseApiModel
 import models.transaction.FormNonFinalIncomeRequestApiModel
 import models.transaction.FormNonFinalIncomeResponseApiModel
@@ -1874,6 +1876,128 @@ class SPTManager(val prefs: DataStore<Preferences>, val client: Account, val spt
 		return suspendCoroutine { cont ->
 			scope.launch {
 				sptPertamaClient.saveIncomeNonFinal("Bearer $apiToken", body)
+					.onSuccess {
+						println(result.Message)
+						cont.resume(result)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(result)
+					}
+			}
+		}
+	}
+	
+	suspend fun deleteIncomeNonFinal(scope: CoroutineScope, id: String): ReturnStatus {
+		val result = ReturnStatus()
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Api token is null")
+			result.SetError("Api token is null")
+			return result
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.deleteIncomeNonFinal("Bearer $apiToken", id)
+					.onSuccess {
+						cont.resume(result)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(result)
+					}
+			}
+		}
+	}
+	
+	//Income Net Job
+	suspend fun getIncomeNetJobData(scope: CoroutineScope, hdId: String): List<FormIncomeNetJobResponseApiModel> {
+		var incomeNetJobData: List<FormIncomeNetJobResponseApiModel> = ArrayList()
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Fail: Api token is null")
+			return incomeNetJobData
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.getIncomeNetJobData("Bearer $apiToken", hdId)
+					.onSuccess {
+						incomeNetJobData = it.Items ?: listOf()
+						cont.resume(incomeNetJobData)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(incomeNetJobData)
+					}
+			}
+		}
+	}
+	
+	suspend fun getIncomeNetJobDataById(scope: CoroutineScope, id: String): FormIncomeNetJobResponseApiModel? {
+		var incomeData: FormIncomeNetJobResponseApiModel? = null
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Fail: Api token is null")
+			return incomeData
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.getIncomeNetJobDataById("Bearer $apiToken", id)
+					.onSuccess {
+						incomeData = it
+						cont.resume(incomeData)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(incomeData)
+					}
+			}
+		}
+	}
+	
+	suspend fun deleteIncomeNetJob(scope: CoroutineScope, id: String): ReturnStatus {
+		val result = ReturnStatus()
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Api token is null")
+			result.SetError("Api token is null")
+			return result
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.deleteIncomeNetJob("Bearer $apiToken", id)
+					.onSuccess {
+						cont.resume(result)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(result)
+					}
+			}
+		}
+	}
+	
+	suspend fun saveIncomeNetJob(scope: CoroutineScope, body: FormIncomeNetJobRequestApiModel): ReturnStatus {
+		val result = ReturnStatus()
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Api token is null")
+			result.SetError("Api token is null")
+			return result
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.saveIncomeNetJob("Bearer $apiToken", body)
 					.onSuccess {
 						println(result.Message)
 						cont.resume(result)
