@@ -56,6 +56,12 @@ import models.transaction.FormIdentityRequestApiModel
 import models.transaction.FormIdentityResponseApiModel
 import models.transaction.FormIncomeNetJobRequestApiModel
 import models.transaction.FormIncomeNetJobResponseApiModel
+import models.transaction.FormNetOtherIncomeARequestApiModel
+import models.transaction.FormNetOtherIncomeBRequestApiModel
+import models.transaction.FormNetOtherIncomeCRequestApiModel
+import models.transaction.FormNetOtherIncomeDRequestApiModel
+import models.transaction.FormNetOtherIncomeERequestApiModel
+import models.transaction.FormNetOtherIncomeFRequestApiModel
 import models.transaction.FormNetOtherIncomeResponseApiModel
 import models.transaction.FormNonFinalIncomeRequestApiModel
 import models.transaction.FormNonFinalIncomeResponseApiModel
@@ -2035,5 +2041,201 @@ class SPTManager(val prefs: DataStore<Preferences>, val client: Account, val spt
 		}
 	}
 	
+	suspend fun getIncomeNetOtherDataById(scope: CoroutineScope, id: String): FormNetOtherIncomeResponseApiModel? {
+		var incomeData: FormNetOtherIncomeResponseApiModel? = null
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Fail: Api token is null")
+			return incomeData
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.getIncomeNetOtherDataById("Bearer $apiToken", id)
+					.onSuccess {
+						incomeData = it
+						cont.resume(incomeData)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(incomeData)
+					}
+			}
+		}
+	}
 	
+	suspend fun deleteIncomeNetOther(scope: CoroutineScope, id: String): ReturnStatus {
+		val result = ReturnStatus()
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Api token is null")
+			result.SetError("Api token is null")
+			return result
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.deleteIncomeNetOther("Bearer $apiToken", id)
+					.onSuccess {
+						cont.resume(result)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(result)
+					}
+			}
+		}
+	}
+	
+	suspend fun saveIncomeNetOtherA(scope: CoroutineScope, body: FormNetOtherIncomeARequestApiModel): ReturnStatus {
+		val result = ReturnStatus()
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Api token is null")
+			result.SetError("Api token is null")
+			return result
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.saveIncomeNetOtherA("Bearer $apiToken", body)
+					.onSuccess {
+						println(result.Message)
+						cont.resume(result)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(result)
+					}
+			}
+		}
+	}
+	
+	suspend fun saveIncomeNetOtherB(scope: CoroutineScope, body: FormNetOtherIncomeBRequestApiModel): ReturnStatus {
+		val result = ReturnStatus()
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Api token is null")
+			result.SetError("Api token is null")
+			return result
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.saveIncomeNetOtherB("Bearer $apiToken", body)
+					.onSuccess {
+						println(result.Message)
+						cont.resume(result)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(result)
+					}
+			}
+		}
+	}
+	
+	suspend fun saveIncomeNetOtherC(scope: CoroutineScope, body: FormNetOtherIncomeCRequestApiModel): ReturnStatus {
+		val result = ReturnStatus()
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Api token is null")
+			result.SetError("Api token is null")
+			return result
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.saveIncomeNetOtherC("Bearer $apiToken", body)
+					.onSuccess {
+						println(result.Message)
+						cont.resume(result)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(result)
+					}
+			}
+		}
+	}
+	
+	suspend fun saveIncomeNetOtherD(scope: CoroutineScope, body: FormNetOtherIncomeDRequestApiModel): ReturnStatus {
+		val result = ReturnStatus()
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Api token is null")
+			result.SetError("Api token is null")
+			return result
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.saveIncomeNetOtherD("Bearer $apiToken", body)
+					.onSuccess {
+						println(result.Message)
+						cont.resume(result)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(result)
+					}
+			}
+		}
+	}
+	
+	suspend fun saveIncomeNetOtherE(scope: CoroutineScope, body: FormNetOtherIncomeERequestApiModel): ReturnStatus {
+		val result = ReturnStatus()
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Api token is null")
+			result.SetError("Api token is null")
+			return result
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.saveIncomeNetOtherE("Bearer $apiToken", body)
+					.onSuccess {
+						println(result.Message)
+						cont.resume(result)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(result)
+					}
+			}
+		}
+	}
+	
+	suspend fun saveIncomeNetOtherF(scope: CoroutineScope, body: FormNetOtherIncomeFRequestApiModel): ReturnStatus {
+		val result = ReturnStatus()
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Api token is null")
+			result.SetError("Api token is null")
+			return result
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.saveIncomeNetOtherF("Bearer $apiToken", body)
+					.onSuccess {
+						println(result.Message)
+						cont.resume(result)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(result)
+					}
+			}
+		}
+	}
 }

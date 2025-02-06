@@ -369,13 +369,30 @@ enum class FinalIncomeType(val value: Int) : IBaseEnum {
 		}
 		
 		fun formTypeFromValue(value: Int): String? {
-			when (value) {
-				10, 20, 30, 80, 120, 140 -> { return "A" }
-				40, 50, 60, 100, 110, 150 -> { return "B" }
-				70 -> { return "C" }
-				160 -> { return "D" }
-				90 -> { return "E" }
-				else -> { return null }
+			return when (value) {
+				10, 20, 30, 80, 120, 140 -> {
+					"A"
+				}
+				
+				40, 50, 60, 100, 110, 150 -> {
+					"B"
+				}
+				
+				70 -> {
+					"C"
+				}
+				
+				160 -> {
+					"D"
+				}
+				
+				90 -> {
+					"E"
+				}
+				
+				else -> {
+					null
+				}
 			}
 		}
 	}
@@ -549,6 +566,57 @@ enum class DomesticNetIncomeType(val value: Int) : IBaseEnum {
 	
 	override var resourceSuffix: String = "domestic_net_income_"
 	
+	companion object {
+		// Method to get the enum name by its value
+		fun fromValue(value: Int): String {
+			return when (value) {
+				5 -> {
+					"Bunga"
+				}
+				10 -> {
+					"Royalti"
+				}
+				15 -> {
+					"Sewa"
+				}
+				20 -> {
+					"Penghargaan dan Hadiah"
+				}
+				25 -> {
+					"Keuntungan dari Penjualan/Pengalihan Harta"
+				}
+				99 -> {
+					"Penghasilan Lainnya"
+				}
+				else -> {
+					"-"
+				}
+			}
+		}
+		
+		fun formTypeFromValue(value: Int): String? {
+			return when (value) {
+				5, 10, 20, 99 -> {
+					"A"
+				}
+				
+				25 -> {
+					"B"
+				}
+				
+				15 -> {
+					"C"
+				}
+				
+				else -> {
+					null
+				}
+			}
+		}
+	}
+	
+	
+	
 //	override fun toString(): String {
 //		val applicationContext: Context = TaxpediaApplication.applicationContext()
 //
@@ -579,6 +647,47 @@ enum class OverseasNetIncomeType(val value: Int) : IBaseEnum {
 	OTHER(299);
 	
 	override var resourceSuffix: String = "overseas_net_income_"
+	
+	companion object {
+		// Method to get the enum name by its value
+		fun fromValue(value: Int): String {
+			return when (value) {
+				215 -> {
+					"Penyewaan Aset (Luar Negeri)"
+				}
+				225 -> {
+					"Keuntungan dari Penjualan/Pengalihan Harta (Luar Negeri)"
+				}
+				299 -> {
+					"Penghasilan Lainnya (Luar Negeri)"
+				}
+				
+				else -> {
+					"-"
+				}
+			}
+		}
+		
+		fun formTypeFromValue(value: Int): String? {
+			return when (value) {
+				225 -> {
+					"D"
+				}
+				
+				299 -> {
+					"E"
+				}
+				
+				215 -> {
+					"F"
+				}
+				
+				else -> {
+					null
+				}
+			}
+		}
+	}
 	
 //	override fun toString(): String {
 //		val applicationContext: Context = TaxpediaApplication.applicationContext()
