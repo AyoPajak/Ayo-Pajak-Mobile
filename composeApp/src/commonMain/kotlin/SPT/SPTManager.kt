@@ -67,6 +67,8 @@ import models.transaction.FormNonFinalIncomeRequestApiModel
 import models.transaction.FormNonFinalIncomeResponseApiModel
 import models.transaction.FormNonTaxedIncomeRequestApiModel
 import models.transaction.FormNonTaxedIncomeResponseApiModel
+import models.transaction.FormOtherDetailRequestApiModel
+import models.transaction.FormOtherDetailResponseApiModel
 import models.transaction.FormSpousePHMTIncomeRequestApiModel
 import models.transaction.FormSpousePHMTIncomeResponseApiModel
 import models.transaction.FormTaxCreditARequestApiModel
@@ -2279,6 +2281,56 @@ class SPTManager(val prefs: DataStore<Preferences>, val client: Account, val spt
 		return suspendCoroutine { cont ->
 			scope.launch {
 				sptPertamaClient.saveIncomeSpousePHMT("Bearer $apiToken", body)
+					.onSuccess {
+						println(result.Message)
+						cont.resume(result)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(result)
+					}
+			}
+		}
+	}
+	
+	//Other Detail
+	suspend fun getOtherDetail(scope: CoroutineScope, id: String): FormOtherDetailResponseApiModel? {
+		var data: FormOtherDetailResponseApiModel? = null
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Fail: Api token is null")
+			return data
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.getOtherDetail("Bearer $apiToken", id)
+					.onSuccess {
+						data = it
+						cont.resume(data)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(data)
+					}
+			}
+		}
+	}
+	
+	suspend fun saveOtherDetail(scope: CoroutineScope, body: FormOtherDetailRequestApiModel): ReturnStatus {
+		val result = ReturnStatus()
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Api token is null")
+			result.SetError("Api token is null")
+			return result
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.saveOtherDetail("Bearer $apiToken", body)
 					.onSuccess {
 						println(result.Message)
 						cont.resume(result)

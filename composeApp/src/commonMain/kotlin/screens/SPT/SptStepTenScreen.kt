@@ -131,8 +131,6 @@ class SptStepTenScreen(val sptHd: Form1770HdResponseApiModel?, val client: Accou
 			isReady = true
 		}
 		
-		loadingPopupBox(!isReady)
-		
 		fun calculateSubTotal() {
 			subTotalIDRActual = nonFinalIncomeIDRActual + jobNettIncomeIDRActual + otherNettIncomeIDRActual + overseasNettIncomeIDRActual - religiousDonationIDRActual
 			if(subTotalIDRActual < 0) subTotalIDRActual = 0L
@@ -155,6 +153,8 @@ class SptStepTenScreen(val sptHd: Form1770HdResponseApiModel?, val client: Accou
 			calculateSubTotal()
 			calculateTotal()
 		}
+		
+		loadingPopupBox(!isReady)
 		
 		//Form
 		Column(
