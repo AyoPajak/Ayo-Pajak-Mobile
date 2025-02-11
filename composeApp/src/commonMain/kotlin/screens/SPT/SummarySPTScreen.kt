@@ -105,13 +105,15 @@ class SummarySPTScreen(private val id: Int, val client: Account, val sptPertamaC
 						110 -> { 5 }
 						120 -> { 6 }
 						210 -> { 7 }
-						330 -> { 8 }
-						340 -> { 9 }
-						410 -> { 10 }
-						430 -> { 11 }
-						450 -> { 12 }
-						470 -> { 13 }
-						999 -> { 14 }
+						310 -> { 8 }
+						320 -> { 9 }
+						330 -> { if(formType == "1770S") 8 else 10 }
+						340 -> { if(formType == "1770S") 9 else 11 }
+						410 -> { if(formType == "1770S") 10 else 12 }
+						430 -> { if(formType == "1770S") 11 else 13 }
+						450 -> { if(formType == "1770S") 12 else 14 }
+						470 -> { if(formType == "1770S") 13 else 15 }
+						999 -> { if(formType == "1770S") 14 else 16 }
 						
 						else -> { 0 }
 					}
@@ -138,7 +140,7 @@ class SummarySPTScreen(private val id: Int, val client: Account, val sptPertamaC
 									7 -> { navigator.push(SptStepSevenScreen(sptHd, client, sptPertamaClient, prefs)) }
 									8 -> { navigator.push(SptStepEightScreen(sptHd, client, sptPertamaClient, prefs)) }
 									9 -> { navigator.push(SptStepNineScreen(sptHd, client, sptPertamaClient, prefs)) }
-									10 -> {  }
+									10 -> { navigator.push(SptStepTenScreen(sptHd, client, sptPertamaClient, prefs)) }
 									11 -> {  }
 									12 -> {  }
 									13 -> {  }
@@ -158,7 +160,7 @@ class SummarySPTScreen(private val id: Int, val client: Account, val sptPertamaC
 									9 -> { navigator.push(IncomeNonFinalScreen(sptHd, client, sptPertamaClient, prefs)) }
 									10 -> { navigator.push(SptStepEightScreen(sptHd, client, sptPertamaClient, prefs)) }
 									11 -> { navigator.push(SptStepNineScreen(sptHd, client, sptPertamaClient, prefs)) }
-									12 -> {  }
+									12 -> { navigator.push(SptStepTenScreen(sptHd, client, sptPertamaClient, prefs)) }
 									13 -> {  }
 									14 -> {  }
 									15 -> {  }

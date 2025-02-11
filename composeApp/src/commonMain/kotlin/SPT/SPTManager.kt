@@ -67,6 +67,8 @@ import models.transaction.FormNonFinalIncomeRequestApiModel
 import models.transaction.FormNonFinalIncomeResponseApiModel
 import models.transaction.FormNonTaxedIncomeRequestApiModel
 import models.transaction.FormNonTaxedIncomeResponseApiModel
+import models.transaction.FormSpousePHMTIncomeRequestApiModel
+import models.transaction.FormSpousePHMTIncomeResponseApiModel
 import models.transaction.FormTaxCreditARequestApiModel
 import models.transaction.FormTaxCreditBRequestApiModel
 import models.transaction.FormTaxCreditResponseApiModel
@@ -2227,6 +2229,56 @@ class SPTManager(val prefs: DataStore<Preferences>, val client: Account, val spt
 		return suspendCoroutine { cont ->
 			scope.launch {
 				sptPertamaClient.saveIncomeNetOtherF("Bearer $apiToken", body)
+					.onSuccess {
+						println(result.Message)
+						cont.resume(result)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(result)
+					}
+			}
+		}
+	}
+	
+	//Income Spouse
+	suspend fun getIncomeSpousePHMTData(scope: CoroutineScope, id: String): FormSpousePHMTIncomeResponseApiModel? {
+		var incomeData: FormSpousePHMTIncomeResponseApiModel? = null
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Fail: Api token is null")
+			return incomeData
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.getIncomeSpousePHMTData("Bearer $apiToken", id)
+					.onSuccess {
+						incomeData = it
+						cont.resume(incomeData)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(incomeData)
+					}
+			}
+		}
+	}
+	
+	suspend fun saveIncomeSpousePHMT(scope: CoroutineScope, body: FormSpousePHMTIncomeRequestApiModel): ReturnStatus {
+		val result = ReturnStatus()
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Api token is null")
+			result.SetError("Api token is null")
+			return result
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.saveIncomeSpousePHMT("Bearer $apiToken", body)
 					.onSuccess {
 						println(result.Message)
 						cont.resume(result)

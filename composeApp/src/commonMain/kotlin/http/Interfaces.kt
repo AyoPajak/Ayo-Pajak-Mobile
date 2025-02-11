@@ -62,6 +62,8 @@ import models.transaction.FormNonFinalIncomeRequestApiModel
 import models.transaction.FormNonFinalIncomeResponseApiModel
 import models.transaction.FormNonTaxedIncomeRequestApiModel
 import models.transaction.FormNonTaxedIncomeResponseApiModel
+import models.transaction.FormSpousePHMTIncomeRequestApiModel
+import models.transaction.FormSpousePHMTIncomeResponseApiModel
 import models.transaction.FormTaxCreditARequestApiModel
 import models.transaction.FormTaxCreditBRequestApiModel
 import models.transaction.FormTaxCreditResponseApiModel
@@ -2694,6 +2696,69 @@ class Interfaces(private val httpClient: HttpClient) {
 		val response = try {
 			httpClient.post  (
 				urlString = "${Variables.PertamaApiBaseUrl}api/SPTTahunanOP/SaveIncomeNetOtherF"
+			) {
+				header("Authorization", apiToken)
+				setBody(request)
+				contentType(ContentType.Application.Json)
+			}
+		} catch (e: UnresolvedAddressException) {
+			return Result.Error(NetworkError.NO_INTERNET)
+		} catch (e: SerializationException) {
+			return Result.Error(NetworkError.SERIALIZATION)
+		}
+		
+		return when (response.status.value) {
+			200 -> {
+				val body = response.body<PertamaGeneralApiResponse>()
+				println(body)
+				Result.Success(body)
+			}
+			401 -> Result.Error(NetworkError.UNAUTHORIZED)
+			409 -> Result.Error(NetworkError.CONFLICT)
+			408 -> Result.Error(NetworkError.REQUEST_TIMEOUT)
+			413 -> Result.Error(NetworkError.PAYLOAD_TOO_LARGE)
+			in 500..599 -> Result.Error(NetworkError.SERVER_ERROR)
+			else -> Result.Error(NetworkError.UNKNOWN)
+		}
+	}
+	
+	//Income Spouse
+	suspend fun getIncomeSpousePHMTData(apiToken: String, id: String): Result<FormSpousePHMTIncomeResponseApiModel, NetworkError> {
+		val response = try {
+			httpClient.get (
+				urlString = "${Variables.PertamaApiBaseUrl}api/SPTTahunanOP/GetIncomeSpousePHMTData"
+			) {
+				header("Authorization", apiToken)
+				url {
+					encodedParameters.append("hdId", id)
+				}
+				
+				contentType(ContentType.Application.Json)
+			}
+		} catch (e: UnresolvedAddressException) {
+			return Result.Error(NetworkError.NO_INTERNET)
+		} catch (e: SerializationException) {
+			return Result.Error(NetworkError.SERIALIZATION)
+		}
+		
+		return when (response.status.value) {
+			200 -> {
+				val responseBody = response.body<FormSpousePHMTIncomeResponseApiModel>()
+				Result.Success(responseBody)
+			}
+			401 -> Result.Error(NetworkError.UNAUTHORIZED)
+			409 -> Result.Error(NetworkError.CONFLICT)
+			408 -> Result.Error(NetworkError.REQUEST_TIMEOUT)
+			413 -> Result.Error(NetworkError.PAYLOAD_TOO_LARGE)
+			in 500..599 -> Result.Error(NetworkError.SERVER_ERROR)
+			else -> Result.Error(NetworkError.UNKNOWN)
+		}
+	}
+	
+	suspend fun saveIncomeSpousePHMT(apiToken: String, request: FormSpousePHMTIncomeRequestApiModel) : Result<PertamaGeneralApiResponse, NetworkError> {
+		val response = try {
+			httpClient.post  (
+				urlString = "${Variables.PertamaApiBaseUrl}api/SPTTahunanOP/SaveIncomeSpousePHMT"
 			) {
 				header("Authorization", apiToken)
 				setBody(request)
