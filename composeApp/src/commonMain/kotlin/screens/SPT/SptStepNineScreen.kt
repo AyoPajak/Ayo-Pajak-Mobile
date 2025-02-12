@@ -25,6 +25,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -80,7 +81,7 @@ class SptStepNineScreen(val sptHd: Form1770HdResponseApiModel?, val client: Acco
 					.padding(bottom = 8.dp)
 					.clip(RoundedCornerShape(8.dp))
 					.border(1.dp, Colors().slate20, RoundedCornerShape(8.dp))
-					.background(Colors().panel)
+					.background(Color.White)
 					.clickable(true, onClick = {
 						navigator.push(IncomeNetOtherFormScreen(data.Id, sptHd, client, sptPertamaClient, prefs))
 					})

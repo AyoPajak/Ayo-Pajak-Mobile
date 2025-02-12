@@ -83,7 +83,7 @@ class SptStepSixScreen(val sptHd: Form1770HdResponseApiModel?, val client: Accou
 					.padding(bottom = 8.dp)
 					.clip(RoundedCornerShape(8.dp))
 					.border(1.dp, Colors().slate20, RoundedCornerShape(8.dp))
-					.background(Colors().panel)
+					.background(Color.White)
 			) {
 				Column(
 					modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 24.dp)

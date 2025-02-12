@@ -268,7 +268,7 @@ class SptStepElevenScreen(val sptHd: Form1770HdResponseApiModel?, val client: Ac
 				item {
 					Text(
 						modifier = Modifier.padding(top = 16.dp).padding(horizontal = 16.dp),
-						text = "STP PPh Pasal 25 yang dibayar sendiri ",
+						text = "STP PPh Pasal 25 yang dibayar sendiri",
 						fontSize = 12.sp,
 						color = Color.Black,
 						fontWeight = FontWeight.Bold

@@ -243,6 +243,24 @@ enum class DepositType(val value: Int) : IBaseEnum {
 	
 	override var resourceSuffix: String = "deposit_type_"
 	
+	companion object {
+		// Method to get the enum name by its value
+		fun fromValue(value: Int): String? {
+			when (value) {
+				100 -> { return "Masa PPh Pasal 25 Orang Pribadi" }
+				101 -> { return "Masa PPh Pasal 25 Orang Pribadi Tertentu" }
+				119 -> { return "Pembayaran Pendahuluan SKP PPh Pasal 25 Orang Pribadi" }
+				200 -> { return "Tahunan PPh Orang Pribadi" }
+				300 -> { return "STP PPh Orang Pribadi" }
+				310 -> { return "SKPKB PPh Orang Pribadi" }
+				320 -> { return "SKPKBT PPh Orang Pribadi" }
+				390 -> { return "Pembayaran Atas Surat keputusan Pembetulan, Surat Keputusan Keberatan, atau Putusan Banding" }
+				
+				else -> { return null }
+			}
+		}
+	}
+	
 //	override fun toString(): String {
 //		val applicationContext: Context = TaxpediaApplication.applicationContext()
 //

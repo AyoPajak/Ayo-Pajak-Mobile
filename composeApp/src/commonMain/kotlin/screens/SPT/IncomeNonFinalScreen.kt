@@ -94,7 +94,7 @@ class IncomeNonFinalScreen(val sptHd: Form1770HdResponseApiModel?, val client: A
 					.padding(bottom = 8.dp)
 					.clip(RoundedCornerShape(8.dp))
 					.border(1.dp, Colors().slate20, RoundedCornerShape(8.dp))
-					.background(Colors().panel)
+					.background(Color.White)
 					.clickable(true, onClick = {
 						navigator.push(IncomeNonFinalFormScreen(data.Id, sptHd, client, sptPertamaClient, prefs))
 					})

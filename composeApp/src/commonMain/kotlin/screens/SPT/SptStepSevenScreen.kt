@@ -79,7 +79,7 @@ class SptStepSevenScreen(val sptHd: Form1770HdResponseApiModel?, val client: Acc
 					.padding(bottom = 8.dp)
 					.clip(RoundedCornerShape(8.dp))
 					.border(1.dp, Colors().slate20, RoundedCornerShape(8.dp))
-					.background(Colors().panel)
+					.background(Color.White)
 					.clickable(true, onClick = {
 						navigator.push(TaxCreditFormScreen(data.Id, sptHd, client, sptPertamaClient, prefs))
 					})

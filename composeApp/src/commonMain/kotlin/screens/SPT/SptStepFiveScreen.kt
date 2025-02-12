@@ -90,7 +90,7 @@ class SptStepFiveScreen(val sptHd: Form1770HdResponseApiModel?, val client: Acco
 					.padding(bottom = 8.dp)
 					.clip(RoundedCornerShape(8.dp))
 					.border(1.dp, Colors().slate20, RoundedCornerShape(8.dp))
-					.background(Colors().panel)
+					.background(Color.White)
 			) {
 				Column(
 					modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 24.dp)
@@ -139,7 +139,7 @@ class SptStepFiveScreen(val sptHd: Form1770HdResponseApiModel?, val client: Acco
 					.padding(bottom = 8.dp)
 					.clip(RoundedCornerShape(8.dp))
 					.border(1.dp, Colors().slate20, RoundedCornerShape(8.dp))
-					.background(Colors().panel)
+					.background(Color.White)
 					.clickable(true, onClick = {
 						if(sptHd?.TaxYear?.toInt()!! >= 2023 && finalIncomeType == "Penghasilan Lain") navigator.push(FinalIncomeUMKMScreen(sptHd, client, sptPertamaClient, prefs)) else navigator.push(FinalIncomeFormScreen(id, sptHd, client, sptPertamaClient, prefs))
 					})

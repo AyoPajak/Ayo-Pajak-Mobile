@@ -28,6 +28,8 @@ class Variables {
 
         const val DefaultTextViewColor = -1979711488
         const val CurrencyCodeIDR = "IDR"
+        
+        const val KAPCode = "411125"
     }
 }
 

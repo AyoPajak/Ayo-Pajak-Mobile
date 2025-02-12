@@ -74,6 +74,8 @@ import models.transaction.FormSpousePHMTIncomeResponseApiModel
 import models.transaction.FormTaxCreditARequestApiModel
 import models.transaction.FormTaxCreditBRequestApiModel
 import models.transaction.FormTaxCreditResponseApiModel
+import models.transaction.FormTaxPaymentSlipRequestApiModel
+import models.transaction.FormTaxPaymentSlipResponseApiModel
 import models.transaction.FormWealthARequestApiModel
 import models.transaction.FormWealthBRequestApiModel
 import models.transaction.FormWealthCRequestApiModel
@@ -2331,6 +2333,128 @@ class SPTManager(val prefs: DataStore<Preferences>, val client: Account, val spt
 		return suspendCoroutine { cont ->
 			scope.launch {
 				sptPertamaClient.saveOtherDetail("Bearer $apiToken", body)
+					.onSuccess {
+						println(result.Message)
+						cont.resume(result)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(result)
+					}
+			}
+		}
+	}
+	
+	//Tax Payment Slip
+	suspend fun getTaxPaymentSlipData(scope: CoroutineScope, hdId: String, depositTypeE: String? = null): List<FormTaxPaymentSlipResponseApiModel> {
+		var taxPaymentSlipData: List<FormTaxPaymentSlipResponseApiModel> = ArrayList()
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Fail: Api token is null")
+			return taxPaymentSlipData
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.getTaxPaymentSlipData("Bearer $apiToken", hdId, depositTypeE)
+					.onSuccess {
+						taxPaymentSlipData = it.Items ?: listOf()
+						cont.resume(taxPaymentSlipData)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(taxPaymentSlipData)
+					}
+			}
+		}
+	}
+	
+	suspend fun getTaxPaymentSlipDataById(scope: CoroutineScope, id: String): FormTaxPaymentSlipResponseApiModel? {
+		var data: FormTaxPaymentSlipResponseApiModel? = null
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Fail: Api token is null")
+			return data
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.getTaxPaymentSlipDataById("Bearer $apiToken", id)
+					.onSuccess {
+						data = it
+						cont.resume(data)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(data)
+					}
+			}
+		}
+	}
+	
+	suspend fun getTaxPaymentSlipTotal(scope: CoroutineScope, hdId: String): Double {
+		var total: Double = 0.0
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Fail: Api token is null")
+			return total
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.getTaxPaymentSlipTotal("Bearer $apiToken", hdId)
+					.onSuccess {
+						total = it
+						cont.resume(total)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(total)
+					}
+			}
+		}
+	}
+	
+	suspend fun deleteTaxPaymentSlip(scope: CoroutineScope, id: String): ReturnStatus {
+		val result = ReturnStatus()
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Api token is null")
+			result.SetError("Api token is null")
+			return result
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.deleteTaxPaymentSlip("Bearer $apiToken", id)
+					.onSuccess {
+						cont.resume(result)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(result)
+					}
+			}
+		}
+	}
+	
+	suspend fun saveTaxPaymentSlip(scope: CoroutineScope, body: FormTaxPaymentSlipRequestApiModel): ReturnStatus {
+		val result = ReturnStatus()
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Api token is null")
+			result.SetError("Api token is null")
+			return result
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.saveTaxPaymentSlip("Bearer $apiToken", body)
 					.onSuccess {
 						println(result.Message)
 						cont.resume(result)
