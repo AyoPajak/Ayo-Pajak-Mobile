@@ -143,7 +143,7 @@ class SummarySPTScreen(private val id: Int, val client: Account, val sptPertamaC
 									10 -> { navigator.push(SptStepTenScreen(sptHd, client, sptPertamaClient, prefs)) }
 									11 -> { navigator.push(SptStepElevenScreen(sptHd, client, sptPertamaClient, prefs)) }
 									12 -> { navigator.push(SptStepTwelveScreen(sptHd, client, sptPertamaClient, prefs)) }
-									13 -> {  }
+									13 -> { navigator.push(SptStepThirteenScreen(sptHd, client, sptPertamaClient, prefs)) }
 									14 -> {  }
 								}
 							}
@@ -163,7 +163,7 @@ class SummarySPTScreen(private val id: Int, val client: Account, val sptPertamaC
 									12 -> { navigator.push(SptStepTenScreen(sptHd, client, sptPertamaClient, prefs)) }
 									13 -> { navigator.push(SptStepElevenScreen(sptHd, client, sptPertamaClient, prefs)) }
 									14 -> { navigator.push(SptStepTwelveScreen(sptHd, client, sptPertamaClient, prefs)) }
-									15 -> {  }
+									15 -> { navigator.push(SptStepThirteenScreen(sptHd, client, sptPertamaClient, prefs)) }
 									16 -> {  }
 								}
 							}

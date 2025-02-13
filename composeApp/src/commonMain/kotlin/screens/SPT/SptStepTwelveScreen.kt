@@ -144,7 +144,7 @@ class SptStepTwelveScreen(val sptHd: Form1770HdResponseApiModel?, val client: Ac
 		) {
 			LazyColumn {
 				//Top Bar
-				item { topBar("Penghasilan Neto Dalam Negeri (Pekerjaan)") }
+				item { topBar("Surat Setoran Pajak (SSP)") }
 				
 				//Attention Box
 				item {

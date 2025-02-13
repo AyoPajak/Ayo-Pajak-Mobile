@@ -823,6 +823,32 @@ enum class Art25InstallmentBase(val value: Int) : IBaseEnum {
 	
 	override var resourceSuffix: String = "art25_installment_base_"
 	
+	companion object {
+		fun fromValue(value: Int): String {
+			return when (value) {
+				0 -> {
+					"Tidak ada angsuran"
+				}
+				
+				1 -> {
+					"1/12 x Jumlah PPh yang dibayar sendiri"
+				}
+				
+				3 -> {
+					"Perhitungan wajib pajak orang pribadi pengusaha tertentu (WP OPPT)"
+				}
+				
+				5 -> {
+					"Perhitungan dalam lampiran tersendiri"
+				}
+				
+				else -> {
+					"-"
+				}
+			}
+		}
+	}
+	
 //	override fun toString(): String {
 //		val applicationContext: Context = TaxpediaApplication.applicationContext()
 //
@@ -853,6 +879,28 @@ enum class OverpaidRequest(val value: Int) : IBaseEnum {
 	ReturnedWithArt17D(7);
 	
 	override var resourceSuffix: String = "overpaid_request_"
+	
+	companion object {
+		fun fromValue(value: Int): String {
+			return when (value) {
+				1 -> {
+					"Restitusi"
+				}
+				
+				5 -> {
+					"Dikembalikan dengan SKPPKP Pasal 17C"
+				}
+				
+				7 -> {
+					"Dikembalikan dengan SKPPKP Pasal 17D"
+				}
+				
+				else -> {
+					""
+				}
+			}
+		}
+	}
 	
 //	override fun toString(): String {
 //		val applicationContext: Context = TaxpediaApplication.applicationContext()
@@ -908,12 +956,14 @@ enum class Authority(val value: Int) : IBaseEnum {
 //	}
 }
 
-//enum class TaxPaymentState(val value: Int) : IBaseEnum {
-//	UnderPaid(1),
-//	OverPaid(3);
-//
-//	override var resourceSuffix: String = "tax_payment_state_"
-//
+enum class TaxPaymentState(val value: Int) : IBaseEnum {
+	UnderPaid(1),
+	OverPaid(3);
+
+	override var resourceSuffix: String = "tax_payment_state_"
+	
+	
+
 //	override fun toString(): String {
 //		val applicationContext: Context = TaxpediaApplication.applicationContext()
 //
@@ -936,7 +986,7 @@ enum class Authority(val value: Int) : IBaseEnum {
 //			}
 //		}
 //	}
-//}
+}
 
 //enum class TaxReportStatus(val value: Int) {
 //	Processing(1),

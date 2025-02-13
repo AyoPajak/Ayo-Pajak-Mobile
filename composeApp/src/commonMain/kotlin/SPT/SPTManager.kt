@@ -40,6 +40,8 @@ import models.transaction.Form1770FinalIncomeUmkm2023ResponseApiModel
 import models.transaction.Form1770FinalIncomeUmkm2023SummaryRequestModel
 import models.transaction.Form1770HdRequestApiModel
 import models.transaction.Form1770HdResponseApiModel
+import models.transaction.FormAdditionalRequestApiModel
+import models.transaction.FormAdditionalResponseApiModel
 import models.transaction.FormBookKeepingRequestApiModel
 import models.transaction.FormBookKeepingResponseApiModel
 import models.transaction.FormDebtRequestApiModel
@@ -2455,6 +2457,56 @@ class SPTManager(val prefs: DataStore<Preferences>, val client: Account, val spt
 		return suspendCoroutine { cont ->
 			scope.launch {
 				sptPertamaClient.saveTaxPaymentSlip("Bearer $apiToken", body)
+					.onSuccess {
+						println(result.Message)
+						cont.resume(result)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(result)
+					}
+			}
+		}
+	}
+	
+	//Additional
+	suspend fun getAdditional(scope: CoroutineScope, hdId: String): FormAdditionalResponseApiModel? {
+		var addData: FormAdditionalResponseApiModel? = null
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Fail: Api token is null")
+			return addData
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.getAdditional("Bearer $apiToken", hdId)
+					.onSuccess {
+						addData = it
+						cont.resume(addData)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(addData)
+					}
+			}
+		}
+	}
+	
+	suspend fun saveAdditional(scope: CoroutineScope, body: FormAdditionalRequestApiModel): ReturnStatus {
+		val result = ReturnStatus()
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Api token is null")
+			result.SetError("Api token is null")
+			return result
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.saveAdditional("Bearer $apiToken", body)
 					.onSuccess {
 						println(result.Message)
 						cont.resume(result)
