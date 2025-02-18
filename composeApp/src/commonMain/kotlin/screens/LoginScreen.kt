@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -60,6 +61,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.datastore.core.DataStore
@@ -67,6 +69,8 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import ayopajakmobile.composeapp.generated.resources.Icon_Peek
+import ayopajakmobile.composeapp.generated.resources.Icon_Peek_Crossed
 import ayopajakmobile.composeapp.generated.resources.Res
 import ayopajakmobile.composeapp.generated.resources.logo_bnw
 import cafe.adriel.voyager.core.screen.Screen
@@ -143,7 +147,7 @@ class LoginScreen(val client: Account, val cryptoManager: Crypto,
 		var isEmailValid by remember { mutableStateOf(false) }
 		var isPassValid by remember { mutableStateOf(false) }
 		
-		var isPasswordVisible = false
+		var isPasswordVisible by remember { mutableStateOf(false) }
 		
 		var isLoginSuccess by remember { mutableStateOf(false) }
 		
@@ -346,54 +350,27 @@ class LoginScreen(val client: Account, val cryptoManager: Crypto,
 					value = pass,
 					onValueChange = {
 						pass = it
-						if (pass.length >= 8) isPassValid = true else isPassValid = false
+						isPassValid = pass.length >= 8
 					},
 					singleLine = true,
 					keyboardOptions = KeyboardOptions(
 						keyboardType = KeyboardType.Password,
 						imeAction = ImeAction.Done
 					),
-//                    keyboardActions = KeyboardActions(
-//                        onDone = {
-//                            focusManager.clearFocus()
-//
-//                            enabled = false
-//
-//                            scope.launch {
-//                                isLoading = true
-//                                errorMessage = null
-//
-//                                val encryptedEmail = cryptoManager.Encrypt(email, cryptoKey)
-//                                val encryptedPass = cryptoManager.Encrypt(pass, cryptoKey)
-//
-//                                val loginModel = LoginRequest(encryptedEmail, encryptedPass)
-//
-//                                client.Login(loginModel, "Bearer $apiToken")
-//                                    .onSuccess {
-//                                        println(it)
-//                                        if (it.ErrorCode == 0) {
-//                                            isLoginSuccess = true
-//                                            focusManager.clearFocus()
-//                                        }
-//                                    }
-//                                    .onError {
-//                                        errorMessage = it
-//                                        pass = ""
-//                                    }
-//                                isLoading = false
-//                            }
-//                        }
-//                    ),
-					visualTransformation = PasswordVisualTransformation(),
+					visualTransformation = if(!isPasswordVisible) PasswordVisualTransformation() else VisualTransformation.None,
 					colors = TextFieldDefaults.textFieldColors(
 						backgroundColor = Color.White,
 						focusedIndicatorColor = Color.Transparent,
 						unfocusedIndicatorColor = Color.Transparent,
 						disabledIndicatorColor = Color.Transparent
 					),
-//                    trailingIcon = { IconButton(onClick = { showPassword = !showPassword }) {
-//                        Icon(imageVector = if(showPassword) Icons.Filled.VisibilityOff else Icons.Filled.Visibility, contentDescription = "Show Password")
-//                    }})
+					trailingIcon = { IconButton(onClick = { isPasswordVisible = !isPasswordVisible }) {
+						Icon(
+							painter = if(!isPasswordVisible) painterResource(Res.drawable.Icon_Peek_Crossed) else painterResource(Res.drawable.Icon_Peek),
+							contentDescription = "Show Password",
+							modifier = Modifier.size(24.dp)
+						)
+					}}
 				)
 				
 				Text(

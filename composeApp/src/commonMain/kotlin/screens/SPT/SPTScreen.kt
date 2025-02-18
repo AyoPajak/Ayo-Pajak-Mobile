@@ -304,7 +304,6 @@ class SPTScreen(val client: Account, val sptPertamaClient: Interfaces, val prefs
 						fontWeight = FontWeight.Bold
 					)
 					
-					//TODO("Create Status Chip")
 					when(status) {
 						null -> {
 							Box(
