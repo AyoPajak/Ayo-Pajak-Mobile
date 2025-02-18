@@ -208,28 +208,7 @@ class SptStepTenScreen(val sptHd: Form1770HdResponseApiModel?, val client: Accou
 				}
 				else {
 					//Attention Box
-					item {
-						Box(
-							modifier = Modifier
-								.fillMaxWidth()
-								.padding(horizontal = 16.dp).padding(bottom = 24.dp)
-								.clip(RoundedCornerShape(8.dp))
-								.background(Color(0xFFEEF4FF))
-						) {
-							Row(
-								modifier = Modifier.fillMaxWidth().padding(16.dp),
-								verticalAlignment = Alignment.Top
-							) {
-								Image(painterResource(Res.drawable.icon_infocircle), null, modifier = Modifier.padding(end = 8.dp))
-								Text(
-									text = "Harap diisi dengan nilai penghasilan neto pasangan anda sesuai dengan data formulir 1770 pasangan Anda",
-									fontSize = 12.sp,
-									lineHeight = 20.sp,
-									color = Colors().brandDark90
-								)
-							}
-						}
-					}
+					
 					
 					//Final Income Checkboxes
 					item {

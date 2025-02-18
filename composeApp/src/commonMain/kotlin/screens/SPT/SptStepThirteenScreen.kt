@@ -198,7 +198,8 @@ class SptStepThirteenScreen(val sptHd: Form1770HdResponseApiModel?, val client: 
 			if(authorityE == 3 && reporterNPWP == defaultReporterNPWP) return false
 			if(inclLampH && lampHName.length < 4) return false
 			if(inclLampL && lampLName.length < 4) return false
-			else return true
+			
+			return true
 		}
 		
 		loadingPopupBox(!isReady)

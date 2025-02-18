@@ -56,4 +56,5 @@ class Colors {
     val textDarkGrey = Color(0xFF868E96)
     val textRed = Color(0xFFD7274D)
     val textGreen = Color(0xFF00A478)
+    val textYellow = Color(0xFFE28400)
 }

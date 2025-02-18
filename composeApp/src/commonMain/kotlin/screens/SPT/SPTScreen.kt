@@ -165,7 +165,7 @@ class SPTScreen(val client: Account, val sptPertamaClient: Interfaces, val prefs
 						// Display the list of SPT cards if data is available
 						if (dataList.isNotEmpty()) {
 							dataList.forEach {
-								sptCard(it.TaxYear, it.CorrectionSeq.toString(), it.SPTType, 0, it.SSPAmount?.toLong() ?: 0, it.TaxPayable?.toLong() ?: 0, it.Id)
+								sptCard(it.TaxYear, it.CorrectionSeq.toString(), it.SPTType, it.TaxReportStatusE, it.SSPAmount?.toLong() ?: 0, it.TaxPayable?.toLong() ?: 0, it.Id, it.TaxPaymentStateE)
 							}
 						} else {
 							// Optionally display a loading indicator or empty state
@@ -274,7 +274,7 @@ class SPTScreen(val client: Account, val sptPertamaClient: Interfaces, val prefs
 	}
 	
 	@Composable
-	fun sptCard(year: String, pembetulan: String, sptType: String, status: Int, value: Long, delta: Long, sptHdId: Int) {
+	fun sptCard(year: String, pembetulan: String, sptType: String, status: Int?, ssp: Long, taxPayable: Long, sptHdId: Int, taxPaymentState: Int?) {
 		val navigator = LocalNavigator.currentOrThrow
 		
 		Box(
@@ -305,6 +305,59 @@ class SPTScreen(val client: Account, val sptPertamaClient: Interfaces, val prefs
 					)
 					
 					//TODO("Create Status Chip")
+					when(status) {
+						null -> {
+							Box(
+								modifier = Modifier.clip(CircleShape).background(Color(0xFFFFF7C5), CircleShape)
+							) {
+								Text(
+									text = "Draft",
+									fontSize = 10.sp,
+									color = Colors().textYellow,
+									modifier = Modifier.padding(vertical = 2.dp, horizontal = 8.dp)
+								)
+							}
+						}
+						
+						3 -> {
+							Box(
+								modifier = Modifier.clip(CircleShape).background(Colors().slate10, CircleShape)
+							) {
+								Text(
+									text = "Menunggu",
+									fontSize = 10.sp,
+									color = Colors().textDarkGrey,
+									modifier = Modifier.padding(vertical = 2.dp, horizontal = 8.dp)
+								)
+							}
+						}
+						
+						5 -> {
+							Box(
+								modifier = Modifier.clip(CircleShape).background(Color(0xFFC5FFE5), CircleShape)
+							) {
+								Text(
+									text = "Berhasil",
+									fontSize = 10.sp,
+									color = Colors().textGreen,
+									modifier = Modifier.padding(vertical = 2.dp, horizontal = 8.dp)
+								)
+							}
+						}
+						
+						99 -> {
+							Box(
+								modifier = Modifier.clip(CircleShape).background(Color(0xFFFEE5E7), CircleShape)
+							) {
+								Text(
+									text = "Gagal",
+									fontSize = 10.sp,
+									color = Colors().textRed,
+									modifier = Modifier.padding(vertical = 2.dp, horizontal = 8.dp)
+								)
+							}
+						}
+					}
 				}
 				
 				Text(
@@ -337,16 +390,16 @@ class SPTScreen(val client: Account, val sptPertamaClient: Interfaces, val prefs
 					verticalAlignment = Alignment.CenterVertically
 				) {
 					Text(
-						text = "Rp. ${CurrencyFormatter(value.toString())}",
+						text = "Rp. ${CurrencyFormatter(ssp.toString())}",
 						fontSize = 10.sp,
 						color = Color.Black,
 						fontWeight = FontWeight.Bold
 					)
 					
 					Text(
-						text = "Rp ${CurrencyFormatter(delta.toString())}",
+						text = "Rp ${CurrencyFormatter(taxPayable.toString())}",
 						fontSize = 10.sp,
-						color = if(delta >= 0) Colors().textGreen else Colors().textRed,
+						color = if(taxPaymentState == 3) Colors().textGreen else if(taxPaymentState == 1) Colors().textRed else Color.Black,
 						fontWeight = FontWeight.Bold
 					)
 				}
