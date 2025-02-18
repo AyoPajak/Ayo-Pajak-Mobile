@@ -396,7 +396,7 @@ class SPTScreen(val client: Account, val sptPertamaClient: Interfaces, val prefs
 					)
 					
 					Text(
-						text = "Rp ${CurrencyFormatter(taxPayable.toString())}",
+						text = if(taxPaymentState == 3)"[Lebih Bayar] Rp ${CurrencyFormatter(taxPayable.toString())}" else if(taxPaymentState == 1) "[Kurang Bayar] Rp ${CurrencyFormatter(taxPayable.toString())}" else "Rp ${CurrencyFormatter(taxPayable.toString())}",
 						fontSize = 10.sp,
 						color = if(taxPaymentState == 3) Colors().textGreen else if(taxPaymentState == 1) Colors().textRed else Color.Black,
 						fontWeight = FontWeight.Bold

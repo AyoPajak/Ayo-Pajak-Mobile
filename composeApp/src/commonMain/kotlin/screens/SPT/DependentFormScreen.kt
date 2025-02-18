@@ -519,10 +519,8 @@ class DependentFormScreen(val id: Int, val sptHd: Form1770HdResponseApiModel?, v
 						modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).padding(top = 22.dp),
 						colors = buttonColors(backgroundColor = Colors().buttonActive, contentColor = Color.White),
 						onClick = {
-							dependentFee = dependentFee.replace("Rp. ", "")
-							dependentFee = dependentFee.replace(",", "")
-							schoolFee = schoolFee.replace("Rp. ", "")
-							schoolFee = schoolFee.replace(",", "")
+							dependentFee = dependentFee.replace("R", "").replace("p", "").replace(".", "").replace(" ", "").replace(",", "")
+							schoolFee = schoolFee.replace("R", "").replace("p", "").replace(".", "").replace(" ", "").replace(",", "")
 							
 							val dataModel = FormDependentRequestApiModel(
 								Id = id,

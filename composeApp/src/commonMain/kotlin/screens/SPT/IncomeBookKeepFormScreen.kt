@@ -781,7 +781,7 @@ class IncomeBookKeepFormScreen(val sptHd: Form1770HdResponseApiModel?, val clien
 										value = businessCirculationIDR,
 										onValueChange = {
 											businessCirculationIDR = it
-											businessCirculationIDRActual = businessCirculationIDR.replace("Rp", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
+											businessCirculationIDRActual = businessCirculationIDR.replace("R", "").replace("p", "").replace(".", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
 											calculate1C()
 										},
 										singleLine = true,
@@ -815,7 +815,7 @@ class IncomeBookKeepFormScreen(val sptHd: Form1770HdResponseApiModel?, val clien
 										value = hppIDR,
 										onValueChange = {
 											hppIDR = it
-											hppIDRActual = hppIDR.replace("Rp", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
+											hppIDRActual = hppIDR.replace("R", "").replace("p", "").replace(".", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
 											calculate1C()
 										},
 										singleLine = true,
@@ -848,7 +848,7 @@ class IncomeBookKeepFormScreen(val sptHd: Form1770HdResponseApiModel?, val clien
 											),
 										value = "Rp ${CurrencyFormatter(profitLossIDR)}",
 										onValueChange = {
-											profitLossIDRActual = profitLossIDR.replace("Rp", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
+											profitLossIDRActual = profitLossIDR.replace("R", "").replace("p", "").replace(".", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
 										},
 										singleLine = true,
 										colors = textFieldColors(
@@ -882,7 +882,7 @@ class IncomeBookKeepFormScreen(val sptHd: Form1770HdResponseApiModel?, val clien
 										value = businessCostIDR,
 										onValueChange = {
 											businessCostIDR = it
-											businessCostIDRActual = businessCostIDR.replace("Rp", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
+											businessCostIDRActual = businessCostIDR.replace("R", "").replace("p", "").replace(".", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
 											calculate1E()
 										},
 										singleLine = true,
@@ -915,7 +915,7 @@ class IncomeBookKeepFormScreen(val sptHd: Form1770HdResponseApiModel?, val clien
 											),
 										value = "Rp ${CurrencyFormatter(nettIncomeIDR)}",
 										onValueChange = {
-											nettIncomeIDRActual = nettIncomeIDR.replace("Rp", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
+											nettIncomeIDRActual = nettIncomeIDR.replace("R", "").replace("p", "").replace(".", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
 											calculateFinal()
 										},
 										singleLine = true,
@@ -993,7 +993,7 @@ class IncomeBookKeepFormScreen(val sptHd: Form1770HdResponseApiModel?, val clien
 										value = p2aIDR,
 										onValueChange = {
 											p2aIDR = it
-											p2aIDRActual = p2aIDR.replace("Rp", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
+											p2aIDRActual = p2aIDR.replace("R", "").replace("p", "").replace(".", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
 											calculate2L()
 										},
 										singleLine = true,
@@ -1027,7 +1027,7 @@ class IncomeBookKeepFormScreen(val sptHd: Form1770HdResponseApiModel?, val clien
 										value = p2bIDR,
 										onValueChange = {
 											p2bIDR = it
-											p2bIDRActual = p2bIDR.replace("Rp", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
+											p2bIDRActual = p2bIDR.replace("R", "").replace("p", "").replace(".", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
 											calculate2L()
 										},
 										singleLine = true,
@@ -1061,7 +1061,7 @@ class IncomeBookKeepFormScreen(val sptHd: Form1770HdResponseApiModel?, val clien
 										value = p2cIDR,
 										onValueChange = {
 											p2cIDR = it
-											p2cIDRActual = p2cIDR.replace("Rp", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
+											p2cIDRActual = p2cIDR.replace("R", "").replace("p", "").replace(".", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
 											calculate2L()
 										},
 										singleLine = true,
@@ -1095,7 +1095,7 @@ class IncomeBookKeepFormScreen(val sptHd: Form1770HdResponseApiModel?, val clien
 										value = p2dIDR,
 										onValueChange = {
 											p2dIDR = it
-											p2dIDRActual = p2dIDR.replace("Rp", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
+											p2dIDRActual = p2dIDR.replace("R", "").replace("p", "").replace(".", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
 											calculate2L()
 										},
 										singleLine = true,
@@ -1129,7 +1129,7 @@ class IncomeBookKeepFormScreen(val sptHd: Form1770HdResponseApiModel?, val clien
 										value = p2eIDR,
 										onValueChange = {
 											p2eIDR = it
-											p2eIDRActual = p2eIDR.replace("Rp", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
+											p2eIDRActual = p2eIDR.replace("R", "").replace("p", "").replace(".", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
 											calculate2L()
 										},
 										singleLine = true,
@@ -1163,7 +1163,7 @@ class IncomeBookKeepFormScreen(val sptHd: Form1770HdResponseApiModel?, val clien
 										value = p2fIDR,
 										onValueChange = {
 											p2fIDR = it
-											p2fIDRActual = p2fIDR.replace("Rp", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
+											p2fIDRActual = p2fIDR.replace("R", "").replace("p", "").replace(".", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
 											calculate2L()
 										},
 										singleLine = true,
@@ -1197,7 +1197,7 @@ class IncomeBookKeepFormScreen(val sptHd: Form1770HdResponseApiModel?, val clien
 										value = p2gIDR,
 										onValueChange = {
 											p2gIDR = it
-											p2gIDRActual = p2gIDR.replace("Rp", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
+											p2gIDRActual = p2gIDR.replace("R", "").replace("p", "").replace(".", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
 											calculate2L()
 										},
 										singleLine = true,
@@ -1231,7 +1231,7 @@ class IncomeBookKeepFormScreen(val sptHd: Form1770HdResponseApiModel?, val clien
 										value = p2hIDR,
 										onValueChange = {
 											p2hIDR = it
-											p2hIDRActual = p2hIDR.replace("Rp", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
+											p2hIDRActual = p2hIDR.replace("R", "").replace("p", "").replace(".", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
 											calculate2L()
 										},
 										singleLine = true,
@@ -1265,7 +1265,7 @@ class IncomeBookKeepFormScreen(val sptHd: Form1770HdResponseApiModel?, val clien
 										value = p2iIDR,
 										onValueChange = {
 											p2iIDR = it
-											p2iIDRActual = p2iIDR.replace("Rp", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
+											p2iIDRActual = p2iIDR.replace("R", "").replace("p", "").replace(".", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
 											calculate2L()
 										},
 										singleLine = true,
@@ -1299,7 +1299,7 @@ class IncomeBookKeepFormScreen(val sptHd: Form1770HdResponseApiModel?, val clien
 										value = p2jIDR,
 										onValueChange = {
 											p2jIDR = it
-											p2jIDRActual = p2jIDR.replace("Rp", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
+											p2jIDRActual = p2jIDR.replace("R", "").replace("p", "").replace(".", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
 											calculate2L()
 										},
 										singleLine = true,
@@ -1333,7 +1333,7 @@ class IncomeBookKeepFormScreen(val sptHd: Form1770HdResponseApiModel?, val clien
 										value = p2kIDR,
 										onValueChange = {
 											p2kIDR = it
-											p2kIDRActual = p2kIDR.replace("Rp", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
+											p2kIDRActual = p2kIDR.replace("R", "").replace("p", "").replace(".", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
 											calculate2L()
 										},
 										singleLine = true,
@@ -1366,7 +1366,7 @@ class IncomeBookKeepFormScreen(val sptHd: Form1770HdResponseApiModel?, val clien
 											),
 										value = "Rp ${CurrencyFormatter(p2lIDR)}",
 										onValueChange = {
-											p2lIDRActual = p2lIDR.replace("Rp", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
+											p2lIDRActual = p2lIDR.replace("R", "").replace("p", "").replace(".", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
 											calculateFinal()
 										},
 										singleLine = true,
@@ -1444,7 +1444,7 @@ class IncomeBookKeepFormScreen(val sptHd: Form1770HdResponseApiModel?, val clien
 										value = p3aIDR,
 										onValueChange = {
 											p3aIDR = it
-											p3aIDRActual = p3aIDR.replace("Rp", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
+											p3aIDRActual = p3aIDR.replace("R", "").replace("p", "").replace(".", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
 											calculate3D()
 										},
 										singleLine = true,
@@ -1478,7 +1478,7 @@ class IncomeBookKeepFormScreen(val sptHd: Form1770HdResponseApiModel?, val clien
 										value = p3bIDR,
 										onValueChange = {
 											p3bIDR = it
-											p3bIDRActual = p3bIDR.replace("Rp", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
+											p3bIDRActual = p3bIDR.replace("R", "").replace("p", "").replace(".", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
 											calculate3D()
 										},
 										singleLine = true,
@@ -1512,7 +1512,7 @@ class IncomeBookKeepFormScreen(val sptHd: Form1770HdResponseApiModel?, val clien
 										value = p3cIDR,
 										onValueChange = {
 											p3cIDR = it
-											p3cIDRActual = p3cIDR.replace("Rp", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
+											p3cIDRActual = p3cIDR.replace("R", "").replace("p", "").replace(".", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
 											calculate3D()
 										},
 										singleLine = true,
@@ -1545,7 +1545,7 @@ class IncomeBookKeepFormScreen(val sptHd: Form1770HdResponseApiModel?, val clien
 											),
 										value = "Rp ${CurrencyFormatter(p3dIDR)}",
 										onValueChange = {
-											p3dIDRActual = p3dIDR.replace("Rp", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
+											p3dIDRActual = p3dIDR.replace("R", "").replace("p", "").replace(".", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
 											calculateFinal()
 										},
 										singleLine = true,
@@ -1584,7 +1584,7 @@ class IncomeBookKeepFormScreen(val sptHd: Form1770HdResponseApiModel?, val clien
 								),
 							value = "Rp ${CurrencyFormatter(finalIDR)}",
 							onValueChange = {
-								finalIDRActual = finalIDR.replace("Rp", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
+								finalIDRActual = finalIDR.replace("R", "").replace("p", "").replace(".", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
 							},
 							singleLine = true,
 							colors = textFieldColors(
@@ -1621,7 +1621,7 @@ class IncomeBookKeepFormScreen(val sptHd: Form1770HdResponseApiModel?, val clien
 							onValueChange = {
 								lossCompIDR = it
 								lossCompIDRActual =
-									lossCompIDR.replace("Rp", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
+									lossCompIDR.replace("R", "").replace("p", "").replace(".", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
 							},
 							singleLine = true,
 							colors = textFieldColors(

@@ -2317,10 +2317,8 @@ class AssetFormScreen(val id: Int, val sptHd: Form1770HdResponseApiModel?, val c
 								modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).padding(top = 22.dp),
 								colors = buttonColors(backgroundColor = Colors().buttonActive, contentColor = Color.White),
 								onClick = {
-									currencyAmount = currencyAmount.replace("Rp. ", "")
-									currencyAmount = currencyAmount.replace(",", "")
-									currRateIDR = currRateIDR.replace("Rp. ", "")
-									currRateIDR = currRateIDR.replace(",", "")
+									currencyAmount = currencyAmount.replace("R", "").replace("p", "").replace(".", "").replace(" ", "").replace(",", "")
+									currRateIDR = currRateIDR.replace("R", "").replace("p", "").replace(".", "").replace(" ", "").replace(",", "")
 									
 									val dataModel = FormWealthARequestApiModel(
 										Id = id,
@@ -2398,10 +2396,8 @@ class AssetFormScreen(val id: Int, val sptHd: Form1770HdResponseApiModel?, val c
 								modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).padding(top = 22.dp),
 								colors = buttonColors(backgroundColor = Colors().buttonActive, contentColor = Color.White),
 								onClick = {
-									currencyAmount = currencyAmount.replace("Rp. ", "")
-									currencyAmount = currencyAmount.replace(",", "")
-									currRateIDR = currRateIDR.replace("Rp. ", "")
-									currRateIDR = currRateIDR.replace(",", "")
+									currencyAmount = currencyAmount.replace("R", "").replace("p", "").replace(".", "").replace(" ", "").replace(",", "")
+									currRateIDR = currRateIDR.replace("R", "").replace("p", "").replace(".", "").replace(" ", "").replace(",", "")
 									
 									val dataModel = FormWealthBRequestApiModel(
 										Id = id,
@@ -2497,10 +2493,8 @@ class AssetFormScreen(val id: Int, val sptHd: Form1770HdResponseApiModel?, val c
 								modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).padding(top = 22.dp),
 								colors = buttonColors(backgroundColor = Colors().buttonActive, contentColor = Color.White),
 								onClick = {
-									currencyAmount = currencyAmount.replace("Rp. ", "")
-									currencyAmount = currencyAmount.replace(",", "")
-									currRateIDR = currRateIDR.replace("Rp. ", "")
-									currRateIDR = currRateIDR.replace(",", "")
+									currencyAmount = currencyAmount.replace("R", "").replace("p", "").replace(".", "").replace(" ", "").replace(",", "")
+									currRateIDR = currRateIDR.replace("R", "").replace("p", "").replace(".", "").replace(" ", "").replace(",", "")
 									
 									val dataModel = FormWealthCRequestApiModel(
 										Id = id,
@@ -2604,12 +2598,9 @@ class AssetFormScreen(val id: Int, val sptHd: Form1770HdResponseApiModel?, val c
 								modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).padding(top = 22.dp),
 								colors = buttonColors(backgroundColor = Colors().buttonActive, contentColor = Color.White),
 								onClick = {
-									currencyAmount = currencyAmount.replace("Rp. ", "")
-									currencyAmount = currencyAmount.replace(",", "")
-									currRateIDR = currRateIDR.replace("Rp. ", "")
-									currRateIDR = currRateIDR.replace(",", "")
-									interestAmmount = interestAmmount.replace("Rp. ", "")
-									interestAmmount = interestAmmount.replace(",", "")
+									currencyAmount = currencyAmount.replace("R", "").replace("p", "").replace(".", "").replace(" ", "").replace(",", "")
+									currRateIDR = currRateIDR.replace("R", "").replace("p", "").replace(".", "").replace(" ", "").replace(",", "")
+									interestAmmount = interestAmmount.replace("R", "").replace("p", "").replace(".", "").replace(" ", "").replace(",", "")
 									
 									val dataModel = FormWealthDRequestApiModel(
 										Id = id,
@@ -2734,10 +2725,8 @@ class AssetFormScreen(val id: Int, val sptHd: Form1770HdResponseApiModel?, val c
 								modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).padding(top = 22.dp),
 								colors = buttonColors(backgroundColor = Colors().buttonActive, contentColor = Color.White),
 								onClick = {
-									currRateIDR = currRateIDR.replace("Rp. ", "")
-									currRateIDR = currRateIDR.replace(",", "")
-									sharesUnitPrice = currRateIDR.replace("Rp. ", "")
-									sharesUnitPrice = currRateIDR.replace(",", "")
+									currRateIDR = currRateIDR.replace("R", "").replace("p", "").replace(".", "").replace(" ", "").replace(",", "")
+									sharesUnitPrice = currRateIDR.replace("R", "").replace("p", "").replace(".", "").replace(" ", "").replace(",", "")
 									
 									val dataModel = FormWealthFRequestApiModel(
 										Id = id,
@@ -2808,8 +2797,7 @@ class AssetFormScreen(val id: Int, val sptHd: Form1770HdResponseApiModel?, val c
 								modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).padding(top = 22.dp),
 								colors = buttonColors(backgroundColor = Colors().buttonActive, contentColor = Color.White),
 								onClick = {
-									currencyAmount = currencyAmount.replace("Rp. ", "")
-									currencyAmount = currencyAmount.replace(",", "")
+									currencyAmount = currencyAmount.replace("R", "").replace("p", "").replace(".", "").replace(" ", "").replace(",", "")
 									
 									val dataModel = FormWealthGRequestApiModel(
 										Id = id,
@@ -2877,8 +2865,7 @@ class AssetFormScreen(val id: Int, val sptHd: Form1770HdResponseApiModel?, val c
 								modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).padding(top = 22.dp),
 								colors = buttonColors(backgroundColor = Colors().buttonActive, contentColor = Color.White),
 								onClick = {
-									currencyAmount = currencyAmount.replace("Rp. ", "")
-									currencyAmount = currencyAmount.replace(",", "")
+									currencyAmount = currencyAmount.replace("R", "").replace("p", "").replace(".", "").replace(" ", "").replace(",", "")
 									
 									val dataModel = FormWealthHRequestApiModel(
 										Id = id,
@@ -2941,8 +2928,7 @@ class AssetFormScreen(val id: Int, val sptHd: Form1770HdResponseApiModel?, val c
 								modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).padding(top = 22.dp),
 								colors = buttonColors(backgroundColor = Colors().buttonActive, contentColor = Color.White),
 								onClick = {
-									currencyAmount = currencyAmount.replace("Rp. ", "")
-									currencyAmount = currencyAmount.replace(",", "")
+									currencyAmount = currencyAmount.replace("R", "").replace("p", "").replace(".", "").replace(" ", "").replace(",", "")
 									
 									val dataModel = FormWealthIRequestApiModel(
 										Id = id,
@@ -3010,8 +2996,7 @@ class AssetFormScreen(val id: Int, val sptHd: Form1770HdResponseApiModel?, val c
 								modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).padding(top = 22.dp),
 								colors = buttonColors(backgroundColor = Colors().buttonActive, contentColor = Color.White),
 								onClick = {
-									currencyAmount = currencyAmount.replace("Rp. ", "")
-									currencyAmount = currencyAmount.replace(",", "")
+									currencyAmount = currencyAmount.replace("R", "").replace("p", "").replace(".", "").replace(" ", "").replace(",", "")
 									
 									val dataModel = FormWealthJRequestApiModel(
 										Id = id,
@@ -3079,8 +3064,7 @@ class AssetFormScreen(val id: Int, val sptHd: Form1770HdResponseApiModel?, val c
 								modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).padding(top = 22.dp),
 								colors = buttonColors(backgroundColor = Colors().buttonActive, contentColor = Color.White),
 								onClick = {
-									currencyAmount = currencyAmount.replace("Rp. ", "")
-									currencyAmount = currencyAmount.replace(",", "")
+									currencyAmount = currencyAmount.replace("R", "").replace("p", "").replace(".", "").replace(" ", "").replace(",", "")
 									
 									val dataModel = FormWealthKRequestApiModel(
 										Id = id,
@@ -3166,10 +3150,8 @@ class AssetFormScreen(val id: Int, val sptHd: Form1770HdResponseApiModel?, val c
 								modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).padding(top = 22.dp),
 								colors = buttonColors(backgroundColor = Colors().buttonActive, contentColor = Color.White),
 								onClick = {
-									currencyAmount = currencyAmount.replace("Rp. ", "")
-									currencyAmount = currencyAmount.replace(",", "")
-									currRateIDR = currRateIDR.replace("Rp. ", "")
-									currRateIDR = currRateIDR.replace(",", "")
+									currencyAmount = currencyAmount.replace("R", "").replace("p", "").replace(".", "").replace(" ", "").replace(",", "")
+									currRateIDR = currRateIDR.replace("R", "").replace("p", "").replace(".", "").replace(" ", "").replace(",", "")
 									
 									val dataModel = FormWealthLRequestApiModel(
 										Id = id,

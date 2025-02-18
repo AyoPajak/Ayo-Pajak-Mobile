@@ -277,7 +277,7 @@ class IncomeNetJobFormScreen(val id: Int, val sptHd: Form1770HdResponseApiModel?
 						onValueChange = {
 							grossIncomeIDR = it
 							grossIncomeIDRActual =
-								grossIncomeIDR.replace("Rp ", "").replace(" ", "").replace(",", "").toLongOrNull()
+								grossIncomeIDR.replace("R", "").replace("p", "").replace(".", "").replace(" ", "").replace(",", "").toLongOrNull()
 									?: 0L
 							calculateNettIncome()
 						},
@@ -315,7 +315,7 @@ class IncomeNetJobFormScreen(val id: Int, val sptHd: Form1770HdResponseApiModel?
 						onValueChange = {
 							deductedIDR = it
 							deductedIDRActual =
-								deductedIDR.replace("Rp ", "").replace(" ", "").replace(",", "").toLongOrNull()
+								deductedIDR.replace("R", "").replace("p", "").replace(".", "").replace(" ", "").replace(",", "").toLongOrNull()
 									?: 0L
 							calculateNettIncome()
 						},

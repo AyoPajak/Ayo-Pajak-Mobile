@@ -445,12 +445,9 @@ class DebtFormScreen(val id: Int, val sptHd: Form1770HdResponseApiModel?, val cl
 						modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).padding(top = 22.dp),
 						colors = buttonColors(backgroundColor = Colors().buttonActive, contentColor = Color.White),
 						onClick = {
-							principalIDR = principalIDR.replace("Rp. ", "")
-							principalIDR = principalIDR.replace(",", "")
-							monInstallmentIDR = monInstallmentIDR.replace("Rp. ", "")
-							monInstallmentIDR = monInstallmentIDR.replace(",", "")
-							outstandingIDR = outstandingIDR.replace("Rp. ", "")
-							outstandingIDR = outstandingIDR.replace(",", "")
+							principalIDR = principalIDR.replace("R", "").replace("p", "").replace(".", "").replace(" ", "").replace(",", "")
+							monInstallmentIDR = monInstallmentIDR.replace("R", "").replace("p", "").replace(".", "").replace(" ", "").replace(",", "")
+							outstandingIDR = outstandingIDR.replace("R", "").replace("p", "").replace(".", "").replace(" ", "").replace(",", "")
 							
 							val dataModel = FormDebtRequestApiModel(
 								Id = id,

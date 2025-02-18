@@ -261,7 +261,7 @@ class IncomeNonFinalFormScreen(val id: Int, val sptHd: Form1770HdResponseApiMode
 		
 		fun calculateNettIncome() {
 			businessCirculationIDR = (bruto1IDRActual + bruto2IDRActual + bruto3IDRActual + bruto4IDRActual + bruto5IDRActual + bruto6IDRActual + bruto7IDRActual + bruto8IDRActual + bruto9IDRActual + bruto10IDRActual + bruto11IDRActual + bruto12IDRActual).toString()
-			nettIncomeIDR = "Rp ${CurrencyFormatter(BigDeciToString((businessCirculationIDR.replace("Rp", "").replace(" ", "").replace(",", "").toLong() * BigDeciToLong(taxNormPerc) / 100L).toString()))}"
+			nettIncomeIDR = "Rp ${CurrencyFormatter(BigDeciToString(((businessCirculationIDR.replace("R", "").replace("p", "").replace(".", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0) * BigDeciToLong(taxNormPerc) / 100L).toString()))}"
 		}
 		
 		fun calculateTaxNorm() {
@@ -562,7 +562,7 @@ class IncomeNonFinalFormScreen(val id: Int, val sptHd: Form1770HdResponseApiMode
 				value = bruto1IDR,
 				onValueChange = {
 					bruto1IDR = it
-					bruto1IDRActual = bruto1IDR.replace("Rp ", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
+					bruto1IDRActual = bruto1IDR.replace("R", "").replace("p", "").replace(".", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
 					calculateNettIncome()
 				},
 				singleLine = true,
@@ -596,7 +596,7 @@ class IncomeNonFinalFormScreen(val id: Int, val sptHd: Form1770HdResponseApiMode
 				value = bruto2IDR,
 				onValueChange = {
 					bruto2IDR = it
-					bruto2IDRActual = bruto2IDR.replace("Rp ", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
+					bruto2IDRActual = bruto2IDR.replace("R", "").replace("p", "").replace(".", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
 					calculateNettIncome()
 				},
 				singleLine = true,
@@ -630,7 +630,7 @@ class IncomeNonFinalFormScreen(val id: Int, val sptHd: Form1770HdResponseApiMode
 				value = bruto3IDR,
 				onValueChange = {
 					bruto3IDR = it
-					bruto3IDRActual = bruto3IDR.replace("Rp ", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
+					bruto3IDRActual = bruto3IDR.replace("R", "").replace("p", "").replace(".", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
 					calculateNettIncome()
 				},
 				singleLine = true,
@@ -664,7 +664,7 @@ class IncomeNonFinalFormScreen(val id: Int, val sptHd: Form1770HdResponseApiMode
 				value = bruto4IDR,
 				onValueChange = {
 					bruto4IDR = it
-					bruto4IDRActual = bruto4IDR.replace("Rp ", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
+					bruto4IDRActual = bruto4IDR.replace("R", "").replace("p", "").replace(".", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
 					calculateNettIncome()
 				},
 				singleLine = true,
@@ -698,7 +698,7 @@ class IncomeNonFinalFormScreen(val id: Int, val sptHd: Form1770HdResponseApiMode
 				value = bruto5IDR,
 				onValueChange = {
 					bruto5IDR = it
-					bruto5IDRActual = bruto5IDR.replace("Rp ", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
+					bruto5IDRActual = bruto5IDR.replace("R", "").replace("p", "").replace(".", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
 					calculateNettIncome()
 				},
 				singleLine = true,
@@ -732,7 +732,7 @@ class IncomeNonFinalFormScreen(val id: Int, val sptHd: Form1770HdResponseApiMode
 				value = bruto6IDR,
 				onValueChange = {
 					bruto6IDR = it
-					bruto6IDRActual = bruto6IDR.replace("Rp ", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
+					bruto6IDRActual = bruto6IDR.replace("R", "").replace("p", "").replace(".", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
 					calculateNettIncome()
 				},
 				singleLine = true,
@@ -766,7 +766,7 @@ class IncomeNonFinalFormScreen(val id: Int, val sptHd: Form1770HdResponseApiMode
 				value = bruto7IDR,
 				onValueChange = {
 					bruto7IDR = it
-					bruto7IDRActual = bruto7IDR.replace("Rp ", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
+					bruto7IDRActual = bruto7IDR.replace("R", "").replace("p", "").replace(".", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
 					calculateNettIncome()
 				},
 				singleLine = true,
@@ -800,7 +800,7 @@ class IncomeNonFinalFormScreen(val id: Int, val sptHd: Form1770HdResponseApiMode
 				value = bruto8IDR,
 				onValueChange = {
 					bruto8IDR = it
-					bruto8IDRActual = bruto8IDR.replace("Rp ", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
+					bruto8IDRActual = bruto8IDR.replace("R", "").replace("p", "").replace(".", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
 					calculateNettIncome()
 				},
 				singleLine = true,
@@ -834,7 +834,7 @@ class IncomeNonFinalFormScreen(val id: Int, val sptHd: Form1770HdResponseApiMode
 				value = bruto9IDR,
 				onValueChange = {
 					bruto9IDR = it
-					bruto9IDRActual = bruto9IDR.replace("Rp ", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
+					bruto9IDRActual = bruto9IDR.replace("R", "").replace("p", "").replace(".", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
 					calculateNettIncome()
 				},
 				singleLine = true,
@@ -868,7 +868,7 @@ class IncomeNonFinalFormScreen(val id: Int, val sptHd: Form1770HdResponseApiMode
 				value = bruto10IDR,
 				onValueChange = {
 					bruto10IDR = it
-					bruto10IDRActual = bruto10IDR.replace("Rp ", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
+					bruto10IDRActual = bruto10IDR.replace("R", "").replace("p", "").replace(".", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
 					calculateNettIncome()
 				},
 				singleLine = true,
@@ -902,7 +902,7 @@ class IncomeNonFinalFormScreen(val id: Int, val sptHd: Form1770HdResponseApiMode
 				value = bruto11IDR,
 				onValueChange = {
 					bruto11IDR = it
-					bruto11IDRActual = bruto11IDR.replace("Rp ", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
+					bruto11IDRActual = bruto11IDR.replace("R", "").replace("p", "").replace(".", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
 					calculateNettIncome()
 				},
 				singleLine = true,
@@ -936,7 +936,7 @@ class IncomeNonFinalFormScreen(val id: Int, val sptHd: Form1770HdResponseApiMode
 				value = bruto12IDR,
 				onValueChange = {
 					bruto12IDR = it
-					bruto12IDRActual = bruto12IDR.replace("Rp ", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
+					bruto12IDRActual = bruto12IDR.replace("R", "").replace("p", "").replace(".", "").replace(" ", "").replace(",", "").toLongOrNull() ?: 0L
 					calculateNettIncome()
 				},
 				singleLine = true,
