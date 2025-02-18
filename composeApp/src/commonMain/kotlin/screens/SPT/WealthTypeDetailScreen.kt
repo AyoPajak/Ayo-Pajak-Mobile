@@ -72,12 +72,13 @@ class WealthTypeDetailScreen(
 		
 		var category by remember { mutableStateOf("") }
 		var wealthList by remember { mutableStateOf<List<FormWealthResponseApiModel>>(emptyList()) }
-		val totalWealthInType by remember { mutableStateOf(0.0) }
+		var totalWealthInType by remember { mutableStateOf(0.0) }
 		
 		var isReady by remember { mutableStateOf(false) }
 		
 		LaunchedEffect(null) {
 			wealthList = sptManager.getWealthData(scope, sptHd!!.Id.toString(), wealthTypeId)
+			wealthList.forEach { totalWealthInType += it.CurrencyAmountIDR }
 			
 			when (assetCode) {
 				AssetCode.UANG_TUNAI.value -> {
@@ -313,7 +314,7 @@ class WealthTypeDetailScreen(
 				}
 				
 				//List Wealth
-				wealthList.forEach {
+				wealthList.sortedBy { it.Id }.forEach {
 					item {
 						wealthCard(it.Description ?: "-", it.AcquisitionYear, it.CurrencyAmountIDR, it.Id.toString())
 					}

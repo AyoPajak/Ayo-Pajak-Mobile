@@ -71,6 +71,7 @@ import global.PreferencesKey.Companion.UserApiSecret
 import global.PreferencesKey.Companion.UserGuid
 import global.PreferencesKey.Companion.WPNIK
 import global.PreferencesKey.Companion.WPName
+import global.universalUIComponents.loadingPopupBox
 import http.Account
 import http.Interfaces
 import kotlinx.coroutines.flow.first
@@ -96,6 +97,8 @@ class HomeScreen(private val client: Account, private val sptPertamaClient: Inte
 		
 		var key by remember { mutableStateOf("") }
 		var secret by remember { mutableStateOf("") }
+		
+		var isReady by remember { mutableStateOf(false) }
 		
 		runBlocking {
 			val pref = prefs.data.first()
@@ -126,8 +129,12 @@ class HomeScreen(private val client: Account, private val sptPertamaClient: Inte
 //			val userProfile = GetUserProfile(apiToken)
 			
 			scope.launch { SetUserProfileLocally(userProfile) }
+			
+			isReady = true
 		}
 
+		loadingPopupBox(!isReady)
+		
 		LazyColumn(
 			modifier = Modifier.fillMaxSize().background(Colors().brandDark60)
 		) {

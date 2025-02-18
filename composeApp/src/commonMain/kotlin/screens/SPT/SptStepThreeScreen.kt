@@ -261,7 +261,7 @@ class SptStepThreeScreen(val sptHd: Form1770HdResponseApiModel?, val client: Acc
 				}
 				
 				//List Wealth by Type
-				wealthListByType.forEach {
+				wealthListByType.sortedBy { it.AssetCode }.forEach {
 					item {
 						wealthCard(it.AssetCode, it.AssetName, it.DataCount, it.Total, it.WealthTypeId.toString())
 					}

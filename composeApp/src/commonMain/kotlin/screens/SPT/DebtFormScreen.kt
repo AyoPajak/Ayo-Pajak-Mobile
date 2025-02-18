@@ -68,6 +68,7 @@ import models.transaction.FormDebtRequestApiModel
 import models.transaction.FormWealthARequestApiModel
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.vectorResource
+import screens.divider
 import util.BigDeciToString
 import util.CurrencyFormatter
 
@@ -512,7 +513,7 @@ class DebtFormScreen(val id: Int, val sptHd: Form1770HdResponseApiModel?, val cl
 						debtTypeList.forEach {
 							item {
 								Text(
-									text = it.DebtTypeName,
+									text = "${it.DebtTypeCode} - ${it.DebtTypeName}",
 									fontSize = 18.sp,
 									modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
 										.clickable(true, onClick = {
@@ -521,6 +522,7 @@ class DebtFormScreen(val id: Int, val sptHd: Form1770HdResponseApiModel?, val cl
 											showDebtTypePopup = false
 										})
 								)
+								if(it != debtTypeList.last()){ divider(0.dp) }
 							}
 						}
 					}

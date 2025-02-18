@@ -233,9 +233,9 @@ class SptStepFourScreen(val sptHd: Form1770HdResponseApiModel?, val client: Acco
 				}
 				
 				//List Debt by Type
-				debtListByType.forEach {
+				debtListByType.sortedBy { it.DebtType.DebtTypeCode }.forEach {
 					item {
-						debtCard(it.DebtType.DebtTypeName, it.DebtYear, it.Outstanding_IDR, it.Id)
+						debtCard("${it.DebtType.DebtTypeCode} - ${it.DebtType.DebtTypeName}", it.DebtYear, it.Outstanding_IDR, it.Id)
 					}
 				}
 				
