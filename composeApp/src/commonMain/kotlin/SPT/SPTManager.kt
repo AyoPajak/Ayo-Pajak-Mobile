@@ -2519,6 +2519,31 @@ class SPTManager(val prefs: DataStore<Preferences>, val client: Account, val spt
 		}
 	}
 	
+	//Update Step Form 1770
+	suspend fun updateStepForm1770(scope: CoroutineScope, hdId: String, formStep: Int): ReturnStatus {
+		val result = ReturnStatus()
+		
+		val apiToken = getUserApiToken(scope, true)
+		if (apiToken.isBlank()) {
+			println("Api token is null")
+			result.SetError("Api token is null")
+			return result
+		}
+		
+		return suspendCoroutine { cont ->
+			scope.launch {
+				sptPertamaClient.updateStepForm1770("Bearer $apiToken", hdId, formStep)
+					.onSuccess {
+						cont.resume(result)
+					}
+					.onError {
+						println(it.name)
+						cont.resume(result)
+					}
+			}
+		}
+	}
+	
 	//Submit SPT OP
 	suspend fun submitForm1770(scope: CoroutineScope, hdId: String): ReturnStatus {
 		val result = ReturnStatus()

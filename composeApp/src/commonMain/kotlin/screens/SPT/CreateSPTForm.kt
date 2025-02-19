@@ -51,6 +51,7 @@ import global.Colors
 import global.PreferencesKey.Companion.NPWP
 import global.PreferencesKey.Companion.WPNPWP
 import global.PreferencesKey.Companion.WPName
+import global.universalUIComponents.loadingPopupBox
 import global.universalUIComponents.topBar
 import http.Account
 import http.Interfaces
@@ -81,7 +82,7 @@ class CreateSPTForm(val client: Account, val sptPertamaClient: Interfaces, val p
 		var taxYear by remember { mutableStateOf((Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).year - 1).toString()) }
 		var correctionSeq by remember { mutableStateOf("") }
 		
-		var isLoading by remember { mutableStateOf(true) }
+		var isReady by remember { mutableStateOf(false) }
 		
 		LaunchedEffect(null) {
 			try {
@@ -92,7 +93,11 @@ class CreateSPTForm(val client: Account, val sptPertamaClient: Interfaces, val p
 			} catch(ex: Exception) {
 				println(ex.message)
 			}
+			
+			isReady = true
 		}
+		
+		loadingPopupBox(!isReady)
 		
 		Column(
 			modifier = Modifier.fillMaxSize().background(Colors().panel)
@@ -440,6 +445,7 @@ class CreateSPTForm(val client: Account, val sptPertamaClient: Interfaces, val p
 						modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
 						colors = buttonColors(backgroundColor = Colors().buttonActive, contentColor = Color.White),
 						onClick = {
+							isReady = false
 							val model = Form1770HdRequestApiModel(
 								taxYear.toInt(),
 								formType,
@@ -447,7 +453,6 @@ class CreateSPTForm(val client: Account, val sptPertamaClient: Interfaces, val p
 							)
 							
 							scope.launch {
-								isLoading = true
 								val id = sptManager.createSpt(scope, model)?.Data?.jsonObject?.get("Id")?.jsonPrimitive?.content!!.toInt()
 								
 								id.let {
