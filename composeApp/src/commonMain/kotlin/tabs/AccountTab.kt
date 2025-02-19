@@ -18,26 +18,26 @@ import screens.AccountScreen
 import security.Crypto
 
 class AccountTab(
-    val client: Account, val cryptoManager: Crypto,
-    val prefs: DataStore<Preferences>, val sptPertamaClient: Interfaces
+	val client: Account, val cryptoManager: Crypto,
+	val prefs: DataStore<Preferences>, val sptPertamaClient: Interfaces
 ) : Tab {
-    override val options: TabOptions
-        @Composable
-        get() {
-            val title = stringResource(Res.string.account_tab_title)
-            val icon = painterResource(Res.drawable.icon_account_selected)
-            
-            return remember {
-                TabOptions(
-                    index = 0u,
-                    title = title,
-                    icon = icon
-                )
-            }
-        }
-    
-    @Composable
-    override fun Content() {
-        Navigator(AccountScreen(client, cryptoManager, prefs, sptPertamaClient))
-    }
+	override val options: TabOptions
+		@Composable
+		get() {
+			val title = stringResource(Res.string.account_tab_title)
+			val icon = painterResource(Res.drawable.icon_account_selected)
+			
+			return remember {
+				TabOptions(
+					index = 0u,
+					title = title,
+					icon = icon
+				)
+			}
+		}
+	
+	@Composable
+	override fun Content() {
+		Navigator(AccountScreen(client, cryptoManager, prefs, sptPertamaClient))
+	}
 }

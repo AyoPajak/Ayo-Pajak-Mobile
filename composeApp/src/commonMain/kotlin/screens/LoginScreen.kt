@@ -429,7 +429,6 @@ class LoginScreen(val client: Account, val cryptoManager: Crypto,
 					)
 					Text(
 						modifier = Modifier.clickable(true, onClick = {
-							println("Daftar")
 							navigator.push(RegisterAccount())
 						}),
 						text = "Daftar",
@@ -477,24 +476,23 @@ class LoginScreen(val client: Account, val cryptoManager: Crypto,
 @Composable
 private fun RowScope.TabNavigationItem(tab: Tab) {
 	val tabNavigator = LocalTabNavigator.current
-	
-	val isSelected = tabNavigator.current == tab
+	val isSelected by remember { mutableStateOf(tabNavigator.current == tab) }
 	
 	BottomNavigationItem(
 		modifier = Modifier.align(Alignment.CenterVertically),
-		selected = tabNavigator.current == tab,
+		selected = isSelected,
 		onClick = { tabNavigator.current = tab },
 		icon = {
 			tab.options.icon?.let {
 				Image(
 					painter = it,
 					contentDescription = tab.options.title,
-					colorFilter = if(!isSelected) ColorFilter.colorMatrix(ColorMatrix().apply {
+					colorFilter = if(tabNavigator.current != tab) ColorFilter.colorMatrix(ColorMatrix().apply {
 						setToSaturation(0f)
 					})  else null,
 				)
 			} },
-		label = { Text(text = tab.options.title, fontWeight = if(isSelected) FontWeight.Bold else FontWeight.Normal) },
+		label = { Text(text = tab.options.title, fontWeight = if(tabNavigator.current == tab) FontWeight.Bold else FontWeight.Normal) },
 		alwaysShowLabel = true,
 	)
 }

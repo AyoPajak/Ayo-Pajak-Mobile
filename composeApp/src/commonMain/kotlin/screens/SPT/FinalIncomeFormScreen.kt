@@ -1591,22 +1591,32 @@ class FinalIncomeFormScreen(val id: Int, val sptHd: Form1770HdResponseApiModel?,
 						fontWeight = FontWeight.Bold,
 						modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
 					)
-					LazyColumn(modifier = Modifier.heightIn(max = 200.dp).padding(horizontal = 18.dp)) {
+					LazyColumn(modifier = Modifier.heightIn(max = 200.dp).padding(start = 10.dp, end = 18.dp)) {
 						FinalIncomeType.entries.forEach {
 							item {
-								Text(
-									text = FinalIncomeType.fromValue(it.value).toString(),
-									fontSize = 18.sp,
-									modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
-										.clickable(true, onClick = {
-											selectedIncomeType = FinalIncomeType.fromValue(it.value).toString()
-											incomeTypeE = it.value.toString()
-											formType = FinalIncomeType.formTypeFromValue(it.value).toString()
-											if( formType == "A" || formType == "C" || formType == "E" ) selectedAssetList = getFilteredAsset()
-											if(sptHd?.TaxYear?.toInt()!! >= 2023 && incomeTypeE == "160") navigator.push(FinalIncomeUMKMScreen(sptHd, client, sptPertamaClient, prefs))
-											showIncomeTypePopup = false
-										})
-								)
+								Row(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)){
+									Text(
+										text = "•",
+										fontSize = 18.sp,
+										modifier = Modifier.padding(end = 8.dp)
+									)
+									Text(
+										text = FinalIncomeType.fromValue(it.value).toString(),
+										fontSize = 18.sp,
+										modifier = Modifier
+											.clickable(true, onClick = {
+												selectedIncomeType = FinalIncomeType.fromValue(it.value).toString()
+												incomeTypeE = it.value.toString()
+												formType = FinalIncomeType.formTypeFromValue(it.value).toString()
+												if (formType == "A" || formType == "C" || formType == "E") selectedAssetList =
+													getFilteredAsset()
+												if (sptHd?.TaxYear?.toInt()!! >= 2023 && incomeTypeE == "160") navigator.push(
+													FinalIncomeUMKMScreen(sptHd, client, sptPertamaClient, prefs)
+												)
+												showIncomeTypePopup = false
+											})
+									)
+								}
 							}
 						}
 					}

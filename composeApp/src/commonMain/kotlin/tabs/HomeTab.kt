@@ -16,7 +16,7 @@ import org.jetbrains.compose.resources.stringResource
 import security.Crypto
 
 class HomeTab(
-	val client: Account, val cryptoManager: Crypto, val prefs: DataStore<Preferences>, val sptPertamaClient: Interfaces
+	val client: Account, private val cryptoManager: Crypto, val prefs: DataStore<Preferences>, val sptPertamaClient: Interfaces
 ) : Tab {
 	
 	override val options: TabOptions

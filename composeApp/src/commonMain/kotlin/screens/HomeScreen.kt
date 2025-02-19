@@ -43,11 +43,13 @@ import ayopajakmobile.composeapp.generated.resources.blog_placeholder
 import ayopajakmobile.composeapp.generated.resources.event_placeholder
 import ayopajakmobile.composeapp.generated.resources.icon_ebilling
 import ayopajakmobile.composeapp.generated.resources.icon_notification
+import ayopajakmobile.composeapp.generated.resources.icon_sptop
 import ayopajakmobile.composeapp.generated.resources.logo_bnw
 import ayopajakmobile.composeapp.generated.resources.placeholder_username
 import ayopajakmobile.composeapp.generated.resources.promo_placeholder
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.tab.LocalTabNavigator
 import global.Colors
 import global.PreferencesKey.Companion.Address
 import global.PreferencesKey.Companion.AyoPajakUserApiToken
@@ -129,7 +131,6 @@ class HomeScreen(private val client: Account, private val sptPertamaClient: Inte
 //			val userProfile = GetUserProfile(apiToken)
 			
 			scope.launch { SetUserProfileLocally(userProfile) }
-			
 			isReady = true
 		}
 
@@ -240,7 +241,7 @@ class HomeScreen(private val client: Account, private val sptPertamaClient: Inte
 							) {
 								Image(
 									modifier = Modifier.height(48.dp).align(Alignment.CenterHorizontally),
-									painter = painterResource(Res.drawable.icon_ebilling),
+									painter = painterResource(Res.drawable.icon_sptop),
 									contentDescription = null
 								)
 								Text(
