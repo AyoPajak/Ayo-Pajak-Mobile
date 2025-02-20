@@ -211,7 +211,7 @@ class IncomeNetOtherFormScreen(val id: Int, val sptHd: Form1770HdResponseApiMode
 					nettIncomeIDRActual = BigDeciToLong(oldData.NettIncomeIDR.toString())
 					description = oldData.Description ?: ""
 					wealthId = oldData.Wealth?.Id ?: 0
-					selectedWealth = "(${oldData.Wealth?.WealthType?.WealthTypeName}) ${oldData.Wealth?.AcquisitionYear} Rp ${CurrencyFormatter(BigDeciToString(oldData.Wealth?.CurrencyAmountIDR.toString()))}"
+					selectedWealth = if(wealthId != 0) "(${oldData.Wealth?.WealthType?.WealthTypeName}) ${oldData.Wealth?.AcquisitionYear} Rp ${CurrencyFormatter(BigDeciToString(oldData.Wealth?.CurrencyAmountIDR.toString()))}" else ""
 					sellPriceIDR = "Rp ${CurrencyFormatter(BigDeciToString(oldData.SellPriceIDR.toString()))}"
 					sellPriceIDRActual = if(oldData.SellPriceIDR == null) 0L else BigDeciToLong(oldData.SellPriceIDR.toString())
 					rentStartDate = oldData.RentStartDate ?: ""
@@ -782,7 +782,7 @@ class IncomeNetOtherFormScreen(val id: Int, val sptHd: Form1770HdResponseApiMode
 					modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 12.dp)
 				) {
 					Text(
-						text = "Jenis Penghasilan Final",
+						text = "Jenis Penghasilan",
 						fontSize = 12.sp,
 						color = Colors().textBlack,
 						fontWeight = FontWeight.Bold,

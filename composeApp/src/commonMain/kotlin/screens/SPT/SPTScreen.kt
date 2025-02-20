@@ -311,7 +311,7 @@ class SPTScreen(val client: Account, val sptPertamaClient: Interfaces, val prefs
 							) {
 								Text(
 									text = "Draft",
-									fontSize = 10.sp,
+									fontSize = 12.sp,
 									color = Colors().textYellow,
 									modifier = Modifier.padding(vertical = 2.dp, horizontal = 8.dp)
 								)
@@ -324,7 +324,7 @@ class SPTScreen(val client: Account, val sptPertamaClient: Interfaces, val prefs
 							) {
 								Text(
 									text = "Menunggu",
-									fontSize = 10.sp,
+									fontSize = 12.sp,
 									color = Colors().textDarkGrey,
 									modifier = Modifier.padding(vertical = 2.dp, horizontal = 8.dp)
 								)
@@ -337,7 +337,7 @@ class SPTScreen(val client: Account, val sptPertamaClient: Interfaces, val prefs
 							) {
 								Text(
 									text = "Berhasil",
-									fontSize = 10.sp,
+									fontSize = 12.sp,
 									color = Colors().textGreen,
 									modifier = Modifier.padding(vertical = 2.dp, horizontal = 8.dp)
 								)
@@ -350,7 +350,7 @@ class SPTScreen(val client: Account, val sptPertamaClient: Interfaces, val prefs
 							) {
 								Text(
 									text = "Gagal",
-									fontSize = 10.sp,
+									fontSize = 12.sp,
 									color = Colors().textRed,
 									modifier = Modifier.padding(vertical = 2.dp, horizontal = 8.dp)
 								)
@@ -373,12 +373,12 @@ class SPTScreen(val client: Account, val sptPertamaClient: Interfaces, val prefs
 				) {
 					Text(
 						text = "Nilai SSP",
-						fontSize = 10.sp,
+						fontSize = 12.sp,
 						color = Colors().textDarkGrey
 					)
 					Text(
 						text = "PPH",
-						fontSize = 10.sp,
+						fontSize = 12.sp,
 						color = Colors().textDarkGrey
 					)
 				}
@@ -389,15 +389,15 @@ class SPTScreen(val client: Account, val sptPertamaClient: Interfaces, val prefs
 					verticalAlignment = Alignment.CenterVertically
 				) {
 					Text(
-						text = "Rp. ${CurrencyFormatter(ssp.toString())}",
-						fontSize = 10.sp,
+						text = "Rp ${CurrencyFormatter(ssp.toString())}",
+						fontSize = 12.sp,
 						color = Color.Black,
 						fontWeight = FontWeight.Bold
 					)
 					
 					Text(
 						text = if(taxPaymentState == 3)"[Lebih Bayar] Rp ${CurrencyFormatter(taxPayable.toString())}" else if(taxPaymentState == 1) "[Kurang Bayar] Rp ${CurrencyFormatter(taxPayable.toString())}" else "Rp ${CurrencyFormatter(taxPayable.toString())}",
-						fontSize = 10.sp,
+						fontSize = 12.sp,
 						color = if(taxPaymentState == 3) Colors().textGreen else if(taxPaymentState == 1) Colors().textRed else Color.Black,
 						fontWeight = FontWeight.Bold
 					)
