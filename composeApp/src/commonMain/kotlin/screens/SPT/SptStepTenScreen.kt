@@ -55,6 +55,7 @@ import global.Colors
 import global.CurrRateEntryMode
 import global.MaritalStatus
 import global.PertamaSptFillingStep
+import global.TaxStatus
 import global.universalUIComponents.loadingPopupBox
 import global.universalUIComponents.topBar
 import http.Account
@@ -79,6 +80,7 @@ class SptStepTenScreen(val sptHd: Form1770HdResponseApiModel?, val client: Accou
 		val navigator = LocalNavigator.currentOrThrow
 		
 		var maritalStatusE by remember { mutableStateOf(0) }
+		var taxStatusE by remember { mutableStateOf("") }
 		
 		var onlyHasFinalIncomeSelf by remember { mutableStateOf(false) }
 		var onlyHasFinalIncomeSpouse by remember { mutableStateOf(false) }
@@ -103,6 +105,7 @@ class SptStepTenScreen(val sptHd: Form1770HdResponseApiModel?, val client: Accou
 		
 		LaunchedEffect(null) {
 			maritalStatusE = sptManager.getIdentityData(scope, sptHd!!.Id)?.MaritalStatusE ?: 0
+			taxStatusE = sptManager.getIdentityData(scope, sptHd!!.Id)?.TaxStatusE ?: ""
 			
 			val oldData = sptManager.getIncomeSpousePHMTData(scope, sptHd.Id.toString())
 			
@@ -169,7 +172,7 @@ class SptStepTenScreen(val sptHd: Form1770HdResponseApiModel?, val client: Accou
 					topBar("PPh Terutang (PH/MT)")
 				}
 				
-				if(maritalStatusE == MaritalStatus.NotMarried.value) {
+				if(maritalStatusE == MaritalStatus.NotMarried.value || taxStatusE == TaxStatus.PisahHarta.value || taxStatusE == TaxStatus.MemilihTerpisahKewajibanPajak.value) {
 					item {
 						Box(
 							modifier = Modifier

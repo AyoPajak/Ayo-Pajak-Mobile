@@ -670,7 +670,7 @@ class IncomeNetOtherFormScreen(val id: Int, val sptHd: Form1770HdResponseApiMode
 									val dataModel = FormNetOtherIncomeBRequestApiModel(
 										Id = id,
 										Tr1770HdId = sptHd!!.Id,
-										Tr1770WealthId = wealthId,
+										Tr1770WealthId = if(wealthId != 0) wealthId else null,
 										SellPriceIDR = sellPriceIDRActual,
 										NettIncomeIDR = nettIncomeIDRActual,
 										Description = description.ifBlank { null }
@@ -686,7 +686,7 @@ class IncomeNetOtherFormScreen(val id: Int, val sptHd: Form1770HdResponseApiMode
 									val dataModel = FormNetOtherIncomeCRequestApiModel(
 										Id = id,
 										Tr1770HdId = sptHd!!.Id,
-										Tr1770WealthId = wealthId,
+										Tr1770WealthId = if(wealthId != 0) wealthId else null,
 										NettIncomeIDR = nettIncomeIDRActual,
 										RentStartDate = rentStartDate.ifBlank { null },
 										RentEndDate = rentEndDate.ifBlank { null },
@@ -703,7 +703,7 @@ class IncomeNetOtherFormScreen(val id: Int, val sptHd: Form1770HdResponseApiMode
 									val dataModel = FormNetOtherIncomeDRequestApiModel(
 										Id = id,
 										Tr1770HdId = sptHd!!.Id,
-										Tr1770WealthId = wealthId,
+										Tr1770WealthId = if(wealthId != 0) wealthId else null,
 										EmployerNameAddr = employerNameAddr.ifBlank { null },
 										SellPriceIDR = sellPriceIDRActual,
 										NettIncomeIDR = nettIncomeIDRActual,
@@ -720,7 +720,7 @@ class IncomeNetOtherFormScreen(val id: Int, val sptHd: Form1770HdResponseApiMode
 									val dataModel = FormNetOtherIncomeERequestApiModel(
 										Id = id,
 										Tr1770HdId = sptHd!!.Id,
-										Tr1770WealthId = wealthId,
+										Tr1770WealthId = if(wealthId != 0) wealthId else null,
 										EmployerNameAddr = employerNameAddr.ifBlank { null },
 										OverseasIncomeType = overseasIncomeType.ifBlank { null },
 										NettIncomeIDR = nettIncomeIDRActual,
@@ -737,7 +737,7 @@ class IncomeNetOtherFormScreen(val id: Int, val sptHd: Form1770HdResponseApiMode
 									val dataModel = FormNetOtherIncomeFRequestApiModel(
 										Id = id,
 										Tr1770HdId = sptHd!!.Id,
-										Tr1770WealthId = wealthId,
+										Tr1770WealthId = if(wealthId != 0) wealthId else null,
 										EmployerNameAddr = employerNameAddr.ifBlank { null },
 										NettIncomeIDR = nettIncomeIDRActual,
 										RentStartDate = rentStartDate.ifBlank { null },
