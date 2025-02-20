@@ -64,6 +64,7 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import global.AccountRecordType
 import global.AuditOpinion
 import global.Colors
+import global.PertamaSptFillingStep
 import global.TaxType
 import global.universalUIComponents.loadingPopupBox
 import global.universalUIComponents.popUpBox
@@ -372,6 +373,38 @@ class IncomeBookKeepFormScreen(val sptHd: Form1770HdResponseApiModel?, val clien
 									text = "Anda tidak perlu mengisi form ini dikarenakan [Jenis Pencatatan Penghasilan] anda pada Form Pengisian Identitas adalah [Pencatatan]. Form ini hanya diisi oleh Wajib Pajak yang menyelenggarakan [Pembukuan], untuk melaporkan besarnya penghasilan neto dalam negeri dari usaha dan/atau pekerjaan bebas yang diterima atau diperoleh Wajib Pajak sendiri dan anggota keluarganya dalam Tahun Pajak yang bersangkutan.",
 									fontSize = 12.sp,
 									lineHeight = 20.sp
+								)
+							}
+						}
+						
+						//Done Button
+						Box(
+							modifier = Modifier.fillMaxSize().padding(bottom = 88.dp).padding(horizontal = 16.dp),
+							contentAlignment = Alignment.BottomCenter
+						){
+							Box(
+								contentAlignment = Alignment.Center,
+								modifier = Modifier.fillMaxWidth()
+									.clip(RoundedCornerShape(8.dp))
+									.background(Colors().brandDark40, RoundedCornerShape(8.dp))
+									.clickable(true, onClick = {
+										println()
+										isReady = false
+										scope.launch{
+											sptManager.updateStepForm1770(
+												scope,
+												sptHd!!.Id,
+												PertamaSptFillingStep.IncomeBookKeep.value
+											)
+											navigator.pop()
+										}
+									})
+							) {
+								Text(
+									text = "Selesai",
+									fontSize = 16.sp,
+									color = Color.White,
+									modifier = Modifier.padding(vertical = 16.dp)
 								)
 							}
 						}

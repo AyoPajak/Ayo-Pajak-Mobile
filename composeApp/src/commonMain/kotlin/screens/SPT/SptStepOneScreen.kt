@@ -930,6 +930,7 @@ class SptStepOneScreen(val sptHd: Form1770HdResponseApiModel?, val client: Accou
 						modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).padding(top = 22.dp),
 						colors = buttonColors(backgroundColor = Colors().buttonActive, contentColor = Color.White),
 						onClick = {
+							isReady = false
 							val dataModel = if(taxPayerTaxStatusE == TaxStatus.KepalaKeluarga.value){
 								FormIdentityRequestApiModel(
 									Tr1770HdId = sptHd.Id,

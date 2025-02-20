@@ -2520,7 +2520,7 @@ class SPTManager(val prefs: DataStore<Preferences>, val client: Account, val spt
 	}
 	
 	//Update Step Form 1770
-	suspend fun updateStepForm1770(scope: CoroutineScope, hdId: String, formStep: Int): ReturnStatus {
+	suspend fun updateStepForm1770(scope: CoroutineScope, hdId: Int, formStep: Int): ReturnStatus {
 		val result = ReturnStatus()
 		
 		val apiToken = getUserApiToken(scope, true)

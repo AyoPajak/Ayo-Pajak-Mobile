@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -38,10 +39,12 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import global.Colors
+import global.PertamaSptFillingStep
 import global.universalUIComponents.loadingPopupBox
 import global.universalUIComponents.topBar
 import http.Account
 import http.Interfaces
+import kotlinx.coroutines.launch
 import models.ApiODataQueryModel
 import models.transaction.Form1770HdResponseApiModel
 import models.transaction.FormDependentResponseApiModel
@@ -156,6 +159,44 @@ class SptStepTwoScreen(val sptHd: Form1770HdResponseApiModel?, val client: Accou
 				dependentList?.forEach {
 					item { dependentCard(it.Seq, it.DependentName, it.FamilyRel.FamilyRelName, it.Id, it.Seq) }
 				}
+				
+				item {
+					Box(
+						modifier = Modifier.height(156.dp)
+					)
+				}
+			}
+		}
+		
+		//Done Button
+		Box(
+			modifier = Modifier.fillMaxSize().padding(bottom = 88.dp).padding(horizontal = 16.dp),
+			contentAlignment = Alignment.BottomCenter
+		){
+			Box(
+				contentAlignment = Alignment.Center,
+				modifier = Modifier.fillMaxWidth()
+					.clip(RoundedCornerShape(8.dp))
+					.background(Colors().brandDark40, RoundedCornerShape(8.dp))
+					.clickable(true, onClick = {
+						println()
+						isReady = false
+						scope.launch{
+							sptManager.updateStepForm1770(
+								scope,
+								sptHd!!.Id,
+								PertamaSptFillingStep.Dependent.value
+							)
+							navigator.pop()
+						}
+					})
+			) {
+				Text(
+					text = "Selesai",
+					fontSize = 16.sp,
+					color = Color.White,
+					modifier = Modifier.padding(vertical = 16.dp)
+				)
 			}
 		}
 	}

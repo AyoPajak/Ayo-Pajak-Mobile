@@ -43,11 +43,13 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import global.Colors
 import global.FinalIncomeType
 import global.IncomeGroup
+import global.PertamaSptFillingStep
 import global.SptType
 import global.universalUIComponents.loadingPopupBox
 import global.universalUIComponents.topBar
 import http.Account
 import http.Interfaces
+import kotlinx.coroutines.launch
 import models.transaction.Form1770HdResponseApiModel
 import models.transaction.FormFinalIncomeResponseApiModel
 import org.jetbrains.compose.resources.painterResource
@@ -492,7 +494,39 @@ class SptStepFiveScreen(val sptHd: Form1770HdResponseApiModel?, val client: Acco
 				}
 				
 				//Spacer
-				item { Box(modifier = Modifier.fillMaxWidth().height(88.dp)) }
+				item { Box(modifier = Modifier.fillMaxWidth().height(156.dp)) }
+			}
+		}
+		
+		//Done Button
+		Box(
+			modifier = Modifier.fillMaxSize().padding(bottom = 88.dp).padding(horizontal = 16.dp),
+			contentAlignment = Alignment.BottomCenter
+		){
+			Box(
+				contentAlignment = Alignment.Center,
+				modifier = Modifier.fillMaxWidth()
+					.clip(RoundedCornerShape(8.dp))
+					.background(Colors().brandDark40, RoundedCornerShape(8.dp))
+					.clickable(true, onClick = {
+						println()
+						isReady = false
+						scope.launch{
+							sptManager.updateStepForm1770(
+								scope,
+								sptHd!!.Id,
+								PertamaSptFillingStep.FinalIncome.value
+							)
+							navigator.pop()
+						}
+					})
+			) {
+				Text(
+					text = "Selesai",
+					fontSize = 16.sp,
+					color = Color.White,
+					modifier = Modifier.padding(vertical = 16.dp)
+				)
 			}
 		}
 	}

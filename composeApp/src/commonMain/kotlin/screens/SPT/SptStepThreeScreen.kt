@@ -23,6 +23,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -39,10 +40,12 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import global.Colors
+import global.PertamaSptFillingStep
 import global.universalUIComponents.loadingPopupBox
 import global.universalUIComponents.topBar
 import http.Account
 import http.Interfaces
+import kotlinx.coroutines.launch
 import models.ApiODataQueryModel
 import models.transaction.AssetGroupResponseApiModel
 import models.transaction.Form1770HdResponseApiModel
@@ -270,7 +273,39 @@ class SptStepThreeScreen(val sptHd: Form1770HdResponseApiModel?, val client: Acc
 				}
 				
 				//Spacer
-				item { Box(modifier = Modifier.fillMaxWidth().height(88.dp)) }
+				item { Box(modifier = Modifier.fillMaxWidth().height(156.dp)) }
+			}
+		}
+		
+		//Done Button
+		Box(
+			modifier = Modifier.fillMaxSize().padding(bottom = 88.dp).padding(horizontal = 16.dp),
+			contentAlignment = Alignment.BottomCenter
+		){
+			Box(
+				contentAlignment = Alignment.Center,
+				modifier = Modifier.fillMaxWidth()
+					.clip(RoundedCornerShape(8.dp))
+					.background(Colors().brandDark40, RoundedCornerShape(8.dp))
+					.clickable(true, onClick = {
+						println()
+						isReady = false
+						scope.launch{
+							sptManager.updateStepForm1770(
+								scope,
+								sptHd!!.Id,
+								PertamaSptFillingStep.Asset.value
+							)
+							navigator.pop()
+						}
+					})
+			) {
+				Text(
+					text = "Selesai",
+					fontSize = 16.sp,
+					color = Color.White,
+					modifier = Modifier.padding(vertical = 16.dp)
+				)
 			}
 		}
 	}

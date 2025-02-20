@@ -56,6 +56,7 @@ import ayopajakmobile.composeapp.generated.resources.icon_tripledot_black
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import global.AssetCode
 import global.Colors
 import global.DomesticNetIncomeType
 import global.FinalIncomeType
@@ -76,6 +77,7 @@ import models.transaction.FormNetOtherIncomeCRequestApiModel
 import models.transaction.FormNetOtherIncomeDRequestApiModel
 import models.transaction.FormNetOtherIncomeERequestApiModel
 import models.transaction.FormNetOtherIncomeFRequestApiModel
+import models.transaction.FormWealthResponseApiModel
 import network.chaintech.kmp_date_time_picker.ui.datepicker.WheelDatePickerComponent.WheelDatePicker
 import network.chaintech.kmp_date_time_picker.utils.now
 import org.jetbrains.compose.resources.painterResource
@@ -100,6 +102,7 @@ class IncomeNetOtherFormScreen(val id: Int, val sptHd: Form1770HdResponseApiMode
 		var showIncomeTypePopup by remember { mutableStateOf(false) }
 		var showRentStartDatePopup by remember { mutableStateOf(false) }
 		var showRentEndDatePopup by remember { mutableStateOf(false) }
+		var showAssetListPopup by remember { mutableStateOf(false) }
 		
 		var formType by remember { mutableStateOf("") }
 		
@@ -117,9 +120,84 @@ class IncomeNetOtherFormScreen(val id: Int, val sptHd: Form1770HdResponseApiMode
 		var employerNameAddr by remember { mutableStateOf("") }
 		var overseasIncomeType by remember { mutableStateOf("") }
 		
+		var wealthList by remember { mutableStateOf<List<FormWealthResponseApiModel>>(emptyList())}
+		var filteredWealthList by remember { mutableStateOf<List<FormWealthResponseApiModel>>(emptyList())}
+		
 		var isReady by remember { mutableStateOf(false) }
 		
+		fun getFilteredWealthList(): List<FormWealthResponseApiModel> {
+			when(formType) {
+				"B" -> {
+					return wealthList.filter { it.IsOverseas == false && (it.WealthType.WealthTypeCode == AssetCode.UANG_TUNAI.value ||
+							it.WealthType.WealthTypeCode == AssetCode.SAHAM.value ||
+							it.WealthType.WealthTypeCode == AssetCode.INVESTASI_LAINNYA.value ||
+							it.WealthType.WealthTypeCode == AssetCode.PENYERTAAN_MODAL_DALAM_PERUSAHAAN_LAIN_YANG_TIDAK_ATAS_SAHAM.value ||
+							it.WealthType.WealthTypeCode == AssetCode.REKSADANA.value ||
+							it.WealthType.WealthTypeCode == AssetCode.OBLIGASI_PERUSAHAAN.value ||
+							it.WealthType.WealthTypeCode == AssetCode.OBLIGASI_PEMERINTAH_INDONESIA.value ||
+							it.WealthType.WealthTypeCode == AssetCode.SEPEDA.value ||
+							it.WealthType.WealthTypeCode == AssetCode.SEPEDA_MOTOR.value ||
+							it.WealthType.WealthTypeCode == AssetCode.MOBIL.value ||
+							it.WealthType.WealthTypeCode == AssetCode.ALAT_TRANSPORTASI_LAINNYA.value ||
+							it.WealthType.WealthTypeCode == AssetCode.LOGAM_MULIA.value ||
+							it.WealthType.WealthTypeCode == AssetCode.BATU_MULIA.value ||
+							it.WealthType.WealthTypeCode == AssetCode.BARANG_SENI_DAN_ANTIK.value ||
+							it.WealthType.WealthTypeCode == AssetCode.KAPAL_PESIAR_PESAWAT_TERBANG_HELIKOPTER_JETSKI_PERALATAN_OLAH_RAGA_KHUSUS.value ||
+							it.WealthType.WealthTypeCode == AssetCode.PERALATAN_ELEKTRONIK_FURINITURE.value ||
+							it.WealthType.WealthTypeCode == AssetCode.HARTA_BERGERAK_LAINNYA.value ||
+							it.WealthType.WealthTypeCode == AssetCode.HARTA_TIDAK_GERAK_LAINNYA.value) }
+				}
+				
+				"C" -> {
+					return wealthList.filter { it.IsOverseas == false && (it.WealthType.WealthTypeCode == AssetCode.SEPEDA.value ||
+							it.WealthType.WealthTypeCode == AssetCode.SEPEDA_MOTOR.value ||
+							it.WealthType.WealthTypeCode == AssetCode.MOBIL.value ||
+							it.WealthType.WealthTypeCode == AssetCode.ALAT_TRANSPORTASI_LAINNYA.value ||
+							it.WealthType.WealthTypeCode == AssetCode.KAPAL_PESIAR_PESAWAT_TERBANG_HELIKOPTER_JETSKI_PERALATAN_OLAH_RAGA_KHUSUS.value ||
+							it.WealthType.WealthTypeCode == AssetCode.PERALATAN_ELEKTRONIK_FURINITURE.value ||
+							it.WealthType.WealthTypeCode == AssetCode.HARTA_BERGERAK_LAINNYA.value ||
+							it.WealthType.WealthTypeCode == AssetCode.HARTA_TIDAK_GERAK_LAINNYA.value) }
+				}
+				
+				"D" -> {
+					return wealthList.filter { it.IsOverseas == true && (it.WealthType.WealthTypeCode == AssetCode.UANG_TUNAI.value ||
+							it.WealthType.WealthTypeCode == AssetCode.SAHAM.value ||
+							it.WealthType.WealthTypeCode == AssetCode.INVESTASI_LAINNYA.value ||
+							it.WealthType.WealthTypeCode == AssetCode.PENYERTAAN_MODAL_DALAM_PERUSAHAAN_LAIN_YANG_TIDAK_ATAS_SAHAM.value ||
+							it.WealthType.WealthTypeCode == AssetCode.REKSADANA.value ||
+							it.WealthType.WealthTypeCode == AssetCode.OBLIGASI_PERUSAHAAN.value ||
+							it.WealthType.WealthTypeCode == AssetCode.OBLIGASI_PEMERINTAH_INDONESIA.value ||
+							it.WealthType.WealthTypeCode == AssetCode.SEPEDA.value ||
+							it.WealthType.WealthTypeCode == AssetCode.SEPEDA_MOTOR.value ||
+							it.WealthType.WealthTypeCode == AssetCode.MOBIL.value ||
+							it.WealthType.WealthTypeCode == AssetCode.ALAT_TRANSPORTASI_LAINNYA.value ||
+							it.WealthType.WealthTypeCode == AssetCode.LOGAM_MULIA.value ||
+							it.WealthType.WealthTypeCode == AssetCode.BATU_MULIA.value ||
+							it.WealthType.WealthTypeCode == AssetCode.BARANG_SENI_DAN_ANTIK.value ||
+							it.WealthType.WealthTypeCode == AssetCode.KAPAL_PESIAR_PESAWAT_TERBANG_HELIKOPTER_JETSKI_PERALATAN_OLAH_RAGA_KHUSUS.value ||
+							it.WealthType.WealthTypeCode == AssetCode.PERALATAN_ELEKTRONIK_FURINITURE.value ||
+							it.WealthType.WealthTypeCode == AssetCode.HARTA_BERGERAK_LAINNYA.value ||
+							it.WealthType.WealthTypeCode == AssetCode.HARTA_TIDAK_GERAK_LAINNYA.value) }
+				}
+				"E" -> {
+					return wealthList.filter { it.IsOverseas == true }
+				}
+				"F" -> {
+					return wealthList.filter { it.IsOverseas == true && (it.WealthType.WealthTypeCode == AssetCode.SEPEDA.value ||
+							it.WealthType.WealthTypeCode == AssetCode.SEPEDA_MOTOR.value ||
+							it.WealthType.WealthTypeCode == AssetCode.MOBIL.value ||
+							it.WealthType.WealthTypeCode == AssetCode.ALAT_TRANSPORTASI_LAINNYA.value ||
+							it.WealthType.WealthTypeCode == AssetCode.KAPAL_PESIAR_PESAWAT_TERBANG_HELIKOPTER_JETSKI_PERALATAN_OLAH_RAGA_KHUSUS.value ||
+							it.WealthType.WealthTypeCode == AssetCode.PERALATAN_ELEKTRONIK_FURINITURE.value ||
+							it.WealthType.WealthTypeCode == AssetCode.HARTA_BERGERAK_LAINNYA.value ||
+							it.WealthType.WealthTypeCode == AssetCode.HARTA_TIDAK_GERAK_LAINNYA.value) }
+				}
+				else -> return emptyList()
+			}
+		}
+		
 		LaunchedEffect(null) {
+			wealthList = sptManager.getWealthData(scope, sptHd!!.Id.toString())
 			
 			if(id != 0) {
 				val oldData = sptManager.getIncomeNetOtherDataById(scope, id.toString())
@@ -128,11 +206,12 @@ class IncomeNetOtherFormScreen(val id: Int, val sptHd: Form1770HdResponseApiMode
 					incomeTypeE = oldData.IncomeTypeE
 					selectedIncomeType = if (incomeTypeE < 200) DomesticNetIncomeType.fromValue(incomeTypeE) else OverseasNetIncomeType.fromValue(incomeTypeE)
 					formType = if (incomeTypeE < 200) DomesticNetIncomeType.formTypeFromValue(incomeTypeE).toString() else OverseasNetIncomeType.formTypeFromValue(incomeTypeE).toString()
+					filteredWealthList = getFilteredWealthList()
 					nettIncomeIDR = "Rp ${CurrencyFormatter(BigDeciToString(oldData.NettIncomeIDR.toString()))}"
 					nettIncomeIDRActual = BigDeciToLong(oldData.NettIncomeIDR.toString())
 					description = oldData.Description ?: ""
 					wealthId = oldData.Wealth?.Id ?: 0
-					selectedWealth = "${oldData.Wealth?.WealthType?.WealthTypeName} - ${oldData.Wealth?.Description}"
+					selectedWealth = "(${oldData.Wealth?.WealthType?.WealthTypeName}) ${oldData.Wealth?.AcquisitionYear} Rp ${CurrencyFormatter(BigDeciToString(oldData.Wealth?.CurrencyAmountIDR.toString()))}"
 					sellPriceIDR = "Rp ${CurrencyFormatter(BigDeciToString(oldData.SellPriceIDR.toString()))}"
 					sellPriceIDRActual = if(oldData.SellPriceIDR == null) 0L else BigDeciToLong(oldData.SellPriceIDR.toString())
 					rentStartDate = oldData.RentStartDate ?: ""
@@ -276,8 +355,39 @@ class IncomeNetOtherFormScreen(val id: Int, val sptHd: Form1770HdResponseApiMode
 				)
 			)
 		}
-
-		//TODO("Create Wealth Selector(Filter Map provided later)")
+		
+		@Composable
+		fun wealthSelector() {
+			Text(
+				modifier = Modifier.padding(horizontal = 16.dp).padding(top = 8.dp),
+				text = "Harta",
+				fontSize = 12.sp,
+				color = Color.Black,
+				fontWeight = FontWeight.Bold
+			)
+			
+			Box(
+				modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)
+					.background(Color.White, RoundedCornerShape(4.dp))
+					.border(1.dp, Colors().textDarkGrey, RoundedCornerShape(4.dp))
+					.clickable(true, onClick = {
+						showAssetListPopup = true
+					})
+			) {
+				Row (
+					modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 16.dp),
+					horizontalArrangement = Arrangement.SpaceBetween,
+					verticalAlignment = Alignment.CenterVertically
+				){
+					Text(
+						text = selectedWealth.ifBlank { "011 - Uang Tunai" },
+						fontSize = 14.sp,
+						color = if(selectedWealth == "") Colors().textDarkGrey else Colors().textBlack
+					)
+					Image(painterResource(Res.drawable.Icon_Dropdown_Arrow), null, modifier = Modifier.size(24.dp))
+				}
+			}
+		}
 		
 		@Composable
 		fun sellPriceTextField() {
@@ -514,6 +624,8 @@ class IncomeNetOtherFormScreen(val id: Int, val sptHd: Form1770HdResponseApiMode
 				//Income Type Selector
 				item { incomeTypeSelector() }
 				
+				if(formType == "B" || formType == "C" || formType == "D" || formType == "E" || formType == "F") item { wealthSelector() }
+				
 				if(formType == "D" || formType == "E" || formType == "F") item { employerNameAddrTextField() }
 				
 				if(formType == "E") item { overseasIncomeTypeTextField() }
@@ -558,7 +670,7 @@ class IncomeNetOtherFormScreen(val id: Int, val sptHd: Form1770HdResponseApiMode
 									val dataModel = FormNetOtherIncomeBRequestApiModel(
 										Id = id,
 										Tr1770HdId = sptHd!!.Id,
-										Tr1770WealthId = null,
+										Tr1770WealthId = wealthId,
 										SellPriceIDR = sellPriceIDRActual,
 										NettIncomeIDR = nettIncomeIDRActual,
 										Description = description.ifBlank { null }
@@ -574,7 +686,7 @@ class IncomeNetOtherFormScreen(val id: Int, val sptHd: Form1770HdResponseApiMode
 									val dataModel = FormNetOtherIncomeCRequestApiModel(
 										Id = id,
 										Tr1770HdId = sptHd!!.Id,
-										Tr1770WealthId = null,
+										Tr1770WealthId = wealthId,
 										NettIncomeIDR = nettIncomeIDRActual,
 										RentStartDate = rentStartDate.ifBlank { null },
 										RentEndDate = rentEndDate.ifBlank { null },
@@ -591,7 +703,7 @@ class IncomeNetOtherFormScreen(val id: Int, val sptHd: Form1770HdResponseApiMode
 									val dataModel = FormNetOtherIncomeDRequestApiModel(
 										Id = id,
 										Tr1770HdId = sptHd!!.Id,
-										Tr1770WealthId = null,
+										Tr1770WealthId = wealthId,
 										EmployerNameAddr = employerNameAddr.ifBlank { null },
 										SellPriceIDR = sellPriceIDRActual,
 										NettIncomeIDR = nettIncomeIDRActual,
@@ -608,7 +720,7 @@ class IncomeNetOtherFormScreen(val id: Int, val sptHd: Form1770HdResponseApiMode
 									val dataModel = FormNetOtherIncomeERequestApiModel(
 										Id = id,
 										Tr1770HdId = sptHd!!.Id,
-										Tr1770WealthId = null,
+										Tr1770WealthId = wealthId,
 										EmployerNameAddr = employerNameAddr.ifBlank { null },
 										OverseasIncomeType = overseasIncomeType.ifBlank { null },
 										NettIncomeIDR = nettIncomeIDRActual,
@@ -625,7 +737,7 @@ class IncomeNetOtherFormScreen(val id: Int, val sptHd: Form1770HdResponseApiMode
 									val dataModel = FormNetOtherIncomeFRequestApiModel(
 										Id = id,
 										Tr1770HdId = sptHd!!.Id,
-										Tr1770WealthId = null,
+										Tr1770WealthId = wealthId,
 										EmployerNameAddr = employerNameAddr.ifBlank { null },
 										NettIncomeIDR = nettIncomeIDRActual,
 										RentStartDate = rentStartDate.ifBlank { null },
@@ -697,6 +809,7 @@ class IncomeNetOtherFormScreen(val id: Int, val sptHd: Form1770HdResponseApiMode
 											incomeTypeE = it.value
 											formType = DomesticNetIncomeType.formTypeFromValue(it.value).toString()
 											showIncomeTypePopup = false
+											filteredWealthList = getFilteredWealthList()
 										})
 								)
 							}
@@ -723,6 +836,42 @@ class IncomeNetOtherFormScreen(val id: Int, val sptHd: Form1770HdResponseApiMode
 											incomeTypeE = it.value
 											formType = OverseasNetIncomeType.formTypeFromValue(it.value).toString()
 											showIncomeTypePopup = false
+											filteredWealthList = getFilteredWealthList()
+										})
+								)
+							}
+						}
+					}
+				}
+			}
+		)
+		
+		//Wealth List Popup
+		popUpBox(
+			showPopup = showAssetListPopup,
+			onClickOutside = { showAssetListPopup = false },
+			content = {
+				Column(
+					modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 12.dp)
+				) {
+					Text(
+						text = "Nama Aset",
+						fontSize = 12.sp,
+						color = Colors().textBlack,
+						fontWeight = FontWeight.Bold,
+						modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+					)
+					LazyColumn(modifier = Modifier.heightIn(max = 200.dp).padding(horizontal = 18.dp)) {
+						filteredWealthList.forEach {
+							item {
+								Text(
+									text = "(${it.WealthType.WealthTypeName}) ${it.AcquisitionYear} Rp ${CurrencyFormatter(BigDeciToString(it.CurrencyAmountIDR.toString()))}",
+									fontSize = 18.sp,
+									modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
+										.clickable(true, onClick = {
+											selectedWealth = "(${it.WealthType.WealthTypeName}) ${it.AcquisitionYear} Rp ${CurrencyFormatter(BigDeciToString(it.CurrencyAmountIDR.toString()))}"
+											wealthId = it.Id
+											showAssetListPopup = false
 										})
 								)
 							}

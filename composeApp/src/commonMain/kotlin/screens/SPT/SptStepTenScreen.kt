@@ -54,6 +54,7 @@ import global.AccountRecordType
 import global.Colors
 import global.CurrRateEntryMode
 import global.MaritalStatus
+import global.PertamaSptFillingStep
 import global.universalUIComponents.loadingPopupBox
 import global.universalUIComponents.topBar
 import http.Account
@@ -204,11 +205,64 @@ class SptStepTenScreen(val sptHd: Form1770HdResponseApiModel?, val client: Accou
 								)
 							}
 						}
+						
+						//Done Button
+						Box(
+							modifier = Modifier.fillMaxSize().padding(bottom = 88.dp).padding(horizontal = 16.dp),
+							contentAlignment = Alignment.BottomCenter
+						){
+							Box(
+								contentAlignment = Alignment.Center,
+								modifier = Modifier.fillMaxWidth()
+									.clip(RoundedCornerShape(8.dp))
+									.background(Colors().brandDark40, RoundedCornerShape(8.dp))
+									.clickable(true, onClick = {
+										println()
+										isReady = false
+										scope.launch{
+											sptManager.updateStepForm1770(
+												scope,
+												sptHd!!.Id,
+												PertamaSptFillingStep.IncomeSpousePHMT.value
+											)
+											navigator.pop()
+										}
+									})
+							) {
+								Text(
+									text = "Selesai",
+									fontSize = 16.sp,
+									color = Color.White,
+									modifier = Modifier.padding(vertical = 16.dp)
+								)
+							}
+						}
 					}
 				}
 				else {
 					//Attention Box
-					
+					item {
+						Box(
+							modifier = Modifier
+								.fillMaxWidth()
+								.padding(horizontal = 16.dp).padding(bottom = 24.dp)
+								.clip(RoundedCornerShape(8.dp))
+								.background(Color(0xFFEEF4FF))
+						) {
+							Row(
+								modifier = Modifier.fillMaxWidth().padding(16.dp),
+								verticalAlignment = Alignment.Top
+							) {
+								Image(painterResource(Res.drawable.icon_infocircle), null, modifier = Modifier.padding(end = 8.dp))
+								Text(
+									text = "Harap diisi dengan nilai penghasilan neto pasangan anda sesuai dengan data formulir 1770 pasangan Anda",
+									fontSize = 12.sp,
+									lineHeight = 20.sp,
+									color = Colors().brandDark90
+								)
+							}
+						}
+					}
 					
 					//Final Income Checkboxes
 					item {

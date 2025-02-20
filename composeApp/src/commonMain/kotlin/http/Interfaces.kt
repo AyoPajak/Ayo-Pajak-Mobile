@@ -2729,7 +2729,7 @@ class Interfaces(private val httpClient: HttpClient) {
 	}
 	
 	//Income Spouse
-	suspend fun getIncomeSpousePHMTData(apiToken: String, id: String): Result<FormSpousePHMTIncomeResponseApiModel, NetworkError> {
+	suspend fun getIncomeSpousePHMTData(apiToken: String, id: String): Result<FormSpousePHMTIncomeResponseApiModel?, NetworkError> {
 		val response = try {
 			httpClient.get (
 				urlString = "${Variables.PertamaApiBaseUrl}api/SPTTahunanOP/GetIncomeSpousePHMTData"
@@ -2749,7 +2749,7 @@ class Interfaces(private val httpClient: HttpClient) {
 		
 		return when (response.status.value) {
 			200 -> {
-				val responseBody = response.body<FormSpousePHMTIncomeResponseApiModel>()
+				val responseBody = response.body<FormSpousePHMTIncomeResponseApiModel?>()
 				Result.Success(responseBody)
 			}
 			401 -> Result.Error(NetworkError.UNAUTHORIZED)
@@ -3079,14 +3079,14 @@ class Interfaces(private val httpClient: HttpClient) {
 	}
 	
 	//Update Step Form 1770
-	suspend fun updateStepForm1770(apiToken: String, hdId: String, formStep: Int) : Result<PertamaGeneralApiResponse, NetworkError> {
+	suspend fun updateStepForm1770(apiToken: String, hdId: Int, formStep: Int) : Result<PertamaGeneralApiResponse, NetworkError> {
 		val response = try {
 			httpClient.post  (
 				urlString = "${Variables.PertamaApiBaseUrl}api/SPTTahunanOP/UpdateStepForm1770"
 			) {
 				header("Authorization", apiToken)
 				url {
-					encodedParameters.append("hdId", hdId)
+					encodedParameters.append("hdId", hdId.toString())
 					encodedParameters.append("formStep", formStep.toString())
 				}
 				contentType(ContentType.Application.Json)
